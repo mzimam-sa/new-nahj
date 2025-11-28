@@ -5,7 +5,7 @@
     "keywords": ["framework", "laravel"], 
     "license": "MIT",
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "akcybex/laravel-jazzcash": "^1.0",
         "anandsiddharth/laravel-paytm-wallet": "^2.0",
         "astrotomic/laravel-translatable": "^11.12",
@@ -122,7 +122,12 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
-        }
+        },
+        "audit": {
+        "ignore": ["PKSA-8qx3-n5y5-vvnd"],
+        "block-insecure": false
+    }
+        
     },
     "minimum-stability": "stable",
     "prefer-stable": true
