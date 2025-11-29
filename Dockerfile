@@ -1,6 +1,6 @@
-FROM php:8.3-apache
+FROM php:8.4-apache
 
-# Enable Apache rewrite
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
 # Install system dependencies

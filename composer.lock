@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "094eb9096fed4d68dc8fd53e00262280",
+    "content-hash": "262c283caaee510b4cd751da67a379bf",
     "packages": [
         {
             "name": "akcybex/laravel-jazzcash",
@@ -15343,7 +15343,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.3"
+        "php": "^8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
