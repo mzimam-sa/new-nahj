@@ -29,7 +29,8 @@ jobs:
           php artisan optimize
 
       - name: Deploy to Shared Hosting (Demo)
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.0.0
+
         with:
           server: ftp://147.93.25.54
           username: u766532697.na
