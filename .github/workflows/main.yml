@@ -27,7 +27,7 @@ jobs:
         port: 65002
         
         script: |
-          cd domains/te.maidan.events/public_html   
+          cd domains/te.maidan.events/laravel
           git pull origin main
           composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
           php artisan migrate --force
