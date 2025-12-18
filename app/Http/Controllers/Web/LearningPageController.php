@@ -25,6 +25,10 @@ class LearningPageController extends Controller
 
         $data = $webinarController->course($slug, true);
 
+        if (!$data) {
+            abort(404);
+        } 
+
         $course = $data['course'];
         $user = $data['user'];
 

@@ -332,7 +332,7 @@ class WebinarController extends Controller
             'slug' => Webinar::makeSlug($data['title']),
             'type' => $data['type'],
             'private' => true,
-//            'private' => (!empty($data['private']) and $data['private'] == 'on') ? true : false,
+        //    'private' => (!empty($data['private']) and $data['private'] == 'on') ? true : false,
             'thumbnail' => $data['thumbnail'],
             'image_cover' => $data['image_cover'],
             'video_demo' => $data['video_demo'],
@@ -367,6 +367,7 @@ class WebinarController extends Controller
 
         return redirect($url);
     }
+
 
     public function edit(Request $request, $id, $step = 1)
     {

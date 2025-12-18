@@ -112,7 +112,7 @@
                             </div>
 
 
-                            {{-- <div class="form-group js-file-path-input {{ (!empty($file) and $file->storage == 's3') ? 'd-none' : '' }}">
+                            <div class="form-group js-file-path-input {{ (!empty($file) and $file->storage == 's3') ? 'd-none' : '' }}">
                                 <div class="local-input input-group">
                                     <div class="input-group-prepend">
                                         <button type="button" class="input-group-text panel-file-manager text-white" data-input="file_path{{ !empty($file) ? $file->id : 'record' }}" data-preview="holder">
@@ -122,7 +122,7 @@
                                     <input type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][file_path]" id="file_path{{ !empty($file) ? $file->id : 'record' }}" value="{{ (!empty($file)) ? $file->file : '' }}" class="js-ajax-file_path form-control" placeholder="{{ trans('webinars.file_upload_placeholder') }}"/>
                                     <div class="invalid-feedback"></div>
                                 </div>
-                            </div> --}}
+                            </div>
 
                             <div class="form-group js-s3-file-path-input {{ (!empty($file) and $file->storage == 's3') ? '' : 'd-none' }}">
                                 <div class="input-group">
