@@ -29,6 +29,11 @@ jobs:
 
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
+        
+        # --- NEW STEP: FORCE UPLOAD ALL FILES ---
+      - name: Remove .gitignore to force upload everything
+        run: rm .gitignore
+      # ----------------------------------------
 
       - name: Deploy to Shared Hosting (Demo)
         uses: SamKirkland/FTP-Deploy-Action@v4.0.0
