@@ -20,7 +20,7 @@
         <div class="form-group">
             <label class="input-label" for="mobile">{{ trans('auth.mobile') }} {{ !empty($optional) ? "(". trans('public.optional') .")" : '' }}:</label>
             <input name="mobile" type="text" class="form-control @error('mobile') is-invalid @enderror"
-                   value="{{ old('mobile') }}" id="mobile" aria-describedby="mobileHelp">
+                 required  value="{{ old('mobile') }}" id="mobile" aria-describedby="mobileHelp">
 
             @error('mobile')
             <div class="invalid-feedback">

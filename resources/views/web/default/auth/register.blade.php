@@ -69,7 +69,7 @@
                         <div class="form-group">
                             <label class="input-label"
                                 for="certificate_additional">{{ trans('update.certificate_additional') }}</label>
-                            <input name="certificate_additional" maxlength="10" id="certificate_additional"
+                            <input name="certificate_additional"  maxlength="10" id="certificate_additional"
                                 class="form-control @error('certificate_additional') is-invalid @enderror" />
                             @error('certificate_additional')
                                 <div class="invalid-feedback">
