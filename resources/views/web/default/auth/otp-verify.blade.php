@@ -33,8 +33,18 @@
 
                         <div class="form-group">
                             <label class="input-label" for="otp">{{ trans('auth.enter_otp') }}:</label>
-                            <input name="otp" type="text" class="form-control @error('otp') is-invalid @enderror"
-                                   id="otp" required autofocus>
+                            <input name="otp" 
+                                   type="text" 
+                                   class="form-control @error('otp') is-invalid @enderror"
+                                   id="otp" 
+                                   maxlength="6"
+                                   pattern="[0-9]{6}"
+                                   inputmode="numeric"
+                                   placeholder="123456"
+                                   @if(isset($locked_out) && $locked_out) disabled @endif
+                                   @if(isset($expired) && $expired) disabled @endif
+                                   required 
+                                   autofocus>
 
                             @error('otp')
                             <div class="invalid-feedback">
@@ -42,23 +52,44 @@
                             </div>
                             @enderror
 
+                            @if(isset($remaining_attempts) && $remaining_attempts > 0)
+                                <div class="text-warning mt-5 font-12">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                    {{ trans('auth.attempts_remaining', ['count' => $remaining_attempts]) }}
+                                </div>
+                            @endif
+
                             <div class="text-muted mt-5 font-12">
                                 {{ trans('auth.otp_expire_note', ['minutes' => 15]) }}
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-block mt-20 rounded-pill">
+                        <button type="submit" 
+                                id="verifyBtn"
+                                class="btn btn-primary btn-block mt-20 rounded-pill"
+                                @if(isset($locked_out) && $locked_out) disabled @endif
+                                @if(isset($expired) && $expired) disabled @endif>
                             {{ trans('auth.verify_otp') }}
                         </button>
-                    </form>
+                        
+                        @if(isset($locked_out) && $locked_out)
+                            <div class="alert alert-danger mt-20 text-center">
+                                <i class="fa fa-lock"></i>
+                                {{ trans('auth.account_locked_message', ['minutes' => $remaining_minutes ?? 5]) }}
+                                <br><br>
+                                <a href="/login" class="btn btn-sm" style="color: white">{{ trans('auth.back_to_login') }}</a>
+                            </div> 
+                        @endif 
 
-                    <!--<form method="Post" action="/resend-otp" class="mt-20 text-center">-->
-                    <!--    @csrf-->
-                    <!--    <input type="hidden" name="email" value="{{ $email }}">-->
-                    <!--    <button type="submit" class="btn btn-link p-0">-->
-                    <!--        {{ trans('auth.didnt_receive_code') }} <strong>{{ trans('auth.resend_otp') }}</strong>-->
-                    <!--    </button>-->
-                    <!--</form>-->
+                        @if(isset($expired) && $expired)
+                            <div class="alert alert-secondary mt-20 text-center">
+                                <i class="fa fa-clock-o" style="color: white">        {{ trans('auth.otp_expired_message') }}</i>
+                        
+                                <br><br>
+                                <a href="/login" class="btn btn-outline-warning btn-sm" style="color: white">{{ trans('auth.back_to_login') }}</a>
+                            </div>
+                        @endif
+                    </form>
 
                     @if(session()->has('otp_error'))
                         <div class="d-flex align-items-center mt-20 p-15 danger-transparent-alert">
@@ -73,10 +104,20 @@
                     @endif
                 </div>
             </div>
-        </div>
+        </div> 
     </div>
 @endsection
 
 @push('scripts_bottom')
     <script src="/assets/default/vendors/select2/select2.min.js"></script>
+    
+    <script>
+        // Only allow numbers in OTP field
+        const otpInput = document.getElementById('otp');
+        if (otpInput && !otpInput.disabled) {
+            otpInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+            });
+        }
+    </script>
 @endpush
