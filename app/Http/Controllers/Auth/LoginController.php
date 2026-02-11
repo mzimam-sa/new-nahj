@@ -109,7 +109,7 @@ class LoginController extends Controller
             $user->otp_expire = now()->addMinutes(15);
             $user->save();
 
-            // Send Email OTP
+            // Send Email OTP 
             Mail::to($user->email)->send(new SendOtpMail([
                 'otp' => $generateOtp,
                 'email' => $user->email

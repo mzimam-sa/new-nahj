@@ -165,10 +165,16 @@
                                         <td class="align-middle">
                                             <span class="text-dark-blue font-weight-500">{{ $quiz->pass_mark }}</span>
                                         </td>
-                                        <td class="align-middle">
+                                        <td class="align-middle"> 
                                             <span class="text-dark-blue font-weight-500">{{ $quiz->total_mark }}</span>
                                         </td>
+                                        @if($quiz->result->show_result_to_student)
                                         <td class="align-middle">{{ $quiz->result->user_grade }}</td>
+                                        @else 
+                                        <td class="align-middle">-</td>
+                                        @endif
+
+
                                         <td class="align-middle">
                                             <span class="text-dark-blue font-weight-500">{{ dateTimeFormat($quiz->result->created_at, 'j M Y') }}</span>
                                         </td>
