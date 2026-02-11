@@ -174,7 +174,6 @@
                                         <td class="align-middle">-</td>
                                         @endif
 
-
                                         <td class="align-middle">
                                             <span class="text-dark-blue font-weight-500">{{ dateTimeFormat($quiz->result->created_at, 'j M Y') }}</span>
                                         </td>

@@ -109,4 +109,20 @@ return [
     'otp_sent_to_email' => 'We sent a verification code to :email',
     'didnt_receive_code' => "Didn't receive a code?",
     'verification_failed' => 'Verification Failed',
+    'invalid_or_expired_otp' => 'Invalid or expired OTP code.',
+    'otp_already_sent' => 'OTP already sent. Please check your email or wait before requesting a new one.',
+    'email_service_error' => 'Email service is temporarily unavailable. Please contact support.',
+    'otp_send_failed' => 'Failed to send OTP. Please try again later.',
+    'otp_verification_error' => 'An error occurred during OTP verification. Please try again.',
+    'otp_process_error' => 'An error occurred while processing your request. Please try again.',
+    'login_system_error' => 'A system error occurred. Please try again later.',
+    'user_not_found' => 'User not found.',
+    'otp_expired_message' => 'Your OTP has expired. Please request a new one.',
+    'back_to_login' => 'Back to Login',
+    'too_many_attempts' => 'Too many attempts. Please try again in 5 minutes.',
+    'invalid_otp_attempts' => 'Invalid OTP. :remaining attempts remaining.',
+    'attempts_remaining' => 'Warning: :count attempts remaining before lockout',
+    'account_locked_message' => 'Account temporarily locked due to too many failed attempts. Please try again in :minutes minutes.',
+
 ];
+ 
