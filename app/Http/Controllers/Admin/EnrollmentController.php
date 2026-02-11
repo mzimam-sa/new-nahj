@@ -73,59 +73,6 @@ class EnrollmentController extends Controller
         return view('admin.enrollment.history', $data);
     }
 
-
-     public function olders(Request $request)
-    {
-        // $this->authorize('admin_enrollment_olders');
-
-        $query = Sale::whereNotNull('webinar_id');
-
-        $salesQuery = $this->getSalesFilters($query, $request);
-
-        $sales = $salesQuery->orderBy('created_at', 'desc')
-            ->with([
-                'buyer',
-                'webinar', 
-            ]) 
-            ->paginate(20);
-
-        foreach ($sales as $sale) {
-            $sale = $this->makeTitle($sale);
-
-            if (empty($sale->saleLog)) {
-                SaleLog::create([
-                    'sale_id' => $sale->id,
-                    'viewed_at' => time()
-                ]);
-            }
-        }
-
-        $data = [
-            'pageTitle' => trans('الطلبات'),
-            'sales' => $sales,
-        ];
-
-        $teacher_ids = $request->get('teacher_ids');
-        $student_ids = $request->get('student_ids');
-        $webinar_ids = $request->get('webinar_ids');
-
-        if (!empty($teacher_ids)) {
-            $data['teachers'] = User::select('id', 'full_name')
-                ->whereIn('id', $teacher_ids)->get();
-        }
-
-        if (!empty($student_ids)) {
-            $data['students'] = User::select('id', 'full_name')
-                ->whereIn('id', $student_ids)->get();
-        }
-
-        if (!empty($webinar_ids)) {
-            $data['webinars'] = Webinar::select('id')
-                ->whereIn('id', $webinar_ids)->get();
-        }
-
-        return view('admin.enrollment.olders', $data);
-    }
     private function makeTitle($sale)
     {
         $item = $sale->webinar;
@@ -318,7 +265,6 @@ class EnrollmentController extends Controller
                         'quantity' => 1,
                         'status' => 'pending',
                         'created_at' => time()
-
                     ]);
 
                     $itemId = $productOrder->id;
