@@ -14,6 +14,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache; 
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -64,66 +67,530 @@ class LoginController extends Controller
         return view(getTemplate() . '.auth.login', $data);
     }
 
-    public function login(Request $request)
-    {
-        // Set validation rules
+    // public function login(Request $request)
+    // {
+    //     // Set validation rules
+    //     $rules = [
+    //         'email' => 'required|email|exists:users,email',
+    //         'password' => 'required_if:otp,null|min:6',
+    //     ];
+
+    //     // Only require captcha for initial login (not OTP verification)
+    //     if (!empty(getGeneralSecuritySettings('captcha_for_login')) && !$request->has('otp')) {
+    //         $rules['captcha'] = 'required|captcha';
+    //     }
+
+    //     $this->validate($request, $rules);
+
+    //     // Handle OTP verification
+    //     if ($request->has('otp')) {
+    //         $user = User::where('email', $request->email)->first();
+
+    //         if ($user && $user->otp == $request->otp && now()->lt($user->otp_expire)) {
+    //             Auth::login($user, $request->remember);
+    //             $user->otp = null;
+    //             $user->otp_expire = null;
+    //             $user->save();
+
+    //             return $this->afterLogged($request);
+    //         }
+
+    //         return back()->withInput($request->all())->withErrors([
+    //             'otp' => trans('auth.invalid_or_expired_otp')
+    //         ]);
+    //     }
+
+    //     // Verify credentials but don't log in yet
+    //     $credentials = $request->only('email', 'password');
+
+    //     if (Auth::validate($credentials)) {
+    //         $user = User::where('email', $request->email)->first();
+
+    //         // Generate and save OTP
+    //         $generateOtp = rand(100000, 999999);
+    //         $user->otp = $generateOtp;
+    //         $user->otp_expire = now()->addMinutes(15);
+    //         $user->save();
+
+    //         // Send Email OTP
+    //         Mail::to($user->email)->send(new SendOtpMail([
+    //             'otp' => $generateOtp,
+    //             'email' => $user->email
+    //         ]));
+
+    //         // Redirect to OTP verification view
+    //         return view('web.default.auth.otp-verify', [
+    //             'email' => $request->email,
+    //             'remember' => $request->remember
+    //         ]);
+    //     }
+
+    //     return $this->sendFailedLoginResponse($request);
+    // }
+
+
+//     public function login(Request $request)
+// {
+//     try {
+//         $rules = [
+//             'email' => 'required|email|exists:users,email',
+//             'password' => 'required_if:otp,null|min:6',
+//         ];
+
+//         if (!empty(getGeneralSecuritySettings('captcha_for_login')) && !$request->has('otp')) {
+//             $rules['captcha'] = 'required|captcha';
+//         }
+
+//         $this->validate($request, $rules);
+
+
+
+//         return $request->has('otp') ? $this->verifyOtp($request)  : $this->sendOtp($request);
+
+//     } catch (\Illuminate\Validation\ValidationException $e) {
+//         throw $e; // Let Laravel handle validation errors normally
+        
+//     } catch (\Exception $e) {
+//         Log::error('Login error', [
+//             'error' => $e->getMessage(),
+//             'trace' => $e->getTraceAsString()
+//         ]);
+
+//         return back()->withInput()->withErrors([
+//             'email' => trans('auth.login_system_error')
+//         ]);
+//     }
+// }
+
+// private function verifyOtp(Request $request)
+// {
+//     try {
+//         $user = User::where('email', $request->email)->first();
+        
+//         if (!$user) {
+//             return back()->withInput()->withErrors([
+//                 'email' => trans('auth.user_not_found')
+//             ]);
+//         }
+
+//         // Get OTP data from session
+//         $otpData = session("otp:{$user->id}");
+        
+//         if (!$otpData || now()->gt($otpData['expires_at'])) {
+//             return back()->withInput()->withErrors([
+//                 'otp' => trans('auth.invalid_or_expired_otp')
+//             ]);
+//         }
+
+//         // Rate limiting
+//         $attempts = session("otp_attempts:{$user->id}", 0);
+        
+//         if ($attempts >= 5) {
+//             return back()->withInput()->withErrors([
+//                 'otp' => trans('auth.too_many_attempts')
+//             ]);
+//         }
+
+//         // Verify OTP
+//         if (!Hash::check($request->otp, $otpData['hashed_otp'])) {
+//             session(["otp_attempts:{$user->id}" => $attempts + 1]);
+            
+//             return back()->withInput()->withErrors([
+//                 'otp' => trans('auth.invalid_or_expired_otp')
+//             ]);
+//         }
+
+//         // Success - clear session and login
+//         session()->forget("otp:{$user->id}");
+//         session()->forget("otp_attempts:{$user->id}");
+        
+//         Auth::login($user, $request->boolean('remember'));
+        
+//         Log::info('User logged in with OTP', ['user_id' => $user->id]);
+
+//         return $this->afterLogged($request);
+
+//     } catch (\Exception $e) {
+//         Log::error('OTP verification error', [
+//             'email' => $request->email,
+//             'error' => $e->getMessage(),
+//             'trace' => $e->getTraceAsString()
+//         ]);
+
+//         return back()->withInput()->withErrors([
+//             'otp' => trans('auth.otp_verification_error')
+//         ]);
+//     }
+// }
+
+// private function sendOtp(Request $request)
+// {
+//     try {
+//         $credentials = $request->only('email', 'password');
+
+//         if (!Auth::validate($credentials)) {
+//             return $this->sendFailedLoginResponse($request);
+//         }
+
+//         $user = User::where('email', $request->email)->first();
+
+//         if (!$user) {
+//             return $this->sendFailedLoginResponse($request);
+//         }
+
+//         // Check if OTP was recently sent
+//         $otpData = session("otp:{$user->id}");
+//         if ($otpData && now()->lt($otpData['expires_at']->subMinutes(14))) {
+//             return back()->withInput()->withErrors([
+//                 'email' => trans('auth.otp_already_sent')
+//             ]);
+//         }
+
+//         // Generate secure OTP
+//         $otp = random_int(100000, 999999);
+        
+//         // Store in session
+//         session([
+//             "otp:{$user->id}" => [
+//                 'hashed_otp' => Hash::make($otp),
+//                 'expires_at' => now()->addMinutes(15)
+//             ]
+//         ]);
+
+//         // Try to send email with comprehensive error handling
+//         try {
+//             Mail::to($user->email)->queue(new SendOtpMail([
+//                 'otp' => $otp,
+//                 'email' => $user->email
+//             ]));
+
+//             Log::info('OTP sent successfully', [
+//                 'user_id' => $user->id,
+//                 'email' => $user->email
+//             ]);
+
+//         } catch (\Swift_TransportException $e) {
+//             // SMTP connection/authentication error
+//             Log::error('SMTP transport error sending OTP', [
+//                 'user_id' => $user->id,
+//                 'email' => $user->email,
+//                 'error' => $e->getMessage()
+//             ]);
+
+//             session()->forget("otp:{$user->id}");
+
+//             return back()->withInput()->withErrors([
+//                 'email' => trans('auth.email_service_error')
+//             ]);
+
+//         } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+//             // Symfony mailer transport error
+//             Log::error('Mailer transport error sending OTP', [
+//                 'user_id' => $user->id,
+//                 'email' => $user->email,
+//                 'error' => $e->getMessage()
+//             ]);
+
+//             session()->forget("otp:{$user->id}");
+
+//             return back()->withInput()->withErrors([
+//                 'email' => trans('auth.email_service_error')
+//             ]);
+
+//         } catch (\Exception $e) {
+//             // Any other email error
+//             Log::error('Unexpected error sending OTP email', [
+//                 'user_id' => $user->id,
+//                 'email' => $user->email,
+//                 'error' => $e->getMessage(),
+//                 'trace' => $e->getTraceAsString()
+//             ]);
+
+//             session()->forget("otp:{$user->id}");
+
+//             return back()->withInput()->withErrors([
+//                 'email' => trans('auth.otp_send_failed')
+//          ]);
+//         }
+
+//         return view('web.default.auth.otp-verify', [
+//             'email' => $request->email,
+//             'remember' => $request->boolean('remember')
+//         ]);
+
+//     } catch (\Exception $e) {
+//         Log::error('Send OTP process error', [
+//             'email' => $request->email,
+//             'error' => $e->getMessage(),
+//             'trace' => $e->getTraceAsString()
+//         ]);
+
+//         // Clean up session in case of error
+//         if (isset($user)) {
+//             session()->forget("otp:{$user->id}");
+//         }
+
+//         return back()->withInput()->withErrors([
+//             'email' => trans('auth.otp_process_error')
+//         ]);
+//     }
+// }
+
+public function login(Request $request)
+{
+    try {
         $rules = [
             'email' => 'required|email|exists:users,email',
             'password' => 'required_if:otp,null|min:6',
         ];
 
-        // Only require captcha for initial login (not OTP verification)
         if (!empty(getGeneralSecuritySettings('captcha_for_login')) && !$request->has('otp')) {
             $rules['captcha'] = 'required|captcha';
         }
 
         $this->validate($request, $rules);
 
-        // Handle OTP verification
+        // If OTP is present, verify it
         if ($request->has('otp')) {
-            $user = User::where('email', $request->email)->first();
+            return $this->verifyOtp($request);
+        }
 
-            if ($user && $user->otp == $request->otp && now()->lt($user->otp_expire)) {
-                Auth::login($user, $request->remember);
-                $user->otp = null;
-                $user->otp_expire = null;
-                $user->save();
+        // Verify email and password before sending OTP
+        $credentials = $request->only('email', 'password');
+        
+        if (!Auth::validate($credentials)) {
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => trans('auth.failed'), // "These credentials do not match our records."
+            ]);
+        }
 
-                return $this->afterLogged($request);
-            }
+        // Credentials are correct, proceed to send OTP
+        return $this->sendOtp($request);
 
-            return back()->withInput($request->all())->withErrors([
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        throw $e; // Let Laravel handle validation errors normally
+        
+    } catch (\Exception $e) {
+        Log::error('Login error', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return back()->withInput()->withErrors([
+            'email' => trans('auth.login_system_error')
+        ]);
+    }
+}
+
+private function sendOtp(Request $request)
+{
+    try {
+        // No need to validate credentials again - already done in login()
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withInput()->withErrors([
+                'email' => trans('auth.failed')
+            ]);
+        }
+
+        // Check if OTP was recently sent
+        $otpData = session("otp:{$user->id}");
+        if ($otpData && now()->lt($otpData['expires_at']->subMinutes(15))) {
+            return back()->withInput()->withErrors([
+                'email' => trans('auth.otp_already_sent')
+            ]);
+        }
+
+        // Generate secure OTP
+        $otp = random_int(100000, 999999);
+        
+        // Store in session
+        session([
+            "otp:{$user->id}" => [
+                'hashed_otp' => Hash::make($otp),
+                'expires_at' => now()->addMinutes(15)
+            ]
+        ]);
+
+        // Try to send email
+        try {
+            Mail::to($user->email)->queue(new SendOtpMail([
+                'otp' => $otp,
+                'email' => $user->email
+            ]));
+
+            Log::info('OTP sent successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+
+        } catch (\Swift_TransportException $e) {
+            Log::error('SMTP transport error sending OTP', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+
+            session()->forget("otp:{$user->id}");
+
+            return back()->withInput()->withErrors([
+                'email' => trans('auth.email_service_error')
+            ]);
+
+        } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+            Log::error('Mailer transport error sending OTP', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+
+            session()->forget("otp:{$user->id}");
+
+            return back()->withInput()->withErrors([
+                'email' => trans('auth.email_service_error')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Unexpected error sending OTP email', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            session()->forget("otp:{$user->id}");
+
+            return back()->withInput()->withErrors([
+                'email' => trans('auth.otp_send_failed')
+            ]);
+        }
+
+        return view('web.default.auth.otp-verify', [
+            'email' => $request->email,
+            'remember' => $request->boolean('remember')
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Send OTP process error', [
+            'email' => $request->email,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        if (isset($user)) {
+            session()->forget("otp:{$user->id}");
+        }
+
+        return back()->withInput()->withErrors([
+            'email' => trans('auth.otp_process_error')
+        ]);
+    }
+}
+
+private function verifyOtp(Request $request)
+{
+    try {
+        $user = User::where('email', $request->email)->first();
+        
+        if (!$user) {
+            return back()->withInput()->withErrors([
+                'email' => trans('auth.user_not_found')
+            ]);
+        }
+
+        // Check rate limiting FIRST
+        $cacheKey = "otp_attempts:{$user->id}";
+        $lockoutKey = "otp_lockout:{$user->id}";
+        
+        // Check if user is locked out
+        if (Cache::has($lockoutKey)) {
+            $lockoutTime = Cache::get($lockoutKey);
+            $remainingMinutes = now()->diffInMinutes($lockoutTime, false);
+            
+            return view('web.default.auth.otp-verify', [
+                'email' => $request->email,
+                'remember' => $request->boolean('remember'),
+                'locked_out' => true,
+                'remaining_minutes' => abs($remainingMinutes)
+            ])->withErrors([
+                'otp' => trans('auth.too_many_attempts')
+            ]);
+        }
+
+        // Get OTP data from session
+        $otpData = session("otp:{$user->id}");
+        
+        if (!$otpData || now()->gt($otpData['expires_at'])) {
+            return view('web.default.auth.otp-verify', [
+                'email' => $request->email,
+                'remember' => $request->boolean('remember'),
+                'expired' => true
+            ])->withErrors([
                 'otp' => trans('auth.invalid_or_expired_otp')
             ]);
         }
 
-        // Verify credentials but don't log in yet
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::validate($credentials)) {
-            $user = User::where('email', $request->email)->first();
-
-            // Generate and save OTP
-            $generateOtp = rand(100000, 999999);
-            $user->otp = $generateOtp;
-            $user->otp_expire = now()->addMinutes(15);
-            $user->save();
-
-            // Send Email OTP 
-            Mail::to($user->email)->send(new SendOtpMail([
-                'otp' => $generateOtp,
-                'email' => $user->email
-            ]));
-
-            // Redirect to OTP verification view
+        // Get current attempts
+        $attempts = Cache::get($cacheKey, 0);
+        
+        // Verify OTP
+        if (!Hash::check($request->otp, $otpData['hashed_otp'])) {
+            $attempts++;
+            
+            // Lock out after 5 attempts
+            if ($attempts >= 5) {
+                Cache::put($lockoutKey, now()->addMinutes(5), now()->addMinutes(5));
+                Cache::forget($cacheKey);
+                
+                return view('web.default.auth.otp-verify', [
+                    'email' => $request->email,
+                    'remember' => $request->boolean('remember'),
+                    'locked_out' => true,
+                    'remaining_minutes' => 5
+                ])->withErrors([
+                    'otp' => trans('auth.too_many_attempts')
+                ]);
+            }
+            
+            // Increment attempts
+            Cache::put($cacheKey, $attempts, now()->addMinutes(5));
+            
             return view('web.default.auth.otp-verify', [
                 'email' => $request->email,
-                'remember' => $request->remember
+                'remember' => $request->boolean('remember'),
+                'remaining_attempts' => 5 - $attempts
+            ])->withErrors([
+                'otp' => trans('auth.invalid_otp_attempts', ['remaining' => 5 - $attempts])
             ]);
         }
 
-        return $this->sendFailedLoginResponse($request);
+        // Success - clear session and cache
+        session()->forget("otp:{$user->id}");
+        Cache::forget($cacheKey);
+        Cache::forget($lockoutKey);
+        
+        Auth::login($user, $request->boolean('remember'));
+        
+        Log::info('User logged in with OTP', ['user_id' => $user->id]);
+
+        return $this->afterLogged($request);
+
+    } catch (\Exception $e) {
+        Log::error('OTP verification error', [
+            'email' => $request->email,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return view('web.default.auth.otp-verify', [
+            'email' => $request->email,
+            'remember' => $request->boolean('remember')
+        ])->withErrors([
+            'otp' => trans('auth.otp_verification_error')
+        ]);
     }
+}
 
     public function logout(Request $request)
     {
