@@ -212,6 +212,8 @@ return [
         App\Providers\MinioStorageServiceProvider::class,
         Ssheduardo\Redsys\RedsysServiceProvider::class,
         Jubaer\Zoom\ZoomServiceProvider::class,
+
+        Nelc\LaravelNelcXapiIntegration\NelcXapiServiceProvider::class,
     ],
 
     /*
@@ -225,6 +227,7 @@ return [
     |
     */
 
+    
     'aliases' => Facade::defaultAliases()->merge([
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
