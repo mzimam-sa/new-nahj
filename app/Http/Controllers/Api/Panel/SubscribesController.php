@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\URL;
-
+use App\Events\StudentEnrolled;
 
 class SubscribesController extends Controller
 {
@@ -221,6 +221,7 @@ class SubscribesController extends Controller
             'sale_id' => $sale->id,
         ]);
 
+        event(new StudentEnrolled($user, $webinar));
 
         return apiResponse2(1, 'subscribed',
             trans('cart.success_pay_msg_subscribe'),
@@ -288,6 +289,8 @@ class SubscribesController extends Controller
             $item_name . '_id' => $item->id,
             'sale_id' => $sale->id,
         ]);
+
+        event(new StudentEnrolled($user, $item));
 
         return apiResponse2(1, 'subscribed',
             trans('cart.success_pay_msg_subscribe')

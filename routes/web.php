@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Panel\TermGradesController;
+use Nelc\LaravelNelcXapiIntegration\XapiIntegration;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,25 @@ use App\Http\Controllers\Panel\TermGradesController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+Route::get('/test-nelc', function () {
+
+    $xapi = new XapiIntegration();
+
+    $response = $xapi->Registered(
+        '1234567890',                 // Student National ID
+        'test@test.com',              // Student Email
+        'course-1',                   // Course ID
+        'Test Course',                // Course Title
+        'Test Course Description',    // Course Description
+        'Instructor Name',            // Instructor Name
+        'instructor@test.com'         // Instructor Email
+    );
+
+    return $response;
+});
+
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
     Route::get('checkout/{user}', 'CartController@webCheckoutRender')->name('checkout');
     Route::get('/charge/{user}', 'PaymentsController@webChargeRender')->name('charge');

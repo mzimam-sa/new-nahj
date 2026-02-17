@@ -20,7 +20,19 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         \App\Events\StudentEnrolled::class => [
-        \App\Listeners\SendNelcStatementListener::class,
+        \App\Listeners\StudentEnrolledStatementListener::class,
+        ],
+
+        \App\Events\CourseInitialized::class => [
+        \App\Listeners\CourseInitializedStatementListener::class,
+        ],
+
+        \App\Events\ModuleWatched::class => [
+        \App\Listeners\ModuleWatchedStatementListener::class,
+        ],
+
+        \App\Events\CompletedLesson::class => [
+        \App\Listeners\CompletedLessonStatementListener::class,
         ],
     ];
 
