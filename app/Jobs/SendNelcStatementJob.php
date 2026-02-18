@@ -14,8 +14,8 @@ class SendNelcStatementJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 3;        
-    public $backoff = 10;     
+    // public $tries = 3;        
+    // public $backoff = 10;     
 
     protected $student;
     protected $course;

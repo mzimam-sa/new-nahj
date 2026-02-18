@@ -22,7 +22,7 @@ class CompletedLessonStatementListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\StudentEnrolled  $event
+     * @param  \App\Events\CompletedLesson  $event
      * @return void
      */
     public function handle(CompletedLesson $event)

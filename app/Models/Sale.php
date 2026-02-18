@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Mixins\RegistrationBonus\RegistrationBonusAccounting;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
+use App\Events\StudentEnrolled;
+
 class Sale extends Model
 {
     public static $webinar = 'webinar';
@@ -147,6 +149,10 @@ class Sale extends Model
             'product_delivery_fee' => $orderItem->product_delivery_fee,
             'created_at' => time(),
         ]);
+
+        //Integration with NELC
+        event(new StudentEnrolled($sale->buyer, $sale->webinar));
+        \Log::info("model");
 
         self::handleSaleNotifications($orderItem, $seller_id);
 

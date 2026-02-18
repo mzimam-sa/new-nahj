@@ -663,7 +663,7 @@ class WebinarController extends Controller
                     'total_amount' => 0,
                     'created_at' => time(),
                 ]);
-
+\Log::info("webinar");
                 $notifyOptions = [
                     '[u.name]' => $user->full_name,
                     '[c.title]' => $course->title,
@@ -819,7 +819,6 @@ class WebinarController extends Controller
                     'total_amount' => 0,
                     'created_at' => time(),
                 ]);
-
                 RewardAccounting::makeRewardAccounting($user->id, $course->points, 'withdraw', null, false, RewardAccounting::DEDUCTION);
 
                 $toastData = [

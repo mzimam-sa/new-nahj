@@ -197,7 +197,7 @@ class WebinarsController extends Controller
             'total_amount' => 0,
             'created_at' => time(),
         ]);
-
+        \Log::info("webinar");
         return apiResponse2(1, 'enrolled', trans('api.webinar.enrolled'));
 
     }

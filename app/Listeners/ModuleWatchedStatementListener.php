@@ -22,7 +22,7 @@ class ModuleWatchedStatementListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\StudentEnrolled  $event
+     * @param  \App\Events\ModuleWatched  $event
      * @return void
      */
     public function handle(ModuleWatched $event)

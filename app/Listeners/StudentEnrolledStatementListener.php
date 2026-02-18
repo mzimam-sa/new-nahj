@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Jobs\SendNelcStatementJob;
 
-class StudentEnrolledStatementListener
+class StudentEnrolledStatementListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -27,6 +27,7 @@ class StudentEnrolledStatementListener
      */
     public function handle(StudentEnrolled $event)
     {
+        \Log::info("Listener Fired");
         SendNelcStatementJob::dispatch(
             $event->student,
             $event->course,

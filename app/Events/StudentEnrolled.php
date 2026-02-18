@@ -4,10 +4,10 @@ namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
-use App\Models\Api\User;
+use App\User;
 use App\Models\Webinar;
 
-class StudentEnrolled
+class StudentEnrolled 
 {
     use Dispatchable, SerializesModels;
 
