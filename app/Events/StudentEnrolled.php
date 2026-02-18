@@ -6,8 +6,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 use App\User;
 use App\Models\Webinar;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class StudentEnrolled 
+class StudentEnrolled implements ShouldQueue
 {
     use Dispatchable, SerializesModels;
 

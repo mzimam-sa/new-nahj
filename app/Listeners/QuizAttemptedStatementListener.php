@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\StudentEnrolled;
+use App\Events\QuizAttempted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Jobs\SendNelcStatementJob;
+use App\Jobs\QuizAttemptedStatementJob;
 
-class SendNelcStatementListener
+class QuizAttemptedStatementListener
 {
     /**
      * Create the event listener.
@@ -22,15 +22,16 @@ class SendNelcStatementListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\StudentEnrolled  $event
+     * @param  \App\Events\QuizAttempted  $event
      * @return void
      */
-    public function handle(StudentEnrolled $event)
+    public function handle(QuizAttempted $event)
     {
-        SendNelcStatementJob::dispatch(
+        QuizAttemptedStatementJob::dispatch(
             $event->student,
             $event->course,
-            'registered'
+            $event->quizResult,
+            'quiz'
         );
     }
 }

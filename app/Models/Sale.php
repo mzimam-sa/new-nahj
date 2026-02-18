@@ -6,6 +6,7 @@ use App\Mixins\RegistrationBonus\RegistrationBonusAccounting;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use App\Events\StudentEnrolled;
+use App\Events\CourseInitialized;
 
 class Sale extends Model
 {
@@ -152,7 +153,10 @@ class Sale extends Model
 
         //Integration with NELC
         event(new StudentEnrolled($sale->buyer, $sale->webinar));
-        \Log::info("model");
+
+        event((new CourseInitialized($sale->buyer, $sale->webinar))->delay(now()->addMinute()));
+
+        \Log::info("Student Enrolled and Initialized events");
 
         self::handleSaleNotifications($orderItem, $seller_id);
 
