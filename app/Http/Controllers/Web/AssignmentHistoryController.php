@@ -11,7 +11,9 @@ use App\Models\WebinarAssignmentHistory;
 use App\Models\WebinarAssignmentHistoryMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use App\Events\ModuleWatched;
+use App\Events\CompletedLesson;
+use App\Events\CompletedCourse;
 class AssignmentHistoryController extends Controller
 {
     use LearningPageAssignmentTrait;
@@ -67,8 +69,7 @@ class AssignmentHistoryController extends Controller
                             'errors' => $validator->errors(),
                         ], 422);
                     }
-
-                    WebinarAssignmentHistoryMessage::create([
+                        WebinarAssignmentHistoryMessage::create([
                         'assignment_history_id' => $assignmentHistory->id,
                         'sender_id' => $user->id,
                         'message' => $data['description'],
@@ -76,6 +77,10 @@ class AssignmentHistoryController extends Controller
                         'file_path' => $data['file_path'] ?? null,
                         'created_at' => time(),
                     ]);
+                    $webinar = $webinar->with('teacher')->first(); 
+                    
+                    //event watch
+                    event(new ModuleWatched($user, $webinar, $assignment));
 
                     if ($assignmentHistory->status == WebinarAssignmentHistory::$notSubmitted) {
                         $assignmentHistory->update([
@@ -153,6 +158,14 @@ class AssignmentHistoryController extends Controller
                     if ($status == WebinarAssignmentHistory::$passed) {
                         $buyStoreReward = RewardAccounting::calculateScore(Reward::PASS_ASSIGNMENT);
                         RewardAccounting::makeRewardAccounting($assignmentHistory->student_id, $buyStoreReward, Reward::PASS_ASSIGNMENT, $assignment->id);
+
+                        //event complete lesson
+                        $assignment->load('webinar.teacher');
+                        $webinar = $assignment->webinar; 
+                        event(new CompletedLesson($user, $webinar, $assignment));
+
+                        //event complete course (fake action)
+                        event(new CompletedCourse($user, $webinar));
                     }
 
                     $notifyOptions = [

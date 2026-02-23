@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Events\QuizAttempted;
-
+use App\Events\EarnedCertificate;
 class QuizzesResultController extends Controller
 {
 
@@ -214,6 +214,7 @@ class QuizzesResultController extends Controller
 
                     event(new QuizAttempted($quizResult->user, $quizResult->quiz->webinar,$quizResult));
 
+
                     if ($quizResult->status == QuizzesResult::$waiting) {
                         $notifyOptions = [
                             '[c.title]' => $quiz->webinar ? $quiz->webinar->title : '-',
@@ -226,14 +227,13 @@ class QuizzesResultController extends Controller
                     if ($quizResult->status == QuizzesResult::$passed) {
                         $passTheQuizReward = RewardAccounting::calculateScore(Reward::PASS_THE_QUIZ);
                         RewardAccounting::makeRewardAccounting($quizResult->user_id, $passTheQuizReward, Reward::PASS_THE_QUIZ, $quiz->id, true);
+                        event(new EarnedCertificate($quizResult->user, $quizResult->quiz->webinar));
                     }
 
                     if ($quiz->certificate) {
                         $certificateReward = RewardAccounting::calculateScore(Reward::CERTIFICATE);
                         RewardAccounting::makeRewardAccounting($quizResult->user_id, $certificateReward, Reward::CERTIFICATE, $quiz->id, true);
                     }
-                    event(new QuizAttempted($sale->buyer, $sale->webinar));
-                    \Log::info("Student Enrolled and Initialized events");
 
                     return apiResponse2(1, 'stored', trans('api.public.stored'), [
                         'result' => $quizResult->details

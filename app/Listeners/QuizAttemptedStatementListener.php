@@ -28,10 +28,10 @@ class QuizAttemptedStatementListener
     public function handle(QuizAttempted $event)
     {
         QuizAttemptedStatementJob::dispatch(
+            'quiz',
             $event->student,
             $event->course,
             $event->quizResult,
-            'quiz'
         );
     }
 }

@@ -21,7 +21,7 @@ class SendNelcStatementJob implements ShouldQueue
     protected $course;
     protected $type;
 
-    public function __construct($student, $course, $type)
+    public function __construct($type,$student, $course)
     {
         $this->student = $student;
         $this->course = $course;
@@ -30,6 +30,17 @@ class SendNelcStatementJob implements ShouldQueue
 
     public function handle(NelcService $nelcService)
     {
+        if (!$this->course || !$this->student) {
+            Log::warning('NELC: missing course or student');
+            return;
+        }
+
+        // ✅ اضبط الـ locale قبل أي شي
+        app()->setLocale('ar');
+
+        // ✅ احمل العلاقات
+        $this->course->loadMissing('teacher');
+
         try {
             $response = $nelcService->sendStatement($this->type, $this->student, $this->course);
 

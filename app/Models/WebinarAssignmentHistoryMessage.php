@@ -16,6 +16,11 @@ class WebinarAssignmentHistoryMessage extends Model
         return $this->belongsTo('App\User', 'sender_id', 'id');
     }
 
+    public function assignmentHistory()
+    {
+        return $this->belongsTo('App\Models\WebinarAssignmentHistory', 'assignment_history_id', 'id');
+    }
+
     public function getDownloadUrl($assignmentId)
     {
         return "/course/assignment/{$assignmentId}/history/{$this->assignment_history_id}/message/{$this->id}/downloadAttach";

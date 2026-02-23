@@ -2,11 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\CompletedLesson;
+use App\Events\CompletedCourse;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Jobs\ModuleWatchedStatementJob;
-class CompletedLessonStatementListener implements ShouldQueue
+use App\Jobs\SendNelcStatementJob;
+
+class CompletedCoursetatementListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -21,16 +22,15 @@ class CompletedLessonStatementListener implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  \App\Events\CompletedLesson  $event
+     * @param  \App\Events\CompletedCourse  $event
      * @return void
      */
-    public function handle(CompletedLesson $event)
+    public function handle(CompletedCourse $event)
     {
-        ModuleWatchedStatementJob::dispatch(
-            'completed_lesson',
+        SendNelcStatementJob::dispatch(
+            'completed_course',
             $event->student,
             $event->course,
-            $event->assignment,
         );
     }
 }

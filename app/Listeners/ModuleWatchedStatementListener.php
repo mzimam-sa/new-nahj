@@ -5,9 +5,9 @@ namespace App\Listeners;
 use App\Events\ModuleWatched;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Jobs\SendNelcStatementJob;
+use App\Jobs\ModuleWatchedStatementJob;
 
-class ModuleWatchedStatementListener
+class ModuleWatchedStatementListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -27,10 +27,11 @@ class ModuleWatchedStatementListener
      */
     public function handle(ModuleWatched $event)
     {
-        SendNelcStatementJob::dispatch(
+        ModuleWatchedStatementJob::dispatch(
+            'watched',
             $event->student,
             $event->course,
-            'watched'
+            $event->assignment,
         );
     }
 }

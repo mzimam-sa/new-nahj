@@ -15,7 +15,7 @@ class CourseInitialized implements ShouldQueue
     public $student;
     public $course;
 
-    public function __construct(User $student, Webinar $course)
+    public function __construct(User $student, ?Webinar $course)
     {
         $this->student = $student;
         $this->course = $course;

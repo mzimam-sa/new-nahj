@@ -33,6 +33,15 @@ Route::get('/test-nelc', function () {
     return $response;
 });
 
+Route::get('/certificate/{courseId}/{studentId}', function($courseId, $studentId) {
+    $sale = \App\Models\Sale::where('webinar_id', $courseId)
+                ->where('buyer_id', $studentId)
+                ->whereNull('refund_at')
+                ->firstOrFail();
+
+    return view('certificate.public', compact('sale'));
+})->name('certificate.public');
+
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
     Route::get('checkout/{user}', 'CartController@webCheckoutRender')->name('checkout');
     Route::get('/charge/{user}', 'PaymentsController@webChargeRender')->name('charge');

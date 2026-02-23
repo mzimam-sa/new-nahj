@@ -22,7 +22,7 @@ class QuizAttemptedStatementJob implements ShouldQueue
     protected $quizResult;
     protected $type;
 
-    public function __construct($student, $course,$quizResult, $type)
+    public function __construct($type,$student, $course,$quizResult)
     {
         $this->student = $student;
         $this->course = $course;
@@ -32,6 +32,18 @@ class QuizAttemptedStatementJob implements ShouldQueue
 
     public function handle(NelcService $nelcService)
     {
+        if (!$this->course || !$this->student) {
+            Log::warning('NELC: missing course or student');
+            return;
+        }
+
+        // ✅ اضبط الـ locale قبل أي شي
+        app()->setLocale('ar');
+
+        // ✅ احمل العلاقات
+        $this->course->loadMissing('teacher');
+        $this->assignment->loadMissing('chapter');
+        
         try {
             $response = $nelcService->sendStatement($this->type, $this->student, $this->course,$this->quizResult);
 

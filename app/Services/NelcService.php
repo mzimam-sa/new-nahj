@@ -23,87 +23,104 @@ class NelcService
      */
     public function sendStatement($type, $student, $course, $object = null)
     {
+
+        $course->loadMissing('teacher', 'translations');
+
+        $translation = $course->translate('ar') 
+                    ?? $course->translate('en') 
+                    ?? $course->translations->first();
+
+        $courseTitle       = $translation?->title       ?? $course->slug ?? 'Untitled Course';
+        $courseDescription = strip_tags($translation?->description ?? $courseTitle);
+
+        $actorName = optional(
+            $student->userMetas->where('name', 'certificate_additional')->first()
+        )->value ?? $student->name ?? 'Unknown Student';
+
+        $actorEmail      = str_replace('mailto:', '', $student->email);
+        $instructorName  = $course->teacher?->full_name ?? 'Unknown Instructor';
+        // $instructorEmail = str_replace('mailto:', '', $course->teacher?->email ?? 'noreply@nelc.gov.sa');
+        $instructorEmail = $course->teacher?->email ?? 'noreply@nelc.gov.sa';
         switch ($type) {
 
             case 'registered':
+
+
                 return $this->xapi->Registered(
-                    $student->userMetas->where('name', 'certificate_additional')->first(),
-                    $student->email,
+                    $actorName,
+                    $actorEmail,
                     $course->id,
-                    $course->title,
-                    $course->description,
-                    $course->teacher->full_name,
-                    $course->teacher->email
+                    $courseTitle,
+                    $courseDescription,
+                    $instructorName,
+                    $instructorEmail,
                 );
-
+    
             case 'initialized':
+
                 return $this->xapi->Initialized(
-                    $student->userMetas->where('name', 'certificate_additional')->first(),
-                    $student->email,
-                    $course->id,
-                    $course->title,
-                    $course->description,
-                    $course->teacher->full_name,
-                    $course->teacher->email
+                      $actorName, $actorEmail, $course->id,
+                        $courseTitle, $courseDescription,
+                        $instructorName, $instructorEmail,
                 );
 
-            // case 'watched':
-            //     if (!$object) {
-            //         throw new \Exception("Lesson is required for watched statements");
-            //     }
+            case 'watched':
+                if (!$object) {
+                    throw new \Exception("Lesson is required for watched statements");
+                }
+                $object->loadMissing('chapter', 'translations');
 
-            //     return $this->xapi->Watched(
-            //         $student->userMetas->where('name', 'certificate_additional')->first(),
-            //         $student->email,
-            //         $object->id ?? $object->url,
-            //         $object->title,
-            //         $object->description,
-            //         true,               // fully watched
-            //         "PT15M",            // duration ISO 8601
-            //         $course->id,
-            //         $course->title,
-            //         $course->description,
-            //         $course->instructor_name,
-            //         $course->instructor_email
-            //     );
+                $translation = $object->translate('ar') 
+                            ?? $object->translate('en') 
+                            ?? $object->translations->first();
+
+                $chapterTitle       = $translation?->title       ?? 'Untitled Course';
+                $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
+
+                return $this->xapi->Watched(
+                    $actorName,$actorEmail,
+                    $object->chapter->id , //lesson url
+                    $chapterTitle, //lesson title
+                    $chapterDescription, //lesson desc
+                    true,               // fully watched
+                    "PT15M",            // duration ISO 8601
+                    $course->id,
+                    $courseTitle, $courseDescription,
+                    $instructorName, $instructorEmail,
+                );
 
 
-            // case 'completed':
-            //     if (!$object) {
-            //         throw new \Exception("Lesson is required for completed statements");
-            //     }
+            case 'completed_lesson':
+                if (!$object) {
+                    throw new \Exception("Lesson is required for completed statements");
+                }
+                $object->loadMissing('chapter', 'translations');
 
-            //     return $this->xapi->CompletedLesson(
-            //         $student->national_id,
-            //         $student->email,
-            //         $lesson->title,
-            //         $lesson->description ?? '',
-            //         $lesson->id ?? $lesson->url,
-            //         $course->id,
-            //         $course->title,
-            //         $course->description,
-            //         $course->instructor_name,
-            //         $course->instructor_email
-            //     );
+                $translation = $object->translate('ar') 
+                            ?? $object->translate('en') 
+                            ?? $object->translations->first();
 
-                
-            // case 'completed_course':
-            //     if (!$lesson) {
-            //         throw new \Exception("Lesson is required for completed statements");
-            //     }
+                $chapterTitle       = $translation?->title       ?? 'Untitled Course';
+                $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
 
-            //     return $this->xapi->CompletedCourse(
-            //         $student->national_id,
-            //         $student->email,
-            //         $lesson->title,
-            //         $lesson->description ?? '',
-            //         $lesson->id ?? $lesson->url,
-            //         $course->id,
-            //         $course->title,
-            //         $course->description,
-            //         $course->instructor_name,
-            //         $course->instructor_email
-            //     );
+                return $this->xapi->CompletedLesson(
+                   $actorName, $actorEmail,
+                    $object->chapter->id,
+                    $chapterTitle,
+                    $chapterDescription,        
+                    $course->id,
+                    $courseTitle, $courseDescription,
+                    $instructorName, $instructorEmail,
+                            );
+
+            case 'completed_course':
+
+                return $this->xapi->CompletedCourse(
+                    $actorName, $actorEmail,
+                    $course->id,
+                    $courseTitle, $courseDescription,
+                    $instructorName, $instructorEmail,
+                );
 
             // case 'completed_unit':
             //     if (!$lesson) {
@@ -125,65 +142,64 @@ class NelcService
 
             case 'attempted':
                 if (!$object) {
-                    throw new \Exception("Quiz Result is required for attempted statements");
+                    throw new \Exception("Quiz Result is required");
                 }
 
-                $raw = $object->user_grade;
-                $min = 0;
-                $max = $object->quiz->total_mark;
+                $object->loadMissing('quiz.translations');
 
-                $scaled = $max > 0 ? ($raw - $min) / ($max - $min) : 0;
+                $quiz = $object->quiz;
 
-                $success = $raw >= $object->quiz->pass_mark;
-                $completion = true;
+                $quizTranslation = $quiz->translate('ar') 
+                                ?? $quiz->translate('en') 
+                                ?? $quiz->translations->first();
 
-                $attemptNumber = data_get(
-                    json_decode($object->results, true),
-                    'attempt_number'
-                );
+                $quizTitle       = $quizTranslation?->title ?? 'Untitled Quiz';
+                $quizDescription = strip_tags($quizTranslation?->description ?? $quizTitle);
+
+                $raw     = $object->user_grade;
+                $max     = $quiz->total_mark;
+                $min     = 0;
+                $scaled  = $max > 0 ? round(($raw - $min) / ($max - $min), 2) : 0;
+                $success = $raw >= $quiz->pass_mark;
+
+                $attemptNumber = data_get(json_decode($object->results, true), 'attempt_number') ?? 1;
+
+                // ✅ استخدم الـ $course اللي ممرره بدل quiz->webinar
                 return $this->xapi->Attempted(
-                    $student->userMetas->where('name', 'certificate_additional')->first(),
-                    $student->email,
-                    $object->quiz->id ?? $object->quiz->url,
-                    $object->quiz->title,
-                    $object->quiz->description ?? '',
-                    $attemptNumber, 
-                    $object->quiz->webinar->id, //course_id
-                    $object->quiz->webinar->title, //course_title 
-                    $object->quiz->webinar->description, //course_desc
-                    $object->quiz->webinar->teacher->full_name,
-                    $object->quiz->webinar->teacher->email,
+                    $actorName, $actorEmail,
+                    $quiz->id,
+                    $quizTitle,
+                    $quizDescription,
+                    $attemptNumber,
+                    $course->id,        // ✅ من الـ $course المُمرر
+                    $courseTitle,
+                    $courseDescription,
+                    $instructorName,    // ✅ من الـ $course المُمرر
+                    $instructorEmail,
                     $scaled,
-                    $raw, 
-                    $min, 
-                    $max, 
-                    $completion,
+                    $raw,
+                    $min,
+                    $max,
+                    true,
                     $success,
-
                 );
 
-            // case 'earned':
+            case 'earned':
 
-            //     return $this->xapi->Earned(
-            //         $student->national_id,
-            //         $student->email,
-            //         $lesson->title,
-            //         $lesson->description ?? '',
-            //         $lesson->id ?? $lesson->url,
-            //         $course->id,
-            //         $course->title,
-            //         $course->description,
-            //         $course->instructor_name,
-            //         $course->instructor_email,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
+                $certName = $courseTitle; // اسم الشهادة = اسم الكورس
 
-            //     );
+                // ✅ رابط الشهادة العام بدون لوجين
+                $certUrl  = url('/certificate/' . $course->id . '/' . $student->id);
+
+                return $this->xapi->Earned(
+                    $actorName,
+                    $actorEmail,
+                    $certUrl,
+                    $certName,
+                    $course->id,
+                    $courseTitle,
+                    $courseDescription,
+                );
 
             // case 'progressed':
 

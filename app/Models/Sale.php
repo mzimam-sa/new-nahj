@@ -152,9 +152,12 @@ class Sale extends Model
         ]);
 
         //Integration with NELC
-        event(new StudentEnrolled($sale->buyer, $sale->webinar));
-
-        event((new CourseInitialized($sale->buyer, $sale->webinar))->delay(now()->addMinute()));
+        if ($sale->webinar_id && $sale->buyer) {
+            $webinar = $sale->webinar()->with('teacher')->first(); // احمل العلاقة مع teacher
+            
+            event(new StudentEnrolled($sale->buyer, $webinar));
+            event(new CourseInitialized($sale->buyer, $webinar));
+        }
 
         \Log::info("Student Enrolled and Initialized events");
 

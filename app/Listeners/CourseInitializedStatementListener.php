@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Jobs\SendNelcStatementJob;
 
-class CourseInitializedStatementListener
+class CourseInitializedStatementListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -27,10 +27,11 @@ class CourseInitializedStatementListener
      */
     public function handle(CourseInitialized $event)
     {
+        \Log::info("Listener Fired - Initialized");
         SendNelcStatementJob::dispatch(
+            'initialized',
             $event->student,
             $event->course,
-            'initialized'
-        );
+        )->delay(now()->addMinute());
     }
 }

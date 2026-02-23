@@ -27,11 +27,11 @@ class StudentEnrolledStatementListener implements ShouldQueue
      */
     public function handle(StudentEnrolled $event)
     {
-        \Log::info("Listener Fired");
+        \Log::info("Listener Fired - Enrolled");
         SendNelcStatementJob::dispatch(
+            'registered',
             $event->student,
             $event->course,
-            'registered'
         );
     }
 }
