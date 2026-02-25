@@ -256,6 +256,8 @@ class QuizzesController extends Controller
                     'created_at' => time()
                 ]);
 
+         
+
                 $data = [
                     'pageTitle' => trans('quiz.quiz_start'),
                     'quiz' => $quiz,

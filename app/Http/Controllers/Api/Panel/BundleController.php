@@ -46,6 +46,7 @@ class BundleController extends Controller
             'total_amount' => 0,
             'created_at' => time(),
         ]);
+                \Log::info("bundle");
 
         RewardAccounting::makeRewardAccounting($user->id, $bundle->points, 'withdraw', null, false, RewardAccounting::DEDUCTION);
 
@@ -83,6 +84,8 @@ class BundleController extends Controller
             'total_amount' => 0,
             'created_at' => time(),
         ]);
+                        \Log::info("bundle");
+
         return apiResponse2(1, 'enrolled', trans('cart.success_pay_msg_for_free_course'));
 
     }

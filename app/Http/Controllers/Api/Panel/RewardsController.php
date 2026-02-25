@@ -169,7 +169,7 @@ class RewardsController extends Controller
             'total_amount' => 0,
             'created_at' => time(),
         ]);
-
+       \Log::info("rewards");
         RewardAccounting::makeRewardAccounting($user->id, $course->points, 'withdraw', null, false, RewardAccounting::DEDUCTION);
      return   apiResponse2(1, 'paid',trans('update.success_pay_course_with_point_msg'));
 

@@ -18,6 +18,31 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+
+        \App\Events\StudentEnrolled::class => [
+        \App\Listeners\StudentEnrolledStatementListener::class,
+        ],
+
+        \App\Events\CourseInitialized::class => [
+        \App\Listeners\CourseInitializedStatementListener::class,
+        ],
+
+        \App\Events\ModuleWatched::class => [
+        \App\Listeners\ModuleWatchedStatementListener::class,
+        ],
+
+        \App\Events\CompletedLesson::class => [
+        \App\Listeners\CompletedLessonStatementListener::class,
+        ],
+
+        \App\Events\CompletedCourse::class => [
+        \App\Listeners\CompletedCoursetatementListener::class,
+        ],
+
+        \App\Events\QuizAttempted::class => [
+        \App\Listeners\QuizAttemptedStatementListener::class,
+        ],
+        
     ];
 
     /**

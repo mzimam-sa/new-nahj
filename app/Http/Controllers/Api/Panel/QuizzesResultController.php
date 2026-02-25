@@ -17,8 +17,8 @@ use Doctrine\Inflector\Rules\English\Rules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
-
+use App\Events\QuizAttempted;
+use App\Events\EarnedCertificate;
 class QuizzesResultController extends Controller
 {
 
@@ -212,6 +212,9 @@ class QuizzesResultController extends Controller
                         'created_at' => time()
                     ]);
 
+                    event(new QuizAttempted($quizResult->user, $quizResult->quiz->webinar,$quizResult));
+
+
                     if ($quizResult->status == QuizzesResult::$waiting) {
                         $notifyOptions = [
                             '[c.title]' => $quiz->webinar ? $quiz->webinar->title : '-',
@@ -224,6 +227,7 @@ class QuizzesResultController extends Controller
                     if ($quizResult->status == QuizzesResult::$passed) {
                         $passTheQuizReward = RewardAccounting::calculateScore(Reward::PASS_THE_QUIZ);
                         RewardAccounting::makeRewardAccounting($quizResult->user_id, $passTheQuizReward, Reward::PASS_THE_QUIZ, $quiz->id, true);
+                        event(new EarnedCertificate($quizResult->user, $quizResult->quiz->webinar));
                     }
 
                     if ($quiz->certificate) {

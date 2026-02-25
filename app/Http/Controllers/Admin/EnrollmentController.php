@@ -17,7 +17,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Illuminate\Support\Facades\Log;
 class EnrollmentController extends Controller
 {
     public function history(Request $request)
@@ -294,8 +294,7 @@ class EnrollmentController extends Controller
                         'status' => $product->isVirtual() ? ProductOrder::$success : ProductOrder::$waitingDelivery,
                     ]);
                 }
-
-
+                
                 if ($request->ajax()) {
                     return response()->json([
                         'code' => 200

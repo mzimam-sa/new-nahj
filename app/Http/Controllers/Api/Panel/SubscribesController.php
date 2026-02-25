@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\URL;
-
+use Illuminate\Support\Facades\Log;
 
 class SubscribesController extends Controller
 {
@@ -211,7 +211,6 @@ class SubscribesController extends Controller
             'total_amount' => 0,
             'created_at' => time(),
         ]);
-
         Accounting::createAccountingForSaleWithSubscribe($webinar, $subscribe);
 
         SubscribeUse::create([
@@ -220,7 +219,6 @@ class SubscribesController extends Controller
             'webinar_id' => $webinar->id,
             'sale_id' => $sale->id,
         ]);
-
 
         return apiResponse2(1, 'subscribed',
             trans('cart.success_pay_msg_subscribe'),
