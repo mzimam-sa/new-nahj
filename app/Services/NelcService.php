@@ -60,7 +60,8 @@ class NelcService
 
                 return $this->xapi->Initialized(
                       $actorName, $actorEmail, $course->id,
-                        $courseTitle, $courseDescription,
+                        $courseTitle,
+                        null, //$courseDescription
                         $instructorName, $instructorEmail,
                 );
 
@@ -85,7 +86,8 @@ class NelcService
                     true,               // fully watched
                     "PT15M",            // duration ISO 8601
                     $course->id,
-                    $courseTitle, $courseDescription,
+                    $courseTitle, 
+                    null, 
                     $instructorName, $instructorEmail,
                 );
 
@@ -109,7 +111,7 @@ class NelcService
                     $chapterTitle,
                     $chapterDescription,        
                     $course->id,
-                    $courseTitle, $courseDescription,
+                    $courseTitle, null,
                     $instructorName, $instructorEmail,
                             );
 
@@ -118,7 +120,7 @@ class NelcService
                 return $this->xapi->CompletedCourse(
                     $actorName, $actorEmail,
                     $course->id,
-                    $courseTitle, $courseDescription,
+                    $courseTitle, null,
                     $instructorName, $instructorEmail,
                 );
 
@@ -173,7 +175,7 @@ class NelcService
                     $attemptNumber,
                     $course->id,        // ✅ من الـ $course المُمرر
                     $courseTitle,
-                    $courseDescription,
+                    null,
                     $instructorName,    // ✅ من الـ $course المُمرر
                     $instructorEmail,
                     $scaled,
@@ -198,7 +200,7 @@ class NelcService
                     $certName,
                     $course->id,
                     $courseTitle,
-                    $courseDescription,
+                    null,
                 );
 
             // case 'progressed':
