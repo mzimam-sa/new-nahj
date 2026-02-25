@@ -42,6 +42,11 @@ Route::get('/certificate/{courseId}/{studentId}', function($courseId, $studentId
     return view('certificate.public', compact('sale'));
 })->name('certificate.public');
 
+Route::get('/certificate/course/{courseId}', function($courseId) {
+    $webinar = \App\Models\Webinar::with('teacher', 'translations')->findOrFail($courseId);
+    return view('certificate.course', compact('webinar'));
+})->name('certificate.course');
+
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
     Route::get('checkout/{user}', 'CartController@webCheckoutRender')->name('checkout');
     Route::get('/charge/{user}', 'PaymentsController@webChargeRender')->name('charge');

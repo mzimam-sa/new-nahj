@@ -32,6 +32,6 @@ class EarnedCertificateStatementListener implements ShouldQueue
             'earned',
             $event->student,
             $event->course,
-        )->delay(now()->addMinute());
+        )->delay(now()->addMinute(5));
     }
 }

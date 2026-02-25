@@ -42,6 +42,18 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\QuizAttempted::class => [
         \App\Listeners\QuizAttemptedStatementListener::class,
         ],
+
+        \App\Events\Progressed::class => [
+        \App\Listeners\ProgressedStatementListener::class,
+        ],
+
+        \App\Events\RatedCourse::class => [
+        \App\Listeners\RatedCourseStatementListener::class,
+        ],
+
+        \App\Events\EarnedCertificate::class => [
+        \App\Listeners\EarnedCertificateStatementListener::class,
+        ],
         
     ];
 
