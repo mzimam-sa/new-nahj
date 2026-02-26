@@ -21,7 +21,7 @@ class NelcService
      * @param Course $course
      * @param Lesson|null $lesson - optional, used for watched/completed
      */
-    public function sendStatement($type, $student, $course, $object = null)
+    public function sendStatement($type, $student, $course, $object = null,$scaled = null)
     {
 
         $course->loadMissing('teacher', 'translations');
@@ -41,9 +41,11 @@ class NelcService
         $instructorName  = $course->teacher?->full_name ?? 'Unknown Instructor';
         // $instructorEmail = str_replace('mailto:', '', $course->teacher?->email ?? 'noreply@nelc.gov.sa');
         $instructorEmail = $course->teacher?->email ?? 'noreply@nelc.gov.sa';
+        
         switch ($type) {
 
             case 'registered':
+               $programUrl = url('/courses/' . $course->slug);
 
 
                 return $this->xapi->Registered(
@@ -54,13 +56,15 @@ class NelcService
                     $courseDescription,
                     $instructorName,
                     $instructorEmail,
+                    $programUrl
                 );
     
             case 'initialized':
 
                 return $this->xapi->Initialized(
                       $actorName, $actorEmail, $course->id,
-                        $courseTitle, $courseDescription,
+                        $courseTitle,
+                        null, //$courseDescription
                         $instructorName, $instructorEmail,
                 );
 
@@ -85,7 +89,8 @@ class NelcService
                     true,               // fully watched
                     "PT15M",            // duration ISO 8601
                     $course->id,
-                    $courseTitle, $courseDescription,
+                    $courseTitle, 
+                    null, 
                     $instructorName, $instructorEmail,
                 );
 
@@ -109,18 +114,10 @@ class NelcService
                     $chapterTitle,
                     $chapterDescription,        
                     $course->id,
-                    $courseTitle, $courseDescription,
+                    $courseTitle, null,
                     $instructorName, $instructorEmail,
                             );
 
-            case 'completed_course':
-
-                return $this->xapi->CompletedCourse(
-                    $actorName, $actorEmail,
-                    $course->id,
-                    $courseTitle, $courseDescription,
-                    $instructorName, $instructorEmail,
-                );
 
             // case 'completed_unit':
             //     if (!$lesson) {
@@ -173,7 +170,7 @@ class NelcService
                     $attemptNumber,
                     $course->id,        // ✅ من الـ $course المُمرر
                     $courseTitle,
-                    $courseDescription,
+                    null,
                     $instructorName,    // ✅ من الـ $course المُمرر
                     $instructorEmail,
                     $scaled,
@@ -184,68 +181,64 @@ class NelcService
                     $success,
                 );
 
+            case 'completed_course':
+
+                return $this->xapi->CompletedCourse(
+                    $actorName, $actorEmail,
+                    $course->id,
+                    $courseTitle, null,
+                    $instructorName, $instructorEmail,
+                );
+
             case 'earned':
 
                 $certName = $courseTitle; // اسم الشهادة = اسم الكورس
 
-                // ✅ رابط الشهادة العام بدون لوجين
-                $certUrl  = url('/certificate/' . $course->id . '/' . $student->id);
+                
+                 // ✅ رابط عام للشهادة (خاص بالكورس مش بالطالب)
+                $certUrl = url('/certificate/course/' . $course->id);
+
+                // ✅ رابط خاص بالطالب
+                $certStudentUrl = url('/certificate/' . $course->id . '/' . $student->id);
 
                 return $this->xapi->Earned(
                     $actorName,
                     $actorEmail,
                     $certUrl,
+                    $certStudentUrl,
                     $certName,
                     $course->id,
                     $courseTitle,
-                    $courseDescription,
+                    null,
                 );
 
-            // case 'progressed':
+            case 'progressed':
+                    if (!$scaled) {
+                        throw new \Exception("scaled is required");
+                    }
+                return $this->xapi->Progressed(
+                    $actorName, $actorEmail,
+                    $course->id,        // ✅ من الـ $course المُمرر
+                    $courseTitle,
+                    null,
+                    $instructorName, $instructorEmail,
+                    $scaled,
+                    true,
 
-            //     return $this->xapi->Progressed(
-            //         $student->national_id,
-            //         $student->email,
-            //         $lesson->title,
-            //         $lesson->description ?? '',
-            //         $lesson->id ?? $lesson->url,
-            //         $course->id,
-            //         $course->title,
-            //         $course->description,
-            //         $course->instructor_name,
-            //         $course->instructor_email,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
+                );
 
-            //     );
+            case 'rated':
 
-            // case 'rated':
-
-            //     return $this->xapi->Rated(
-            //         $student->national_id,
-            //         $student->email,
-            //         $lesson->title,
-            //         $lesson->description ?? '',
-            //         $lesson->id ?? $lesson->url,
-            //         $course->id,
-            //         $course->title,
-            //         $course->description,
-            //         $course->instructor_name,
-            //         $course->instructor_email,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-            //         $course->instructor_name,
-
-            //     );
+                return $this->xapi->Rated(
+                    $actorName, $actorEmail,
+                    $course->id,        
+                    $courseTitle,
+                    null,
+                    $instructorName, $instructorEmail,
+                    0.8,
+                    4,
+                    "Text review written by the evaluator",
+                );
 
             default:
                 throw new \Exception("Unsupported statement type: {$type}");

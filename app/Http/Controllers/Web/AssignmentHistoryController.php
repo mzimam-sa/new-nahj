@@ -12,6 +12,7 @@ use App\Models\WebinarAssignmentHistoryMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Events\ModuleWatched;
+use App\Events\Progressed;
 use App\Events\CompletedLesson;
 use App\Events\CompletedCourse;
 class AssignmentHistoryController extends Controller
@@ -81,6 +82,8 @@ class AssignmentHistoryController extends Controller
                     
                     //event watch
                     event(new ModuleWatched($user, $webinar, $assignment));
+                    $scaled = 0.33;
+                    event(new Progressed($user, $webinar, $scaled));
 
                     if ($assignmentHistory->status == WebinarAssignmentHistory::$notSubmitted) {
                         $assignmentHistory->update([
@@ -164,8 +167,9 @@ class AssignmentHistoryController extends Controller
                         $webinar = $assignment->webinar; 
                         event(new CompletedLesson($user, $webinar, $assignment));
 
+                        $scaled = 0.66;
+                        event(new Progressed($user, $webinar, $scaled));
                         //event complete course (fake action)
-                        event(new CompletedCourse($user, $webinar));
                     }
 
                     $notifyOptions = [

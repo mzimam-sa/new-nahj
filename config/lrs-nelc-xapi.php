@@ -6,5 +6,6 @@ return [
     'secret'    => env('LRS_PASSWORD'),
     'platform_in_arabic'    => 'نهج المعرفة للتدريب', // Platform name in Arabic
     'platform_in_english'    => 'https://nahj.com.sa/', // Platform name in English
+    'lms_url'            => env('APP_URL', 'https://nahj.com.sa'),
     'base_route'    => 'nelcxapi/test', // Demo Page Link
 ];

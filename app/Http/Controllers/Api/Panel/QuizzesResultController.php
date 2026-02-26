@@ -18,7 +18,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Events\QuizAttempted;
+use App\Events\RatedCourse;
+use App\Events\CompletedCourse;
 use App\Events\EarnedCertificate;
+use App\Events\Progressed;
 class QuizzesResultController extends Controller
 {
 
@@ -213,7 +216,11 @@ class QuizzesResultController extends Controller
                     ]);
 
                     event(new QuizAttempted($quizResult->user, $quizResult->quiz->webinar,$quizResult));
-
+                    event(new RatedCourse($quizResult->user, $quizResult->quiz->webinar));
+                    event(new CompletedCourse($user, $quizResult->quiz->webinar));
+                    
+                    $scaled = 1.0;
+                    event(new Progressed($user, $quizResult->quiz->webinar, $scaled));
 
                     if ($quizResult->status == QuizzesResult::$waiting) {
                         $notifyOptions = [

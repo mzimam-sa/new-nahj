@@ -32,6 +32,6 @@ class CourseInitializedStatementListener implements ShouldQueue
             'initialized',
             $event->student,
             $event->course,
-        )->delay(now()->addMinute());
+        )->delay(now()->addMinute(5));
     }
 }
