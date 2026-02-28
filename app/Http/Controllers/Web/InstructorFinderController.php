@@ -41,7 +41,7 @@ class InstructorFinderController extends Controller
 
         $query = $this->handleFilters($query, $request);
 
-        $query = $query->addSelect(DB::raw('ST_AsText(location) as userLocation'));
+        $query = $query->addSelect(DB::raw('location as "userLocation"'));
 
         $instructors = deepClone($query)->paginate(6);
 
@@ -408,7 +408,7 @@ class InstructorFinderController extends Controller
 
     private function getLocationData(Request $request)
     {
-        $countries = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $countries = Region::select(DB::raw('*'))
             ->where('type', Region::$country)
             ->get();
 
@@ -419,7 +419,7 @@ class InstructorFinderController extends Controller
         $mapZoom = 3;
 
         if ($request->get('country_id')) {
-            $provinces = Region::select(DB::raw(' *, ST_AsText(geo_center) as geo_center'))
+            $provinces = Region::select(DB::raw('*'))
                 ->where('type', Region::$province)
                 ->where('country_id', $request->get('country_id'))
                 ->get();
@@ -443,7 +443,7 @@ class InstructorFinderController extends Controller
                 }
             }
 
-            $cities = Region::select(DB::raw(' *, ST_AsText(geo_center) as geo_center'))
+            $cities = Region::select(DB::raw('*'))
                 ->where('type', Region::$city)
                 ->where('province_id', $request->get('province_id'))
                 ->get();
@@ -460,7 +460,7 @@ class InstructorFinderController extends Controller
                 }
             }
 
-            $districts = Region::select(DB::raw(' *, ST_AsText(geo_center) as geo_center'))
+            $districts = Region::select(DB::raw('*'))
                 ->where('type', Region::$district)
                 ->where('city_id', $request->get('city_id'))
                 ->get();
@@ -528,7 +528,7 @@ class InstructorFinderController extends Controller
         $countries = null;
 
         if ($step == 2) {
-            $countries = Region::select(DB::raw(' *, ST_AsText(geo_center) as geo_center'))
+            $countries = Region::select(DB::raw('*'))
                 ->where('type', Region::$country)
                 ->get();
         }

@@ -607,26 +607,26 @@ class UserController extends Controller
         $cities = null;
         $districts = null;
 
-        $countries = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $countries = Region::select(DB::raw('*'))
             ->where('type', Region::$country)
             ->get();
 
         if (!empty($user->country_id)) {
-            $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $provinces = Region::select(DB::raw('*'))
                 ->where('type', Region::$province)
                 ->where('country_id', $user->country_id)
                 ->get();
         }
 
         if (!empty($user->province_id)) {
-            $cities = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $cities = Region::select(DB::raw('*'))
                 ->where('type', Region::$city)
                 ->where('province_id', $user->province_id)
                 ->get();
         }
 
         if (!empty($user->city_id)) {
-            $districts = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $districts = Region::select(DB::raw('*'))
                 ->where('type', Region::$district)
                 ->where('city_id', $user->city_id)
                 ->get();
@@ -1322,7 +1322,7 @@ class UserController extends Controller
                 "province_id" => $data['province_id'] ?? null,
                 "city_id" => $data['city_id'] ?? null,
                 "district_id" => $data['district_id'] ?? null,
-                "location" => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw("ST_MakePoint(" . $data['longitude'] . "," . $data['latitude'] . ")") : null,
+                "location" => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw("POINT(" . $data['latitude'] . "," . $data['longitude'] . ")") : null,
             ]);
 
             $updateUserMeta = [
