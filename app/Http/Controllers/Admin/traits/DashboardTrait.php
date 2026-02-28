@@ -589,12 +589,12 @@ trait DashboardTrait
     {
         return Webinar::where('status', Webinar::$active)
             ->join('sales', 'webinars.id', '=', 'sales.webinar_id')
-            ->select('webinars.*', 'sales.webinar_id',
+            ->select('webinars.*',
                 DB::raw('count(sales.webinar_id) as sales_count'),
                 DB::raw('sum(sales.total_amount) as sales_amount')
             )->whereNull('sales.refund_at')
             ->where('sales.amount', '>', '0')
-            ->groupBy('sales.webinar_id')
+            ->groupBy('webinars.id')
             ->orderBy('sales_count', 'desc')
             ->limit(5)
             ->get();
@@ -604,12 +604,12 @@ trait DashboardTrait
     {
         return Meeting::where('disabled', false)
             ->join('sales', 'meetings.id', '=', 'sales.meeting_id')
-            ->select('meetings.*', 'sales.meeting_id',
+            ->select('meetings.*',
                 DB::raw('count(sales.meeting_id) as sales_count'),
                 DB::raw('sum(sales.total_amount) as sales_amount')
             )->whereNull('sales.refund_at')
             ->where('sales.amount', '>', '0')
-            ->groupBy('sales.meeting_id')
+            ->groupBy('meetings.id')
             ->orderBy('sales_count', 'desc')
             ->limit(5)
             ->get();
@@ -619,13 +619,13 @@ trait DashboardTrait
     {
         $users = User::where('status', 'active')
             ->join('sales', 'users.id', '=', 'sales.seller_id')
-            ->select('users.*', 'sales.seller_id',
+            ->select('users.*',
                 DB::raw('count(sales.seller_id) as sales_count'),
                 DB::raw('sum(sales.total_amount) as sales_amount')
             )->whereNull('sales.refund_at')
             ->where('sales.amount', '>', '0')
             ->where('users.role_name', (($role == 'teachers') ? Role::$teacher : Role::$organization))
-            ->groupBy('sales.seller_id')
+            ->groupBy('users.id')
             ->orderBy('sales_count', 'desc')
             ->limit(5)
             ->get();
@@ -647,14 +647,14 @@ trait DashboardTrait
     {
         return User::where('status', 'active')
             ->join('sales', 'users.id', '=', 'sales.buyer_id')
-            ->select('users.*', 'sales.buyer_id',
+            ->select('users.*',
                 DB::raw('count(sales.webinar_id) as purchased_classes'),
                 DB::raw('count(sales.meeting_id) as reserved_appointments'),
                 DB::raw('sum(sales.total_amount) as total_cost')
             )->whereNull('sales.refund_at')
             ->where('sales.amount', '>', '0')
             ->where('users.role_name', Role::$user)
-            ->groupBy('sales.buyer_id')
+            ->groupBy('users.id')
             ->orderBy('purchased_classes', 'desc')
             ->orderBy('reserved_appointments', 'desc')
             ->limit(5)

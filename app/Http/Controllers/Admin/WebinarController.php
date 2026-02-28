@@ -173,16 +173,16 @@ class WebinarController extends Controller
                     $query->where('webinars.status', 'active')
                         ->where('start_date', '<=', $time)
                         ->join('sessions', 'webinars.id', '=', 'sessions.webinar_id')
-                        ->select('webinars.*', 'sessions.date', DB::raw('max(`date`) as last_date'))
-                        ->groupBy('sessions.webinar_id')
+                        ->select('webinars.*', DB::raw('max(sessions."date") as last_date'))
+                        ->groupBy('webinars.id')
                         ->where('sessions.date', '>', $time);
                     break;
                 case 'active_finished':
                     $query->where('webinars.status', 'active')
                         ->where('start_date', '<=', $time)
                         ->join('sessions', 'webinars.id', '=', 'sessions.webinar_id')
-                        ->select('webinars.*', 'sessions.date', DB::raw('max(`date`) as last_date'))
-                        ->groupBy('sessions.webinar_id');
+                        ->select('webinars.*', DB::raw('max(sessions."date") as last_date'))
+                        ->groupBy('webinars.id');
                     break;
                 default:
                     $query->where('webinars.status', $status);
@@ -219,18 +219,18 @@ class WebinarController extends Controller
                     break;
                 case 'sales_asc':
                     $query->join('sales', 'webinars.id', '=', 'sales.webinar_id')
-                        ->select('webinars.*', 'sales.webinar_id', 'sales.refund_at', DB::raw('count(sales.webinar_id) as sales_count'))
+                        ->select('webinars.*', DB::raw('count(sales.webinar_id) as sales_count'))
                         ->whereNotNull('sales.webinar_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.webinar_id')
+                        ->groupBy('webinars.id')
                         ->orderBy('sales_count', 'asc');
                     break;
                 case 'sales_desc':
                     $query->join('sales', 'webinars.id', '=', 'sales.webinar_id')
-                        ->select('webinars.*', 'sales.webinar_id', 'sales.refund_at', DB::raw('count(sales.webinar_id) as sales_count'))
+                        ->select('webinars.*', DB::raw('count(sales.webinar_id) as sales_count'))
                         ->whereNotNull('sales.webinar_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.webinar_id')
+                        ->groupBy('webinars.id')
                         ->orderBy('sales_count', 'desc');
                     break;
 
@@ -244,19 +244,19 @@ class WebinarController extends Controller
 
                 case 'income_asc':
                     $query->join('sales', 'webinars.id', '=', 'sales.webinar_id')
-                        ->select('webinars.*', 'sales.webinar_id', 'sales.total_amount', 'sales.refund_at', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
+                        ->select('webinars.*', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
                         ->whereNotNull('sales.webinar_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.webinar_id')
+                        ->groupBy('webinars.id')
                         ->orderBy('amounts', 'asc');
                     break;
 
                 case 'income_desc':
                     $query->join('sales', 'webinars.id', '=', 'sales.webinar_id')
-                        ->select('webinars.*', 'sales.webinar_id', 'sales.total_amount', 'sales.refund_at', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
+                        ->select('webinars.*', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
                         ->whereNotNull('sales.webinar_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.webinar_id')
+                        ->groupBy('webinars.id')
                         ->orderBy('amounts', 'desc');
                     break;
 
@@ -934,17 +934,17 @@ class WebinarController extends Controller
                     $query->on('webinar_reviews.creator_id', 'users.id')
                         ->where('webinar_reviews.webinar_id', $webinar->id);
                 })
-                ->select('users.*', 'webinar_reviews.rates', 'sales.access_to_purchased_item', 'sales.id as sale_id', 'sales.gift_id', DB::raw('min(sales.created_at) as purchase_date'))
+                ->select('users.*', 'webinar_reviews.rates', 'sales.access_to_purchased_item', DB::raw('min(sales.id) as sale_id'), 'sales.gift_id', DB::raw('min(sales.created_at) as purchase_date'))
                 ->where(function ($query) use ($webinar, $giftsIds, $installmentSalesIds) {
                     $query->where('sales.webinar_id', $webinar->id);
                     $query->orWhereIn('sales.gift_id', $giftsIds);
                     $query->orWhereIn('sales.id', $installmentSalesIds);
                 })
-                ->groupBy('sales.buyer_id')
+                ->groupBy('users.id', 'webinar_reviews.rates', 'sales.access_to_purchased_item', 'sales.gift_id')
                 ->whereNull('sales.refund_at');
 
             $students = $this->studentsListsFilters($webinar, $query, $request)
-                ->orderBy('sales.created_at', 'desc')
+                ->orderBy('purchase_date', 'desc')
                 ->paginate(10);
 
             $userGroups = Group::where('status', 'active')

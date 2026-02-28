@@ -286,7 +286,7 @@ class UserController extends Controller
                     "province_id" => $data['province_id'] ?? null,
                     "city_id" => $data['city_id'] ?? null,
                     "district_id" => $data['district_id'] ?? null,
-                    "location" => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw("POINT(" . $data['latitude'] . "," . $data['longitude'] . ")") : null,
+                    "location" => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw("ST_MakePoint(" . $data['longitude'] . "," . $data['latitude'] . ")") : null,
                 ];
 
                 $updateUserMeta = [

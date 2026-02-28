@@ -131,7 +131,7 @@ class UsersController extends Controller
                     $value = (new UserLevelOfTraining())->getValue($value);
                 }
                 if ($input == 'location') {
-                    $value = DB::raw("POINT(" . $value['latitude'] . "," . $value['longitude'] . ")");
+                    $value = DB::raw("ST_MakePoint(" . $value['longitude'] . "," . $value['latitude'] . ")");
                 }
                 if ($input == 'password') {
                     $value = User::generatePassword($value);

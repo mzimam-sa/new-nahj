@@ -93,7 +93,7 @@ class RegionController extends Controller
             'city_id' => $data['city_id'] ?? null,
             'type' => $data['type'],
             'title' => $data['title'],
-            'geo_center' => DB::raw("point(" . $data['latitude'] . "," . $data['longitude'] . ")"),
+            'geo_center' => DB::raw("ST_MakePoint(" . $data['longitude'] . "," . $data['latitude'] . ")"),
             'created_at' => time()
         ]);
 
@@ -200,7 +200,7 @@ class RegionController extends Controller
             'city_id' => $data['city_id'] ?? null,
             'type' => $data['type'],
             'title' => $data['title'],
-            'geo_center' => DB::raw("point(" . $data['latitude'] . "," . $data['longitude'] . ")"),
+            'geo_center' => DB::raw("ST_MakePoint(" . $data['longitude'] . "," . $data['latitude'] . ")"),
             'created_at' => time()
         ]);
 

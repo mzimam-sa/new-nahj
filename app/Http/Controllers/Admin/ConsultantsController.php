@@ -26,8 +26,7 @@ class ConsultantsController extends Controller
                 $join->on('meetings.id', '=', 'sales.meeting_id')
                     ->whereNull('sales.refund_at');
             })
-            ->select('users.*', 'meetings.amount', 'meetings.discount', 'meetings.disabled',
-                'sales.seller_id', 'sales.meeting_id', 'sales.refund_at',
+            ->select('users.*',
                 DB::raw('count(sales.seller_id) as sales_count'),
                 DB::raw('sum(sales.total_amount) as sales_amount'),
                 DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as totalIncome'),

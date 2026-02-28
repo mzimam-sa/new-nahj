@@ -180,15 +180,15 @@ class GiftsController extends Controller
             switch ($sort) {
                 case "amount_asc":
                     $query->join('sales', 'sales.gift_id', '=', 'gifts.id')
-                        ->select('gifts.*', 'sales.total_amount')
-                        ->groupBy('sales.gift_id')
-                        ->orderBy('sales.total_amount', 'asc');
+                        ->select('gifts.*', DB::raw('sum(sales.total_amount) as total_amount'))
+                        ->groupBy('gifts.id')
+                        ->orderBy('total_amount', 'asc');
                     break;
                 case "amount_desc":
                     $query->join('sales', 'sales.gift_id', '=', 'gifts.id')
-                        ->select('gifts.*', 'sales.total_amount')
-                        ->groupBy('sales.gift_id')
-                        ->orderBy('sales.total_amount', 'desc');
+                        ->select('gifts.*', DB::raw('sum(sales.total_amount) as total_amount'))
+                        ->groupBy('gifts.id')
+                        ->orderBy('total_amount', 'desc');
                     break;
                 case "submit_date_asc":
                     $query->orderBy('created_at', 'asc');
