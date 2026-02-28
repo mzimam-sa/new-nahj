@@ -65,8 +65,8 @@
                     </div>
 
                     {{-- رقم الهوية الوطنية وهو الحقل الاضافي الموجود في اعدادات الادمن خانة الخصائص--}}
-                    @if ($showCertificateAdditionalInRegister) 
-                        {{-- <div class="form-group">
+                    @if ($showCertificateAdditionalInRegister)
+                        <div class="form-group">
                             <label class="input-label"
                                 for="certificate_additional">{{ trans('update.certificate_additional') }}</label>
                             <input name="certificate_additional"  maxlength="10" id="certificate_additional"
@@ -76,7 +76,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div> --}}
+                        </div>
                     @endif
 
                     {{-- كلمة المرور --}}
