@@ -27,6 +27,7 @@ class ProgressedStatementListener implements ShouldQueue
      */
     public function handle(Progressed $event)
     {
+        \Log::info("Listener Fired - Progressed");
         ModuleWatchedStatementJob::dispatch(
             'progressed',
             $event->student,
