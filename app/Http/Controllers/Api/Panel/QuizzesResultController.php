@@ -216,11 +216,18 @@ class QuizzesResultController extends Controller
                     ]);
 
                     event(new QuizAttempted($quizResult->user, $quizResult->quiz->webinar,$quizResult));
+                            \Log::info("Quiz Attempted events");
+
                     event(new RatedCourse($quizResult->user, $quizResult->quiz->webinar));
+                            \Log::info("Rated Course events");
+
                     event(new CompletedCourse($user, $quizResult->quiz->webinar));
+                            \Log::info("Completed Course events");
+
                     
                     $scaled = 1.0;
                     event(new Progressed($user, $quizResult->quiz->webinar, $scaled));
+                            \Log::info("Progressed events");
 
                     if ($quizResult->status == QuizzesResult::$waiting) {
                         $notifyOptions = [
@@ -235,6 +242,7 @@ class QuizzesResultController extends Controller
                         $passTheQuizReward = RewardAccounting::calculateScore(Reward::PASS_THE_QUIZ);
                         RewardAccounting::makeRewardAccounting($quizResult->user_id, $passTheQuizReward, Reward::PASS_THE_QUIZ, $quiz->id, true);
                         event(new EarnedCertificate($quizResult->user, $quizResult->quiz->webinar));
+                                \Log::info("Earned Certificate and Initialized events");
                     }
 
                     if ($quiz->certificate) {

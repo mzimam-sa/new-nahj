@@ -26,6 +26,7 @@ class CompletedLessonStatementListener implements ShouldQueue
      */
     public function handle(CompletedLesson $event)
     {
+        \Log::info("Listener Fired - Completed Lesson");
         ModuleWatchedStatementJob::dispatch(
             'completed_lesson',
             $event->student,

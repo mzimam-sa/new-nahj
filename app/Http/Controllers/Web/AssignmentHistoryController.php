@@ -82,8 +82,10 @@ class AssignmentHistoryController extends Controller
                     
                     //event watch
                     event(new ModuleWatched($user, $webinar, $assignment));
+                        \Log::info("Module Watched events");
                     $scaled = 0.33;
                     event(new Progressed($user, $webinar, $scaled));
+                        \Log::info("Progressed events");
 
                     if ($assignmentHistory->status == WebinarAssignmentHistory::$notSubmitted) {
                         $assignmentHistory->update([
@@ -166,6 +168,7 @@ class AssignmentHistoryController extends Controller
                         $assignment->load('webinar.teacher');
                         $webinar = $assignment->webinar; 
                         event(new CompletedLesson($user, $webinar, $assignment));
+                                \Log::info("Completed Lesson events");
 
                         $scaled = 0.66;
                         event(new Progressed($user, $webinar, $scaled));

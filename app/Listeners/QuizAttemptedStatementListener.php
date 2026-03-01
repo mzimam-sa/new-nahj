@@ -27,6 +27,7 @@ class QuizAttemptedStatementListener
      */
     public function handle(QuizAttempted $event)
     {
+        \Log::info("Listener Fired - Quiz Attempted");
         QuizAttemptedStatementJob::dispatch(
             'quiz',
             $event->student,

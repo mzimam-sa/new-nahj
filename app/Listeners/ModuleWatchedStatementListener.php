@@ -27,6 +27,7 @@ class ModuleWatchedStatementListener implements ShouldQueue
      */
     public function handle(ModuleWatched $event)
     {
+        \Log::info("Listener Fired - Module Watched");
         ModuleWatchedStatementJob::dispatch(
             'watched',
             $event->student,

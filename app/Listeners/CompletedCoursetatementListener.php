@@ -27,6 +27,7 @@ class CompletedCoursetatementListener implements ShouldQueue
      */
     public function handle(CompletedCourse $event)
     {
+        \Log::info("Listener Fired - Completed Course");
         SendNelcStatementJob::dispatch(
             'completed_course',
             $event->student,
