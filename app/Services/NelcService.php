@@ -31,11 +31,11 @@ class NelcService
                     ?? $course->translations->first();
 
         $courseTitle       = $translation?->title       ?? $course->slug ?? 'Untitled Course';
-        $courseDescription = strip_tags($translation?->description ?? $courseTitle);
+        $courseDescription = strip_tags($translation?->description ?? $courseTitle ?? 'Untitled Description');
 
         $actorName = optional(
             $student->userMetas->where('name', 'certificate_additional')->first()
-        )->value ?? $student->name ?? 'Unknown Student';
+        )->value ?? null;
 
         $actorEmail      = str_replace('mailto:', '', $student->email);
         $instructorName  = $course->teacher?->full_name ?? 'Unknown Instructor';
@@ -80,6 +80,7 @@ class NelcService
 
                 $chapterTitle       = $translation?->title       ?? 'Untitled Course';
                 $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
+                
 
                 return $this->xapi->Watched(
                     $actorName,$actorEmail,
