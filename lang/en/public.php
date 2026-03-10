@@ -1,3 +1,4 @@
+    
 <?php
 
 use App\Enums\BundleSemsterEnum;
@@ -415,5 +416,16 @@ return [
     'register_semester_subjects' => 'Register Courses',
     'latest_removal_date_passed' => 'Latest Remove Date Has Been Passed',
 
+    // Course review
+    'rate_course' => 'Rate the course',
+    'rating' => 'Rating',
+    'comment' => 'Comment',
+    'optional' => 'Optional',
+    'submit' => 'Submit',
 
+    // Toast messages for course review
+    'review_already_submitted' => 'You have already reviewed this course.',
+    'review_only_enrolled' => 'Only enrolled students can review this course.',
+    'review_submitted_success' => 'Your review has been submitted.',
+    'your_review' => 'Your Review',
 ];

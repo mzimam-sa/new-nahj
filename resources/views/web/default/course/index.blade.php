@@ -3,6 +3,25 @@
 @push('styles_top')
     <link rel="stylesheet" href="/assets/default/css/css-stars.css">
     <link rel="stylesheet" href="/assets/default/vendors/video/video-js.min.css">
+    <style>
+        .star-rating {
+            direction: ltr;
+            display: inline-flex;
+        }
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+        .star-rating label {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            margin: 0 2px;
+            transition: color 0.2s;
+        }
+        .star-rating label.selected {
+            color: #ffd700;
+        }
+    </style>
 @endpush
 
 
@@ -113,6 +132,9 @@
                                 @include(getTemplate().'.course.tabs.reviews')
                             </div>
                         </div>
+
+                        
+                        
 
                     </div>
 

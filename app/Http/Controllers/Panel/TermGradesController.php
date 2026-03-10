@@ -96,7 +96,7 @@ public function store(Request $request, $webinarId)
             $students = User::whereIn('id', $studentIds)->get();
         } else {
             // fallback: all users with student role (adjust role field if different)
-            $students = User::where('role', 'student')->get();
+            $students = User::where('role_name', 'student')->get();
         } 
 
         return view(getTemplate() . '.panel.webinar.add_term_grades', compact('webinars', 'quizzes', 'students'));

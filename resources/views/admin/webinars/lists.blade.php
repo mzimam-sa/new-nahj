@@ -247,6 +247,7 @@
                                         <th>المبيعات</th>
                                         <th>{{trans('admin/main.students_count')}}</th>
                                         <th>{{trans('admin/main.created_at')}}</th>
+                                        <th>التقييم</th>
                                         <!--@if($classesType == 'webinar')-->
                                         <!--    <th>{{trans('admin/main.start_date')}}</th>-->
                                         <!--@else-->
@@ -299,7 +300,8 @@
                                                 <a href="{{ getAdminPanelUrl() }}/webinars/{{ $webinar->id }}/students" target="_blank" class="">{{ $webinar->sales->count() }}</a>
                                             </td>
 
-                                            <td class="font-12">{{ dateTimeFormat($webinar->created_at, 'Y M j | H:i') }}</td>
+                                    <td class="font-12">{{ dateTimeFormat($webinar->created_at, 'Y M j | H:i') }}</td>
+                                    <td class="font-12">{{ $webinar->getRate() }}</td>
 
                                             <!--@if($classesType == 'webinar')-->
                                             <!--    <td class="font-12">{{ dateTimeFormat($webinar->start_date, 'Y M j | H:i') }}</td>-->

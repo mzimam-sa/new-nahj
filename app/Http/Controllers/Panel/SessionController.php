@@ -87,6 +87,7 @@ class SessionController extends Controller
                 'access_after_day' => $data['access_after_day'],
                 'extra_time_to_join' => $data['extra_time_to_join'] ?? null,
                 'status' => (!empty($data['status']) and $data['status'] == 'on') ? Session::$Active : Session::$Inactive,
+                'is_final' => (!empty($data['is_final']) && $data['is_final'] == 'on') ? 1 : 0,
                 'created_at' => time()
             ]);
 
@@ -212,6 +213,7 @@ class SessionController extends Controller
                     'check_previous_parts' => $data['check_previous_parts'],
                     'access_after_day' => $data['access_after_day'],
                     'extra_time_to_join' => $data['extra_time_to_join'] ?? null,
+                    'is_final' => (!empty($data['is_final']) && $data['is_final'] == 'on') ? 1 : 0,
                     'updated_at' => time()
                 ]);
 

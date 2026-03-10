@@ -22,6 +22,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     });
 
     Route::group(['prefix' => 'webinars'], function () {
+
+            // تقييم الكورس من الطالب
+            Route::post('/{webinar_id}/review', [\App\Http\Controllers\Panel\WebinarReviewController::class, 'store'])->name('panel.webinar_review.store');
         Route::group(['middleware' => 'user.not.access'], function () {
             Route::get('/', 'WebinarController@index');
             Route::get('/new', 'WebinarController@create');

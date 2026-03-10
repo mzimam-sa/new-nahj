@@ -1448,7 +1448,7 @@ return [
     'unlocked' => 'غير مقفلة',
     'user_id' => 'الرقم التعريفي للمستخدم',
     'bonus' => 'مكافأة',
-    'referred_users' => 'المستخدمين المحالون',
+    'referred_users' => 'المستخدمين المحالين',
     'referred_purchases' => 'المشتريات المحال إليها',
     'registration_date' => 'تاريخ التسجيل',
     'bonus_date' => 'تاريخ المكافأة',
@@ -2135,4 +2135,6 @@ return [
     'latest_webinar_remove_date' => 'اخر موعد لسحب المواد',
     'studyschedule_for_bundle'  => 'الجدول الدراسي: :bundle',
     'the_bundles'   =>'الدبلومات',
+    'final_session' => 'جلسة نهائية (فاينل)',
+    
 ];

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 trait ReviewTrait
 {
+    
     public function store(Request $request)
     {
         $rules = [
