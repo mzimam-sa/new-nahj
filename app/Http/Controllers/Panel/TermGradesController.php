@@ -111,20 +111,26 @@ public function store(Request $request, $webinarId)
             return response()->json([]);
         }
 
-        // Prefer explicit relation first
-        if (method_exists($webinar, 'students')) {
-            $students = $webinar->students()->select('id', 'full_name', 'name')->get();
-        } elseif (method_exists($webinar, 'sales')) {
-            $sales = $webinar->sales()->whereNull('refund_at')->with('buyer')->get();
-            $students = $sales->pluck('buyer')->filter()->unique('id')->values();
-        } else {
-            $students = User::where('role', 'student')->select('id', 'full_name', 'name')->get();
-        }
 
-        $payload = $students->map(function ($s) {
+        // جلب الطلاب الذين اشتروا الفصل بشكل صريح
+        $sales = $webinar->sales()->with('buyer')->get();
+        $students = $sales->pluck('buyer')->filter()->unique('id')->values();
+
+        // جلب درجات الطلاب لهذا الفصل
+        $grades = WebinarGrade::where('webinar_id', $webinarId)->get()->keyBy('student_id');
+
+
+        $payload = $students->map(function ($s) use ($grades) {
+            $grade = isset($grades[$s->id]) ? $grades[$s->id] : null;
             return [
                 'id' => $s->id,
                 'name' => $s->full_name ?? $s->name,
+                'score' => $grade ? $grade->score : '',
+                'type' => $grade ? $grade->type : 'term_grade',
+                'term' => $grade ? $grade->term : 1,
+                'success_score' => $grade ? $grade->success_score : '',
+                'notes' => $grade ? $grade->notes : '',
+                'pdf_path' => $grade ? $grade->pdf_path : null,
             ];
         });
 
@@ -145,41 +151,59 @@ public function store(Request $request, $webinarId)
             'grades.*.term' => 'nullable|integer',
             'grades.*.type' => 'nullable|string|max:50',
             'grades.*.notes' => 'nullable|string|max:1000',
+            'grades.*.pdf_file' => 'nullable|file|mimes:pdf|max:20480',
         ]);
-
 
         $webinarId = $data['webinar_id'] ?? null;
         $grades = $data['grades'] ?? [];
 
         foreach ($grades as $studentId => $g) {
-            // skip rows not enabled or with no meaningful value
             $enabled = isset($g['enabled']) && $g['enabled'] == 1;
             $hasScore = isset($g['score']) && $g['score'] !== '';
             if (! $enabled && ! $hasScore) {
                 continue;
             }
 
-            // Normalize fields
             $term = $g['term'] ?? 1;
             $type = $g['type'] ?? 'term_grade';
 
-            WebinarGrade::updateOrCreate(
+            $updateData = [
+                'score' => $g['score'] ?? null,
+                'success_score' => $g['success_score'] ?? null,
+                'notes' => $g['notes'] ?? null,
+                'creator_id' => auth()->id(),
+            ];
+
+            // جلب السجل الحالي إن وجد
+            $gradeRow = \App\Models\WebinarGrade::where('webinar_id', $webinarId)
+                ->where('student_id', $g['student_id'])
+                ->where('term', $term)
+                ->where('type', $type)
+                ->first();
+
+            $file = $request->grades[$studentId]['pdf_file'] ?? null;
+            if ($file instanceof \Illuminate\Http\UploadedFile) {
+                $fileName = 'grade_' . $webinarId . '_' . $studentId . '_' . time() . '.pdf';
+                $path = $file->storeAs('pdf_grades', $fileName, 'public');
+                $updateData['pdf_path'] = $path;
+            } elseif (! $gradeRow || !$gradeRow->pdf_path) {
+                // إذا لم يكن هناك ملف سابق يجب رفع ملف جديد
+                return redirect()->back()->withErrors(['grades.' . $studentId . '.pdf_file' => 'رفع ملف PDF إجباري لكل طالب']);
+            }
+
+            \App\Models\WebinarGrade::updateOrCreate(
                 [
                     'webinar_id' => $webinarId,
                     'student_id' => $g['student_id'],
                     'term' => $term,
                     'type' => $type,
                 ],
-                [
-                    'score' => $g['score'] ?? null,
-                    'success_score' => $g['success_score'] ?? null,
-                    'notes' => $g['notes'] ?? null,
-                    'creator_id' => auth()->id(),
-                ]
+                $updateData
             );
         }
 
         return redirect()->back()->with('success', 'تم حفظ الدرجات');
+                            // ...existing code...
     }
 
 
@@ -264,26 +288,43 @@ public function store(Request $request, $webinarId)
     }
 
     // update grade (PATCH) — respond JSON for AJAX 
-    public function updateGrade(Request $request, $id)
-    {
-        $grade = WebinarGrade::findOrFail($id);
+   public function updateGrade(Request $request, $id)
+{
+    $grade = WebinarGrade::findOrFail($id);
 
-        $data = $request->validate([
-            'score' => 'nullable|numeric',
-            'success_score' => 'nullable|numeric',
-            'type' => 'nullable|string|max:50', 
-            'term' => 'nullable|integer',
-            'notes' => 'nullable|string|max:2000',
-        ]);
+    $request->validate([
+        'term'     => 'nullable|integer',
+        'notes'    => 'nullable|string|max:2000',
+        'pdf_file' => 'nullable|file|mimes:pdf|max:20480',
+    ]);
 
-        $grade->update($data);  
+    $updateData = [
+        'term'  => $request->input('term', $grade->term),
+        'notes' => $request->input('notes', $grade->notes),
+    ];
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['status' => 'ok', 'grade' => $grade]);
+    $file = $request->file('pdf_file');
+
+    if ($file && $file->isValid()) {
+        // حذف الملف القديم
+        if ($grade->pdf_path && \Storage::disk('public')->exists($grade->pdf_path)) {
+            \Storage::disk('public')->delete($grade->pdf_path);
         }
-
-        return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم تحديث الدرجة');
+        $fileName = 'grade_' . $grade->webinar_id . '_' . $grade->student_id . '_' . time() . '.pdf';
+        $path = $file->storeAs('pdf_grades', $fileName, 'public');
+        $updateData['pdf_path'] = $path;
+    } elseif (!$grade->pdf_path) {
+        return redirect()->back()->withErrors(['pdf_file' => 'رفع ملف PDF إجباري']);
     }
+
+    $grade->update($updateData);
+
+    if ($request->ajax() || $request->wantsJson()) {
+        return response()->json(['status' => 'ok', 'grade' => $grade->fresh()]);
+    }
+
+    return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم تحديث الدرجة');
+}
 
     // delete grade (DELETE) — already returns json, keep it
     public function deleteGrade($id)
