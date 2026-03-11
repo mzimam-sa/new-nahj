@@ -49,6 +49,7 @@
 <section class="mt-40">
     <h2 class="section-title after-line">{{ trans('product.reviews') }} ({{ $course->reviews->pluck('creator_id')->count() }})</h2>
 
+    @if(!(auth()->check() && (auth()->user()->id == $course->teacher_id || auth()->user()->isAdmin())))
     <form action="/reviews/store" class="mt-20" method="post">
         {{ csrf_field() }}
         <input type="hidden" name="webinar_id" value="{{ $course->id }}"/>
@@ -106,6 +107,7 @@
 
         <button type="submit" class="btn btn-sm btn-primary mt-20">{{ trans('product.post_review') }}</button>
     </form>
+    @endif
 
     <div class="mt-45">
         @if($course->reviews->count() > 0)

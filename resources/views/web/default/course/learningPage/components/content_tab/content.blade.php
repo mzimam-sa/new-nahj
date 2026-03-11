@@ -25,9 +25,15 @@
      data-access-days-error="{{ !empty($checkSequenceContent['access_after_day_error']) ? $checkSequenceContent['access_after_day_error'] : '' }}"
 >
 
-        <span class="chapter-icon bg-gray300 ml-10">
-            <i data-feather="{{ $icon }}" class="text-gray" width="16" height="16"></i>
-        </span>
+        @if($type == \App\Models\WebinarChapter::$chapterSession && !empty($item->link))
+            <a href="{{ $item->getJoinLink() }}" target="_blank" class="chapter-icon bg-gray300 ml-10" title="دخول الجلسة">
+                <i data-feather="{{ $icon }}" class="text-gray" width="16" height="16"></i>
+            </a>
+        @else
+            <span class="chapter-icon bg-gray300 ml-10">
+                <i data-feather="{{ $icon }}" class="text-gray" width="16" height="16"></i>
+            </span>
+        @endif
 
     <div>
         <div class="">
@@ -48,7 +54,7 @@
             @if($type == \App\Models\WebinarChapter::$chapterSession)
                 @if(auth()->check() && (auth()->user()->id == $item->webinar->teacher_id || auth()->user()->isAdmin()))
                     <div class="mt-15">
-                        <label class="font-weight-bold">قائمة المتدربين (تشييك الحضور):</label>
+                        <label class="font-weight-bold">قائمة المتدربين (تحضير الطلاب):</label>
                         <form method="POST" action="{{ route('panel.sessions.attendance', ['session_id' => $item->id]) }}">
                             @csrf
                             <table class="table table-bordered table-sm mt-2">
@@ -83,19 +89,13 @@
                     </div>
                 @else
                     <div class="mt-15">
-    <span class="badge badge-secondary" style="font-size: 12px; padding: 6px 10px; border-radius: 6px; white-space: normal; text-align: right; display: inline-block;">
-        سيتم تسجيل الحضور من قبل المدرب   
-    </span>
-</div>
+                        <span class="badge badge-secondary" style="font-size: 12px; padding: 6px 10px; border-radius: 6px; white-space: normal; text-align: right; display: inline-block;">
+                            سيتم تسجيل الحضور من قبل المدرب   
+                        </span>
+                    </div>
                 @endif
             @else
-                <div class="d-flex align-items-center justify-content-between mt-15">
-                    <label class="mb-0 ml-10 cursor-pointer font-weight-normal font-14 text-dark-blue" for="readToggle{{ $type }}{{ $item->id }}">{{ trans('public.i_passed_this_lesson') }}</label>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" @if($sequenceContentHasError) disabled @endif id="readToggle{{ $type }}{{ $item->id }}" data-item-id="{{ $item->id }}" data-item="{{ $type }}_id" value="{{ $item->webinar_id }}" class="js-passed-lesson-toggle custom-control-input" @if(!empty($item->checkPassedItem())) checked @endif>
-                        <label class="custom-control-label" for="readToggle{{ $type }}{{ $item->id }}"></label>
-                    </div>
-                </div>
+                <!-- تم حذف جملة اجتياز الدرس بناءً على طلب العميل -->
             @endif
         </div>
     </div>
