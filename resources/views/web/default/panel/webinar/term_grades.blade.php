@@ -581,7 +581,7 @@
                 </div>
             </div>
 
-            <div class="stat-card total-grades">
+            <div class="stat-card total-grades" style="display:none">
                 <div class="stat-content">
                     <div class="stat-icon">
                         <i class="fas fa-list-check"></i>
@@ -591,7 +591,7 @@
                 </div>
             </div>
 
-            <div class="stat-card avg-grade">
+            <div class="stat-card avg-grade" style="display:none">
                 <div class="stat-content">
                     <div class="stat-icon">
                         <i class="fas fa-chart-line"></i>
@@ -642,7 +642,7 @@
                         <option value="">جميع المواد</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-calendar-alt"></i> الترم</label>
                     <select id="filter-term">
                         <option value="">جميع الترمات</option>
@@ -652,7 +652,7 @@
                         <option value="4">الترم الرابع</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-tag"></i> نوع الاختبار</label>
                     <select id="filter-type">
                         <option value="">جميع الأنواع</option>
@@ -661,7 +661,7 @@
                         <option value="final">نهائي</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-check-circle"></i> الحالة</label>
                     <select id="filter-status">
                         <option value="">الكل</option>

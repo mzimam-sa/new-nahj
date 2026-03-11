@@ -492,7 +492,7 @@
       
         <!-- Statistics Cards -->
         <div class="stats-cards">
-            <div class="stat-card average">
+            <div class="stat-card average" style="display:none">
                 <div class="stat-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
@@ -503,7 +503,7 @@
                 </div>
             </div>
 
-            <div class="stat-card total">
+            <div class="stat-card total" >
                 <div class="stat-icon">
                     <i class="fas fa-list-check"></i>
                 </div>
@@ -511,7 +511,7 @@
                 <div class="stat-label">إجمالي المواد</div>
             </div>
 
-            <div class="stat-card passed">
+            <div class="stat-card passed" style="display:none">
                 <div class="stat-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
@@ -519,7 +519,7 @@
                 <div class="stat-label">المواد الناجحة</div>
             </div>
 
-            <div class="stat-card failed">
+            <div class="stat-card failed" style="display:none">
                 <div class="stat-icon">
                     <i class="fas fa-times-circle"></i>
                 </div>
@@ -535,7 +535,7 @@
                 <h4>تصفية النتائج</h4>
             </div>
             <div class="filters-grid">
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-calendar-alt"></i> الترم</label>
                     <select id="filter-term">
                         <option value="">جميع الترمات</option>
@@ -545,8 +545,8 @@
                         <option value="4">الترم الرابع</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label><i class="fas fa-tag"></i> نوع الاختبار</label>
+                <div class="filter-group" style="display:none">
+                    <label><i class="fas fa-tag" ></i> نوع الاختبار</label>
                     <select id="filter-type">
                         <option value="">جميع الأنواع</option>
                         <option value="term_grade">درجة الترم</option>
