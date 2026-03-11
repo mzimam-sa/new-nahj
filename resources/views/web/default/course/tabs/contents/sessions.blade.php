@@ -2,7 +2,6 @@
     $checkSequenceContent = $session->checkSequenceContent();
     $sequenceContentHasError = (!empty($checkSequenceContent) and (!empty($checkSequenceContent['all_passed_items_error']) or !empty($checkSequenceContent['access_after_day_error'])));
 @endphp
-{{ dd($authUser->role_id, $authUser->role_name) }}
 
 <div class="accordion-row rounded-sm border mt-15 p-15">
     <div class="d-flex align-items-center justify-content-between" role="tab" id="session_{{ $session->id }}">

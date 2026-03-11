@@ -126,6 +126,39 @@ class SessionController extends Controller
         abort(403);
     }
 
+        /**
+     * حفظ حضور الطلاب للجلسة
+     */
+    public function attendance(Request $request, $session_id)
+    {
+        $user = auth()->user();
+        $session = \App\Models\Session::findOrFail($session_id);
+        $webinar = $session->webinar;
+
+        // فقط المدرس أو الأدمن يمكنه التعديل
+        if ($user->id != $webinar->teacher_id && !$user->isAdmin()) {
+            abort(403);
+        }
+
+        $attendance = $request->input('attendance', []);
+
+        // حذف الحضور السابق للجلسة
+        \App\Models\CourseLearning::where('session_id', $session_id)->delete();
+
+        // إضافة الحضور الجديد
+        foreach ($attendance as $student_id => $present) {
+            if ($present) {
+                \App\Models\CourseLearning::create([
+                    'user_id' => $student_id,
+                    'session_id' => $session_id,
+                    'created_at' => time(),
+                ]);
+            }
+        }
+
+        return back()->with('success', 'تم حفظ الحضور بنجاح');
+    }
+
     public function update(Request $request, $id)
     {
         $user = auth()->user();

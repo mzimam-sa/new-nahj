@@ -45,13 +45,58 @@
                 {!! truncate($description, 150) !!}
             </p>
 
-            <div class="d-flex align-items-center justify-content-between mt-15">
-                <label class="mb-0 ml-10 cursor-pointer font-weight-normal font-14 text-dark-blue" for="readToggle{{ $type }}{{ $item->id }}">{{ trans('public.i_passed_this_lesson') }}</label>
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" @if($sequenceContentHasError) disabled @endif id="readToggle{{ $type }}{{ $item->id }}" data-item-id="{{ $item->id }}" data-item="{{ $type }}_id" value="{{ $item->webinar_id }}" class="js-passed-lesson-toggle custom-control-input" @if(!empty($item->checkPassedItem())) checked @endif>
-                    <label class="custom-control-label" for="readToggle{{ $type }}{{ $item->id }}"></label>
+            @if($type == \App\Models\WebinarChapter::$chapterSession)
+                @if(auth()->check() && (auth()->user()->id == $item->webinar->teacher_id || auth()->user()->isAdmin()))
+                    <div class="mt-15">
+                        <label class="font-weight-bold">قائمة المتدربين (تشييك الحضور):</label>
+                        <form method="POST" action="{{ route('panel.sessions.attendance', ['session_id' => $item->id]) }}">
+                            @csrf
+                            <table class="table table-bordered table-sm mt-2">
+                                <thead>
+                                    <tr>
+                                        <th>الطالب</th>
+                                        <th>حضر؟</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $presentStudents = \App\Models\CourseLearning::where('session_id', $item->id)->pluck('user_id')->toArray();
+                                    @endphp
+                                    @foreach($item->webinar->getStudentsIds() as $studentId)
+                                        @php $student = \App\User::find($studentId); @endphp
+                                        @if($student)
+                                        <tr>
+                                            <td>
+                                                <img src="{{ $student->getAvatar(30) }}" class="rounded-circle" width="30" height="30" alt="avatar">
+                                                {{ $student->full_name }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="attendance[{{ $student->id }}]" value="1" @if(in_array($student->id, $presentStudents)) checked @endif>
+                                            </td>
+                                        </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <button type="submit" class="btn btn-primary btn-sm mt-2">حفظ الحضور</button>
+                        </form>
+                    </div>
+                @else
+                    <div class="mt-15">
+    <span class="badge badge-secondary" style="font-size: 12px; padding: 6px 10px; border-radius: 6px; white-space: normal; text-align: right; display: inline-block;">
+        سيتم تسجيل الحضور من قبل المدرب   
+    </span>
+</div>
+                @endif
+            @else
+                <div class="d-flex align-items-center justify-content-between mt-15">
+                    <label class="mb-0 ml-10 cursor-pointer font-weight-normal font-14 text-dark-blue" for="readToggle{{ $type }}{{ $item->id }}">{{ trans('public.i_passed_this_lesson') }}</label>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" @if($sequenceContentHasError) disabled @endif id="readToggle{{ $type }}{{ $item->id }}" data-item-id="{{ $item->id }}" data-item="{{ $type }}_id" value="{{ $item->webinar_id }}" class="js-passed-lesson-toggle custom-control-input" @if(!empty($item->checkPassedItem())) checked @endif>
+                        <label class="custom-control-label" for="readToggle{{ $type }}{{ $item->id }}"></label>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>
