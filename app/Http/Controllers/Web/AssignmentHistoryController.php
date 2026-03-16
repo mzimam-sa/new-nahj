@@ -81,10 +81,10 @@ class AssignmentHistoryController extends Controller
                     $webinar = $webinar->with('teacher')->first(); 
                     
                     //event watch
-                    event(new ModuleWatched($user, $webinar, $assignment));
+                    // event(new ModuleWatched($user, $webinar, $assignment));
                         \Log::info("Module Watched events");
                     $scaled = 0.33;
-                    event(new Progressed($user, $webinar, $scaled));
+                    // event(new Progressed($user, $webinar, $scaled));
                         \Log::info("Progressed events");
 
                     if ($assignmentHistory->status == WebinarAssignmentHistory::$notSubmitted) {
@@ -167,11 +167,11 @@ class AssignmentHistoryController extends Controller
                         //event complete lesson
                         $assignment->load('webinar.teacher');
                         $webinar = $assignment->webinar; 
-                        event(new CompletedLesson($user, $webinar, $assignment));
+                        // event(new CompletedLesson($user, $webinar, $assignment));
                                 \Log::info("Completed Lesson events");
 
                         $scaled = 0.66;
-                        event(new Progressed($user, $webinar, $scaled));
+                        // event(new Progressed($user, $webinar, $scaled));
                         //event complete course (fake action)
                     }
 

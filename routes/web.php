@@ -33,19 +33,18 @@ Route::get('/test-nelc', function () {
     return $response;
 });
 
+Route::get('/certificate/course/{courseId}', function($courseId) {
+    $webinar = \App\Models\Webinar::with('teacher', 'translations')->findOrFail($courseId);
+    return view('certificate.course', compact('webinar'));
+})->name('certificate.course');
+
 Route::get('/certificate/{courseId}/{studentId}', function($courseId, $studentId) {
     $sale = \App\Models\Sale::where('webinar_id', $courseId)
                 ->where('buyer_id', $studentId)
                 ->whereNull('refund_at')
                 ->firstOrFail();
-
     return view('certificate.public', compact('sale'));
 })->name('certificate.public');
-
-Route::get('/certificate/course/{courseId}', function($courseId) {
-    $webinar = \App\Models\Webinar::with('teacher', 'translations')->findOrFail($courseId);
-    return view('certificate.course', compact('webinar'));
-})->name('certificate.course');
 
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
     Route::get('checkout/{user}', 'CartController@webCheckoutRender')->name('checkout');
