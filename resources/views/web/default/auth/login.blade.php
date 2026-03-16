@@ -63,10 +63,10 @@
                                 <i data-feather="alert-octagon" width="18" height="18" class=""></i>
                             </div>
                             <div class="ml-10">
-                                <div class="font-14 font-weight-bold ">{{ session()->get('login_failed_active_session')['title'] }}</div>
+                                 <div class="font-14 font-weight-bold ">{{ session()->get('login_failed_active_session')['title'] }}</div>
                                 <div class="font-12 ">{{ session()->get('login_failed_active_session')['msg'] }}</div>
                             </div>
-                        </div>
+                        </div> 
                     @endif
                 </div>
             </div>
@@ -84,3 +84,4 @@
     </script>
 
 @endpush
+

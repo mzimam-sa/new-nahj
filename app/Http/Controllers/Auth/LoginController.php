@@ -146,7 +146,7 @@ private function sendOtp(Request $request)
 
         // Try to send email
         try {
-            Mail::to($user->email)->queue(new SendOtpMail([
+            Mail::to($user->email)->send(new SendOtpMail([
                 'otp' => $otp,
                 'email' => $user->email
             ]));

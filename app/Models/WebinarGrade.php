@@ -9,6 +9,12 @@ class WebinarGrade extends Model
 {
     protected $table = 'webinar_grades';
     protected $guarded = [];
+    
+    // مسار ملف PDF الخاص بالطالب
+    public function getPdfPathAttribute()
+    {
+        return $this->attributes['pdf_path'] ?? null;
+    }
  
     public function webinar()
     {

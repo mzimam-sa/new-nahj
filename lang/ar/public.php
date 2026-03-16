@@ -378,5 +378,19 @@ return [
     'latest_removal_date_passed' => 'لقد تجاوزت الموعد المحدد لسحب المواد',
 
 
+// تقييم الكورس
+    'rate_course' => 'قيّم الدورة',
+    'rating' => 'التقييم',
+    'comment' => 'ملاحظة',
+    'optional' => 'اختياري',
+    'submit' => 'إرسال',
 
+        // رسائل التوست لتقييم الكورس
+
+    'review_already_submitted' => 'لقد قمت بتقييم هذا الكورس مسبقاً.',
+    'review_only_enrolled' => 'فقط الطلاب المسجلين يمكنهم التقييم.',
+    'review_submitted_success' => 'تم إرسال تقييمك بنجاح.',
+    'your_review' =>'تقييمك',
+
+    
 ];

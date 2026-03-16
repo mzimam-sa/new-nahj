@@ -258,6 +258,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
         });
 
         Route::group(['prefix' => 'webinars'], function () {
+            // صفحة عرض محاور الدورة للإدارة
+            Route::get('/{id}/chapters', 'WebinarController@adminChapters')->name('admin.webinars.chapters');
             Route::get('/', 'WebinarController@index');
             Route::get('/create', 'WebinarController@create');
             Route::post('/store', 'WebinarController@store');

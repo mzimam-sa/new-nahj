@@ -169,6 +169,16 @@
                             </div>
                         </div>
 
+                        <div class="form-group mt-20">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <label class="cursor-pointer input-label" for="sessionIsFinalSwitch{{ !empty($session) ? $session->id : '_record' }}">{{ trans('update.final_session') }}</label>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" name="ajax[{{ !empty($session) ? $session->id : 'new' }}][is_final]" class="custom-control-input" id="sessionIsFinalSwitch{{ !empty($session) ? $session->id : '_record' }}" {{ (!empty($session) && $session->is_final) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="sessionIsFinalSwitch{{ !empty($session) ? $session->id : '_record' }}"></label>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="js-agora-chat-and-rec  {{ (empty($session) or $session->session_api !== 'agora') ? 'd-none' : '' }}">
                             @if(getFeaturesSettings('agora_chat'))
                                 <div class="form-group mt-20">

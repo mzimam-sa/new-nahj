@@ -15,7 +15,6 @@ use Nelc\LaravelNelcXapiIntegration\XapiIntegration;
 |
 */
 
-
 Route::get('/test-nelc', function () {
 
     $xapi = new XapiIntegration();
@@ -33,19 +32,20 @@ Route::get('/test-nelc', function () {
     return $response;
 });
 
-Route::get('/certificate/{courseId}/{studentId}', function($courseId, $studentId) {
-    $sale = \App\Models\Sale::where('webinar_id', $courseId)
-                ->where('buyer_id', $studentId)
-                ->whereNull('refund_at')
-                ->firstOrFail();
 
-    return view('certificate.public', compact('sale'));
-})->name('certificate.public');
 
 Route::get('/certificate/course/{courseId}', function($courseId) {
     $webinar = \App\Models\Webinar::with('teacher', 'translations')->findOrFail($courseId);
     return view('certificate.course', compact('webinar'));
 })->name('certificate.course');
+
+Route::get('/certificate/{courseId}/{studentId}', function($courseId, $studentId) {
+    $sale = \App\Models\Sale::where('webinar_id', $courseId)
+                ->where('buyer_id', $studentId)
+                ->whereNull('refund_at')
+                ->firstOrFail();
+    return view('certificate.public', compact('sale'));
+})->name('certificate.public');
 
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
     Route::get('checkout/{user}', 'CartController@webCheckoutRender')->name('checkout');
@@ -54,11 +54,7 @@ Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 
     Route::get('/registration_packages/{user}/{package}', 'RegistrationPackagesController@webPayRender')->name('registration_packages');
 });
 
-Route::group(['prefix' => 'api_sessions'], function () {
-    Route::get('/big_blue_button', ['uses' => 'Api\Panel\SessionsController@BigBlueButton'])->name('big_blue_button');
-    Route::get('/agora', ['uses' => 'Api\Panel\SessionsController@agora'])->name('agora');
 
-});
 
 Route::get('/mobile-app', 'Web\MobileAppController@index')->middleware(['share'])->name('mobileAppRoute');
 Route::get('/maintenance', 'Web\MaintenanceController@index')->middleware(['share'])->name('maintenanceRoute');

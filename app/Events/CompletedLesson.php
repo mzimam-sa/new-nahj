@@ -4,7 +4,7 @@ namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
-use App\Models\Api\User;
+use App\User;
 use App\Models\Webinar;
 use App\Models\WebinarAssignment;
 use Illuminate\Contracts\Queue\ShouldQueue;
