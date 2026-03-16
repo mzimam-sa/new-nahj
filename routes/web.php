@@ -489,16 +489,10 @@ WHERE  NOT EXISTS
 
 Route::prefix('panel')->name('panel.')->middleware(['auth'])->group(function () {
     // show create form (fills $webinars and all $students)
-    Route::get('webinars/add_term_grades', [TermGradesController::class, 'termGradesShowCreate'])
-        ->name('panel.webinars.add_term_grades');
 
     // AJAX: students for a specific webinar
-    Route::get('webinars/{webinar}/students', [TermGradesController::class, 'studentsForWebinar'])
-        ->name('panel.webinars.students');
 
     // store submitted grades (blade posts here)
-    Route::post('webinars/term_grades', [TermGradesController::class, 'termGradesStore'])
-        ->name('panel.webinars.store_term_grades');
 
     Route::get('webinars/student_grades', [TermGradesController::class, 'studentGrades'])
         ->name('panel.webinars.student_grades');
@@ -514,7 +508,4 @@ Route::prefix('panel')->name('panel.')->middleware(['auth'])->group(function () 
         ->name('panel.grades.delete');
 
     // teacher grades list (if not already present)
-    Route::get('webinars/teacher-grades', [TermGradesController::class, 'teacherGrades'])
-        ->name('panel.webinars.teacher_grades');
 });
-

@@ -8,37 +8,57 @@ use App\Models\Webinar;
 use App\User;
 use App\Models\WebinarGrade;
 use App\Models\Quiz; 
+
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class termGradesController extends Controller
 {
-    public function termGrades(Request $request)
+    // صفحة إضافة درجات الترم
+    public function termGradesShowCreate()
     {
-        $user = auth()->user();
+        // يمكنك تخصيص البيانات حسب الحاجة
+        return view(getTemplate() . '.panel.webinar.add_term_grades');
+    }
+   public function termGrades(Request $request)
+    {
+        $studentIds = \App\Models\Sale::whereNotNull('webinar_id')
+            ->whereNull('refund_at')
+            ->pluck('buyer_id')->unique()->toArray();
 
-        if (!$user->isTeacher() || !$user->isOrganization()) {
-            $grades = WebinarGrade::whereHas('webinar', function ($q) use ($user) {
-                $q->where('creator_id', $user->id);
-            })
-            ->with(['webinar', 'student'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $students = \App\User::whereIn('id', $studentIds)->paginate(15);
 
-            // add helper attributes used by JS / views
-            $grades->each(function($g) {
-                $g->student_name = optional($g->student)->full_name ?? optional($g->student)->name;
-                $g->student_id = $g->student_id;
-                $g->webinar_title = optional($g->webinar)->title;
-            });
+        // درجة وحدة لكل طالب (آخر درجة)
+        $grades = WebinarGrade::whereIn('student_id', $studentIds)
+            ->with('webinar')
+            ->get()
+            ->keyBy('student_id');
 
-            $webinars = Webinar::where('creator_id', $user->id)->get();
-            $quizzes = Quiz::where('creator_id', $user->id)->get();
+        $allGrades = collect();
+        foreach ($students as $student) {
+            $grade = $grades->get($student->id);
+            $allGrades->push((object) [
+                'id'            => $grade->id ?? null,
+                'student_id'    => $student->id,
+                'student_name'  => $student->full_name ?? $student->name,
+                'webinar_title' => $grade ? optional($grade->webinar)->title : null,
+                'webinar_id'    => $grade->webinar_id ?? null,
+                'score'         => $grade->score ?? null,
+                'success_score' => $grade->success_score ?? null,
+                'type'          => $grade->type ?? null,
+                'term'          => $grade->term ?? null,
+                'notes'         => $grade->notes ?? null,
+                'pdf_path'      => $grade->pdf_path ?? null,
+            ]);
         }
 
-        return view(getTemplate() . '.panel.webinar.term_grades', compact('webinars', 'quizzes', 'grades'));
+        return view(getTemplate() . '.panel.webinar.term_grades', [
+            'grades'   => $allGrades,
+            'students' => $students
+        ]);
     }
 
 
@@ -46,61 +66,33 @@ public function store(Request $request, $webinarId)
 {
     $data = $request->validate([
         'grades' => 'required|array',
-        'grades.*.score' => 'nullable|numeric',
-        'grades.*.term' => 'nullable|integer',
-        'grades.*.type' => 'nullable|string',
+        'grades.*.student_id' => 'required|exists:users,id',
+        'grades.*.pdf_file' => 'required|file|mimes:pdf|max:20480',
     ]);
 
     foreach ($data['grades'] as $studentId => $gradeData) {
-
-        
-        WebinarGrade::updateOrCreate(
-            [
-                'webinar_id' => $webinarId,
-                'student_id' => $studentId,
-                'term' => $gradeData['term'] ?? null,
-                'type' => $gradeData['type'] ?? null,
-            ],
-            [
-                'score' => $gradeData['score'],
-                'success_score' => $gradeData['success_score'] ?? null,
-                'notes' => $gradeData['notes'] ?? null,
-                'creator_id' => auth()->id(),
-            ]
-        );
+        $file = $request->grades[$studentId]['pdf_file'] ?? null;
+        if ($file instanceof \Illuminate\Http\UploadedFile) {
+            $fileName = 'grade_' . $webinarId . '_' . $studentId . '_' . time() . '.pdf';
+            $path = $file->storeAs('pdf_grades', $fileName, 'public');
+            WebinarGrade::updateOrCreate(
+                [
+                    'webinar_id' => $webinarId,
+                    'student_id' => $studentId,
+                ],
+                [
+                    'pdf_path' => $path,
+                    'creator_id' => auth()->id(),
+                ]
+            );
+        }
     }
 
-    return redirect()->back()->with('success', 'تم حفظ الدرجات');
+    return redirect()->back()->with('success', 'تم رفع ملف درجات الطالب بنجاح');
 }
 
 
-        public function termGradesShowCreate()
-        {
-              $user = auth()->user();
 
-        if (!$user->isTeacher() || !$user->isOrganization()) {
-                
-                $webinars = Webinar::where('creator_id', $user->id)->get();
-                $quizzes = Quiz::where('creator_id', $user->id)->get();
-
-        }
-
-        // try to get students from sales for this teacher, fallback to all students
-        $sales = Sale::where('seller_id', $user->id)
-            ->whereNull('refund_at')
-            ->get();
-
-        $studentIds = $sales->pluck('buyer_id')->unique()->toArray();
-
-        if (!empty($studentIds)) {
-            $students = User::whereIn('id', $studentIds)->get();
-        } else {
-            // fallback: all users with student role (adjust role field if different)
-            $students = User::where('role_name', 'student')->get();
-        } 
-
-        return view(getTemplate() . '.panel.webinar.add_term_grades', compact('webinars', 'quizzes', 'students'));
-    }
 
 
       public function studentsForWebinar($webinarId): JsonResponse
@@ -142,67 +134,27 @@ public function store(Request $request, $webinarId)
     public function termGradesStore(Request $request)
     {
         $data = $request->validate([
-            'webinar_id' => 'nullable|exists:webinars,id',
             'grades' => 'required|array',
             'grades.*.student_id' => 'required|exists:users,id',
-            'grades.*.enabled' => 'nullable|in:1',
-            'grades.*.score' => 'nullable|numeric',
-            'grades.*.success_score' => 'nullable|numeric',
-            'grades.*.term' => 'nullable|integer',
-            'grades.*.type' => 'nullable|string|max:50',
-            'grades.*.notes' => 'nullable|string|max:1000',
-            'grades.*.pdf_file' => 'nullable|file|mimes:pdf|max:20480',
+            'grades.*.pdf_file' => 'required|file|mimes:pdf|max:20480',
         ]);
 
-        $webinarId = $data['webinar_id'] ?? null;
         $grades = $data['grades'] ?? [];
 
         foreach ($grades as $studentId => $g) {
-            $enabled = isset($g['enabled']) && $g['enabled'] == 1;
-            $hasScore = isset($g['score']) && $g['score'] !== '';
-            if (! $enabled && ! $hasScore) {
-                continue;
-            }
-
-            $term = $g['term'] ?? 1;
-            $type = $g['type'] ?? 'term_grade';
-
-            $updateData = [
-                'score' => $g['score'] ?? null,
-                'success_score' => $g['success_score'] ?? null,
-                'notes' => $g['notes'] ?? null,
-                'creator_id' => auth()->id(),
-            ];
-
-            // جلب السجل الحالي إن وجد
-            $gradeRow = \App\Models\WebinarGrade::where('webinar_id', $webinarId)
-                ->where('student_id', $g['student_id'])
-                ->where('term', $term)
-                ->where('type', $type)
-                ->first();
-
             $file = $request->grades[$studentId]['pdf_file'] ?? null;
             if ($file instanceof \Illuminate\Http\UploadedFile) {
-                $fileName = 'grade_' . $webinarId . '_' . $studentId . '_' . time() . '.pdf';
+                $fileName = 'grade_' . $studentId . '_' . time() . '.pdf';
                 $path = $file->storeAs('pdf_grades', $fileName, 'public');
-                $updateData['pdf_path'] = $path;
-            } elseif (! $gradeRow || !$gradeRow->pdf_path) {
-                // إذا لم يكن هناك ملف سابق يجب رفع ملف جديد
-                return redirect()->back()->withErrors(['grades.' . $studentId . '.pdf_file' => 'رفع ملف PDF إجباري لكل طالب']);
-            }
-
-            \App\Models\WebinarGrade::updateOrCreate(
-                [
-                    'webinar_id' => $webinarId,
+                \App\Models\WebinarGrade::create([
                     'student_id' => $g['student_id'],
-                    'term' => $term,
-                    'type' => $type,
-                ],
-                $updateData
-            );
+                    'pdf_path' => $path,
+                    'creator_id' => auth()->id(),
+                ]);
+            }
         }
 
-        return redirect()->back()->with('success', 'تم حفظ الدرجات');
+        return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم رفع ملف درجات الطالب بنجاح');
                             // ...existing code...
     }
 
@@ -307,8 +259,8 @@ public function store(Request $request, $webinarId)
 
     if ($file && $file->isValid()) {
         // حذف الملف القديم
-        if ($grade->pdf_path && \Storage::disk('public')->exists($grade->pdf_path)) {
-            \Storage::disk('public')->delete($grade->pdf_path);
+        if ($grade->pdf_path && Storage::disk('public')->exists($grade->pdf_path)) {
+            Storage::disk('public')->delete($grade->pdf_path);
         }
         $fileName = 'grade_' . $grade->webinar_id . '_' . $grade->student_id . '_' . time() . '.pdf';
         $path = $file->storeAs('pdf_grades', $fileName, 'public');
@@ -336,25 +288,87 @@ public function store(Request $request, $webinarId)
     }
 
     // teacherGrades method (if not present) - reuse termGrades logic or add dedicated view
+    // public function teacherGrades()
+    // {
+    //     $user = auth()->user();
+
+    //     // جلب جميع الطلاب الذين لديهم درجات عند هذا المدرس في أي دورة
+    //     $grades = WebinarGrade::whereHas('webinar', function ($q) use ($user) {
+    //             $q->where('creator_id', $user->id);
+    //         })
+    //         ->with(['webinar', 'student'])
+    //         ->orderBy('created_at', 'desc')
+    //         ->get();
+
+    //     $grades->each(function($g) {
+    //         $g->student_name = optional($g->student)->full_name ?? optional($g->student)->name;
+    //         $g->student_id = $g->student_id;
+    //         $g->webinar_title = optional($g->webinar)->title;
+    //     });
+
+    //     // جلب جميع الطلاب الذين اشتروا أي دورة على المنصة
+    //     $studentIds = \App\Models\Sale::whereNotNull('webinar_id')
+    //         ->whereNull('refund_at')
+    //         ->pluck('buyer_id')->unique()->toArray();
+    //     $students = \App\User::whereIn('id', $studentIds)->get();
+
+    //     // تجهيز مصفوفة grades بحيث تحتوي على كل طالب حتى لو لم يكن لديه درجة
+    //     $gradesByStudent = $grades->keyBy('student_id');
+    //     $allGrades = collect();
+    //     foreach ($students as $student) {
+    //         $grade = $gradesByStudent->get($student->id);
+    //         $allGrades->push((object) [
+    //             'id' => $grade->id ?? null,
+    //             'student_id' => $student->id,
+    //             'student_name' => $student->full_name ?? $student->name,
+    //             'webinar_title' => $grade->webinar_title ?? null,
+    //             'score' => $grade->score ?? null,
+    //             'success_score' => $grade->success_score ?? null,
+    //             'type' => $grade->type ?? null,
+    //             'term' => $grade->term ?? null,
+    //             'notes' => $grade->notes ?? null,
+    //             'pdf_path' => $grade->pdf_path ?? null,
+    //         ]);
+    //     }
+
+    //     return view(getTemplate() . '.panel.webinar.term_grades', ['grades' => $allGrades, 'students' => $students]);
+    // }
     public function teacherGrades()
-    {
-        $user = auth()->user();
+{
+    $studentIds = \App\Models\Sale::whereNotNull('webinar_id')
+        ->whereNull('refund_at')
+        ->pluck('buyer_id')->unique()->toArray();
 
-        $grades = WebinarGrade::whereHas('webinar', function ($q) use ($user) {
-                $q->where('creator_id', $user->id);
-            })
-            ->with(['webinar', 'student'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+    $students = \App\User::whereIn('id', $studentIds)->get();
 
-        $grades->each(function($g) {
-            $g->student_name = optional($g->student)->full_name ?? optional($g->student)->name;
-            $g->student_id = $g->student_id;
-            $g->webinar_title = optional($g->webinar)->title;
-        });
+    $grades = WebinarGrade::whereIn('student_id', $studentIds)
+        ->with('webinar')
+        ->get()
+        ->keyBy('student_id'); // طالب → درجة وحدة
 
-        return view(getTemplate() . '.panel.webinar.term_grades', compact('grades'));
+    $allGrades = collect();
+    foreach ($students as $student) {
+        $grade = $grades->get($student->id);
+        $allGrades->push((object) [
+            'id'            => $grade->id ?? null,
+            'student_id'    => $student->id,
+            'student_name'  => $student->full_name ?? $student->name,
+            'webinar_title' => $grade ? optional($grade->webinar)->title : null,
+            'webinar_id'    => $grade->webinar_id ?? null,
+            'score'         => $grade->score ?? null,
+            'success_score' => $grade->success_score ?? null,
+            'type'          => $grade->type ?? null,
+            'term'          => $grade->term ?? null,
+            'notes'         => $grade->notes ?? null,
+            'pdf_path'      => $grade->pdf_path ?? null,
+        ]);
     }
+
+    return view(getTemplate() . '.panel.webinar.term_grades', [
+        'grades'   => $allGrades,
+        'students' => $students
+    ]);
+}
 }
 
 
