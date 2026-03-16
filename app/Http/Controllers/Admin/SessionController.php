@@ -92,6 +92,7 @@ class SessionController extends Controller
                     'check_previous_parts' => $data['check_previous_parts'],
                     'access_after_day' => $data['access_after_day'],
                     'status' => (!empty($data['status']) and $data['status'] == 'on') ? Session::$Active : Session::$Inactive,
+                    'is_final' => (!empty($data['is_final']) && $data['is_final'] == 'on') ? 1 : 0,
                     'created_at' => time()
                 ]);
 
@@ -213,6 +214,7 @@ class SessionController extends Controller
                     'agora_settings' => $agoraSettings,
                     'check_previous_parts' => $data['check_previous_parts'],
                     'access_after_day' => $data['access_after_day'],
+                    'is_final' => (!empty($data['is_final']) && $data['is_final'] == 'on') ? 1 : 0,
                     'updated_at' => time()
                 ]);
 

@@ -492,7 +492,7 @@
       
         <!-- Statistics Cards -->
         <div class="stats-cards">
-            <div class="stat-card average">
+            <div class="stat-card average" style="display:none">
                 <div class="stat-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
@@ -503,7 +503,7 @@
                 </div>
             </div>
 
-            <div class="stat-card total">
+            <div class="stat-card total" >
                 <div class="stat-icon">
                     <i class="fas fa-list-check"></i>
                 </div>
@@ -511,7 +511,7 @@
                 <div class="stat-label">إجمالي المواد</div>
             </div>
 
-            <div class="stat-card passed">
+            <div class="stat-card passed" style="display:none">
                 <div class="stat-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
@@ -519,7 +519,7 @@
                 <div class="stat-label">المواد الناجحة</div>
             </div>
 
-            <div class="stat-card failed">
+            <div class="stat-card failed" style="display:none">
                 <div class="stat-icon">
                     <i class="fas fa-times-circle"></i>
                 </div>
@@ -535,7 +535,7 @@
                 <h4>تصفية النتائج</h4>
             </div>
             <div class="filters-grid">
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-calendar-alt"></i> الترم</label>
                     <select id="filter-term">
                         <option value="">جميع الترمات</option>
@@ -545,8 +545,8 @@
                         <option value="4">الترم الرابع</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label><i class="fas fa-tag"></i> نوع الاختبار</label>
+                <div class="filter-group" style="display:none">
+                    <label><i class="fas fa-tag" ></i> نوع الاختبار</label>
                     <select id="filter-type">
                         <option value="">جميع الأنواع</option>
                         <option value="term_grade">درجة الترم</option>
@@ -583,17 +583,14 @@
                         <tr>
                             <th><i class="fas fa-hashtag"></i></th>
                             <th><i class="fas fa-book"></i> المادة</th>
-                            <th><i class="fas fa-star"></i> الدرجة</th>
-                            <th><i class="fas fa-trophy"></i> درجة النجاح</th>
-                            <th><i class="fas fa-tag"></i> النوع</th>
                             <th><i class="fas fa-calendar"></i> الترم</th>
-                            <th><i class="fas fa-check-double"></i> الحالة</th>
                             <th><i class="fas fa-comment-dots"></i> ملاحظات</th>
+                            <th><i class="fas fa-file-pdf"></i> سجل الدرجات</th>
                         </tr>
                     </thead>
                     <tbody id="grades-tbody">
                         <tr>
-                            <td colspan="8">
+                            <td colspan="9">
                                 <div class="empty-state">
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <h5>جارٍ تحميل الدرجات...</h5>
@@ -672,7 +669,7 @@
                     if (filteredGrades.length === 0) {
                         gradesTbody.innerHTML = `
                             <tr>
-                                <td colspan="8">
+                                <td colspan="5">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox"></i>
                                         <h5>لا توجد درجات</h5>
@@ -685,30 +682,18 @@
                     }
                     let html = '';
                     filteredGrades.forEach((grade, idx) => {
-                        const score = parseFloat(grade.score) || 0;
-                        const successScore = parseFloat(grade.success_score) || 50;
-                        const passed = score >= successScore;
-                        const gradeClass = getGradeClass(score);
-                        const typeLabel = getTypeLabel(grade.type);
+                        let pdfCell = '-';
+                        if (grade.pdf_path) {
+                            let pdfUrl = '/store/' + grade.pdf_path.replace(/^pdf_grades[\\\/]/, 'pdf_grades/');
+                            pdfCell = `<a href="${pdfUrl}" target="_blank" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> تحميل</a>`;
+                        }
                         html += `
                             <tr>
                                 <td><strong>${idx + 1}</strong></td>
                                 <td class="course-name">${escapeHtml(grade.webinar_title || 'بدون مادة')}</td>
-                                <td>
-                                    <span class="grade-badge ${gradeClass}">${score.toFixed(2)}</span>
-                                </td>
-                                <td>${successScore.toFixed(2)}</td>
-                                <td><span class="type-badge">${typeLabel}</span></td>
                                 <td><span class="term-badge">${grade.term || 1}</span></td>
-                                <td>
-                                    <span class="status-badge ${passed ? 'passed' : 'failed'}">
-                                        <i class="fas fa-${passed ? 'check' : 'times'}-circle"></i>
-                                        ${passed ? 'ناجح' : 'راسب'}
-                                    </span>
-                                </td>
-                                <td class="notes-cell" title="${escapeHtml(grade.notes || '-')}">
-                                    ${escapeHtml(grade.notes || '-')}
-                                </td>
+                                <td class="notes-cell" title="${escapeHtml(grade.notes || '-')}">${escapeHtml(grade.notes || '-')}</td>
+                                <td>${pdfCell}</td>
                             </tr>
                         `;
                     });

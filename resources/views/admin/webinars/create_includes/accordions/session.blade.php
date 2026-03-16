@@ -45,6 +45,65 @@
 
                 <div class="form-group">
                     <label class="input-label">{{ trans('webinars.select_session_api') }}</label>
+                </div>
+
+                {{-- قائمة الطلاب وحضورهم --}}
+                @if(!empty($webinar) && !empty($session) && method_exists($webinar, 'getStudentsIds'))
+                    @php
+                        $studentsIds = $webinar->getStudentsIds();
+                        $students = \App\User::whereIn('id', $studentsIds)->get();
+                        $attendedIds = \App\Models\CourseLearning::where('session_id', $session->id)->pluck('user_id')->toArray();
+                    @endphp
+                    <!-- <div class="form-group mt-20">
+                        <label class="input-label">الطلاب المسجلون في الدورة (تشييك الحضور)</label>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>حضر؟</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($students as $student)
+                                    <tr>
+                                        <td>{{ $student->full_name }}</td>
+                                        <td>{{ $student->email }}</td>
+                                        <td>
+                                            <input type="checkbox"
+                                                class="attendance-checkbox"
+                                                data-session-id="{{ $session->id }}"
+                                                data-user-id="{{ $student->id }}"
+                                                @if(in_array($student->id, $attendedIds)) checked @endif
+                                            >
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> -->
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.querySelectorAll('.attendance-checkbox').forEach(function(checkbox) {
+                                checkbox.addEventListener('change', function() {
+                                    var sessionId = this.getAttribute('data-session-id');
+                                    var userId = this.getAttribute('data-user-id');
+                                    var checked = this.checked ? 1 : 0;
+                                    fetch('/admin/sessions/attendance', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                        },
+                                        body: JSON.stringify({ session_id: sessionId, user_id: userId, attended: checked })
+                                    });
+                                });
+                            });
+                        });
+                    </script>
+                @endif
 
                     <div class="js-session-api">
                         @foreach(getFeaturesSettings("available_session_apis") as $sessionApi)
@@ -164,6 +223,16 @@
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" name="ajax[{{ !empty($session) ? $session->id : 'new' }}][status]" class="custom-control-input" id="sessionStatusSwitch{{ !empty($session) ? $session->id : '_record' }}" {{ (empty($session) or $session->status == \App\Models\Session::$Active) ? 'checked' : ''  }}>
                                     <label class="custom-control-label" for="sessionStatusSwitch{{ !empty($session) ? $session->id : '_record' }}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-20">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <label class="cursor-pointer input-label" for="sessionIsFinalSwitch{{ !empty($session) ? $session->id : '_record' }}">جلسة نهائية (فاينل)</label>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" name="ajax[{{ !empty($session) ? $session->id : 'new' }}][is_final]" class="custom-control-input" id="sessionIsFinalSwitch{{ !empty($session) ? $session->id : '_record' }}" {{ (!empty($session) && $session->is_final) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="sessionIsFinalSwitch{{ !empty($session) ? $session->id : '_record' }}"></label>
                                 </div>
                             </div>
                         </div>

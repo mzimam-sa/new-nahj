@@ -581,7 +581,7 @@
                 </div>
             </div>
 
-            <div class="stat-card total-grades">
+            <div class="stat-card total-grades" style="display:none">
                 <div class="stat-content">
                     <div class="stat-icon">
                         <i class="fas fa-list-check"></i>
@@ -591,7 +591,7 @@
                 </div>
             </div>
 
-            <div class="stat-card avg-grade">
+            <div class="stat-card avg-grade" style="display:none">
                 <div class="stat-content">
                     <div class="stat-icon">
                         <i class="fas fa-chart-line"></i>
@@ -642,7 +642,7 @@
                         <option value="">جميع المواد</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-calendar-alt"></i> الترم</label>
                     <select id="filter-term">
                         <option value="">جميع الترمات</option>
@@ -652,7 +652,7 @@
                         <option value="4">الترم الرابع</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-tag"></i> نوع الاختبار</label>
                     <select id="filter-type">
                         <option value="">جميع الأنواع</option>
@@ -661,7 +661,7 @@
                         <option value="final">نهائي</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label><i class="fas fa-check-circle"></i> الحالة</label>
                     <select id="filter-status">
                         <option value="">الكل</option>
@@ -696,11 +696,9 @@
                             <th><i class="fas fa-hashtag"></i></th>
                             <th><i class="fas fa-user"></i> الطالب</th>
                             <th><i class="fas fa-book"></i> المادة</th>
-                            <th><i class="fas fa-star"></i> الدرجة</th>
-                            <th><i class="fas fa-trophy"></i> درجة النجاح</th>
-                            <th><i class="fas fa-tag"></i> النوع</th>
                             <th><i class="fas fa-calendar"></i> الترم</th>
-                            <th><i class="fas fa-check-double"></i> الحالة</th>
+                            <th><i class="fas fa-comment-dots"></i> ملاحظات</th>
+                            <th><i class="fas fa-file-pdf"></i> ملف PDF</th>
                             <th><i class="fas fa-cog"></i> إجراءات</th>
                         </tr>
                     </thead>
@@ -804,7 +802,7 @@
                     if (filteredGrades.length === 0) {
                         gradesTbody.innerHTML = `
                             <tr>
-                                <td colspan="9">
+                                <td colspan="7">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox"></i>
                                         <h5>لا توجد درجات</h5>
@@ -815,18 +813,15 @@
                         `;
                         return;
                     }
-                    
                     let html = '';
                     filteredGrades.forEach((grade, idx) => {
-                        const score = parseFloat(grade.score) || 0;
-                        const successScore = parseFloat(grade.success_score) || 50;
-                        const passed = score >= successScore;
-                        const gradeClass = getGradeClass(score);
-                        const typeLabel = getTypeLabel(grade.type);
-               
                         const studentName = grade.student_name || 'طالب #' + grade.student_id;
                         const initial = studentName.charAt(0);
-                        
+                        let pdfCell = '-';
+                        if (grade.pdf_path) {
+                            let pdfUrl = '/store/' + grade.pdf_path.replace(/^pdf_grades[\\\/]/, 'pdf_grades/');
+                            pdfCell = `<a href="${pdfUrl}" target="_blank" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> تحميل</a>`;
+                        }
                         html += `
                             <tr>
                                 <td><strong>${idx + 1}</strong></td>
@@ -837,18 +832,9 @@
                                     </div>
                                 </td>
                                 <td class="course-name">${escapeHtml(grade.webinar_title || 'بدون مادة')}</td>
-                                <td>
-                                    <span class="grade-badge ${gradeClass}">${score.toFixed(2)}</span>
-                                </td>
-                                <td>${successScore.toFixed(2)}</td>
-                                <td><span class="type-badge">${typeLabel}</span></td>
                                 <td><span class="term-badge">${grade.term || 1}</span></td>
-                                <td>
-                                    <span class="status-badge ${passed ? 'passed' : 'failed'}">
-                                        <i class="fas fa-${passed ? 'check' : 'times'}-circle"></i>
-                                        ${passed ? 'ناجح' : 'راسب'}
-                                    </span>
-                                </td>
+                                <td class="notes-cell" title="${escapeHtml(grade.notes || '-')}">${escapeHtml(grade.notes || '-')}</td>
+                                <td>${pdfCell}</td>
                                 <td>
                                     <div class="action-cell">
                                         <button class="btn-edit" onclick="editGrade(${grade.id})" title="تعديل">
@@ -862,7 +848,6 @@
                             </tr>
                         `;
                     });
-                    
                     gradesTbody.innerHTML = html;
                 }
 

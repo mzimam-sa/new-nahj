@@ -30,13 +30,7 @@
             </div>
 
             @if(!empty($user) and $hasBought)
-                <div class="d-flex align-items-center mt-20">
-                    <label class="mb-0 ml-10 cursor-pointer font-weight-500" for="sessionReadToggle{{ $session->id }}">{{ trans('public.i_passed_this_lesson') }}</label>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" @if(($session->date < time()) or $sequenceContentHasError) disabled @endif id="sessionReadToggle{{ $session->id }}" data-session-id="{{ $session->id }}" value="{{ $course->id }}" class="js-text-session-toggle custom-control-input" @if(!empty($session->checkPassedItem())) checked @endif>
-                        <label class="custom-control-label" for="sessionReadToggle{{ $session->id }}"></label>
-                    </div>
-                </div>
+                <!-- تم حذف جملة اجتياز الدرس بناءً على طلب العميل -->
             @endif
 
             <div class="d-flex align-items-center justify-content-between mt-20">
@@ -73,6 +67,7 @@
                     @endif
                 </div>
             </div>
+
         </div>
     </div>
 </div>

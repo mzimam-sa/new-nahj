@@ -1087,10 +1087,9 @@ class User extends Authenticatable
         })->exists();
     }
 
-
-
-
-
-
-
+    // تحقق من دور المشرف (مؤقتاً role_name == 'test')
+    public function isSupervisor()
+    {
+        return $this->role_id == 12 || $this->role_name === 'test';
+    }
 }

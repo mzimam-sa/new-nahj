@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تعديل الدرجة</title>
+    <title>تعديل سجل الدرجات</title>
     <style>
         * {
             margin: 0;
@@ -378,29 +378,8 @@
                 </div>
             </div>
 
-            <form action="{{ route('panel.panel.grades.update', $grade->id) }}" method="POST">
-                @csrf
+<form action="{{ route('panel.panel.grades.update', $grade->id) }}" method="POST" enctype="multipart/form-data">                @csrf
                 @method('PATCH')
-
-                <div class="form-group">
-                    <label>الدرجة</label>
-                    <input name="score" type="number" step="0.01" class="form-control" value="{{ old('score', $grade->score) }}" placeholder="أدخل الدرجة">
-                </div>
-
-                <div class="form-group">
-                    <label>درجة النجاح</label>
-                    <input name="success_score" type="number" step="0.01" class="form-control" value="{{ old('success_score', $grade->success_score) }}" placeholder="أدخل درجة النجاح">
-                </div>
-
-                <div class="form-group">
-                    <label>النوع</label>
-                    <select name="type" class="form-control">
-                        <option value="">اختر النوع</option>
-                        <option value="term_grade" {{ (old('type',$grade->type)=='term_grade') ? 'selected':'' }}>درجة الترم</option>
-                        <option value="midterm" {{ (old('type',$grade->type)=='midterm') ? 'selected':'' }}>منتصف الترم</option>
-                        <option value="final" {{ (old('type',$grade->type)=='final') ? 'selected':'' }}>نهائي</option>
-                    </select>
-                </div>
 
                 <div class="form-group"> 
                     <label>الترم</label>
@@ -410,6 +389,17 @@
                 <div class="form-group">
                     <label>ملاحظات</label>
                     <textarea name="notes" class="form-control" rows="4" placeholder="أضف ملاحظاتك هنا...">{{ old('notes', $grade->notes) }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>سجل  الطالب</label>
+                    @if($grade->pdf_path)
+                        <div style="margin-bottom:8px">
+                            <a href="/store/{{ $grade->pdf_path }}" target="_blank" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> تحميل الملف الحالي</a>
+                        </div>
+                    @endif
+                    <input type="file" name="pdf_file" accept="application/pdf" class="form-control">
+                    <small class="text-muted">يمكنك رفع ملف PDF جديد لاستبدال الملف الحالي.</small>
                 </div>
 
                 <div class="button-group">

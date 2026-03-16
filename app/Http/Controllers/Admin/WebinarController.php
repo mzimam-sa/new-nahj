@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\WebinarsExport;
@@ -40,9 +39,27 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 class WebinarController extends Controller
 {
     use WebinarChangeCreator;
+
+    /**
+     * عرض محاور الدورة (الفصول) للإدارة
+     */
+    public function adminChapters($id)
+    {
+        $this->authorize('admin_webinars_edit');
+
+        $webinar = Webinar::with(['chapters'])->findOrFail($id);
+
+        $data = [
+            'pageTitle' => trans('webinars.chapters'),
+            'webinar' => $webinar,
+        ];
+
+        return view('admin.webinars.chapters', $data);
+    }
 
 
     public function index(Request $request)
