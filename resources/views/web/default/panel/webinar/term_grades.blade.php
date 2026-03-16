@@ -233,10 +233,6 @@
                     <h4>البحث والتصفية</h4>
                 </div>
                 <div class="action-buttons">
-                    <a href="/panel/webinars/add_term_grades" class="action-btn">
-                        <i class="fas fa-plus"></i>
-                        إضافة درجات جديدة
-                    </a>
                     <button class="action-btn secondary" onclick="refreshData()">
                         <i class="fas fa-sync-alt"></i>
                         تحديث البيانات
@@ -298,11 +294,6 @@
                     </button>
                     <button class="export-btn" onclick="exportPDF()" title="تصدير PDF">
                         <i class="fas fa-file-pdf"></i> PDF
-                    @if(isset($students) && $students instanceof \Illuminate\Pagination\LengthAwarePaginator && $students->hasPages())
-                        <div class="pagination-wrapper" style="margin: 24px 0; display: flex; justify-content: center;">
-                            {{ $students->links('vendor.pagination.bootstrap-4') }}
-                        </div>
-                    @endif
                     </button>
                 </div>
             </div>
@@ -422,6 +413,11 @@
                         @endif
                     </tbody>
                 </table>
+            </div>
+            <div class="my-30">
+                @if(isset($students) && $students instanceof \Illuminate\Pagination\LengthAwarePaginator && $students->hasPages())
+                    {{ $students->appends(request()->input())->links('vendor.pagination.panel') }}
+                @endif
             </div>
         </div>
     </div>

@@ -20,13 +20,13 @@ Route::get('/test-nelc', function () {
     $xapi = new XapiIntegration();
 
     $response = $xapi->Registered(
-        '1234567890',                 // Student National ID
-        'test@test.com',              // Student Email
-        'course-1',                   // Course ID
-        'Test Course',                // Course Title
-        'Test Course Description',    // Course Description
-        'Instructor Name',            // Instructor Name
-        'instructor@test.com'         // Instructor Email
+        '5634567890',                 // Student National ID
+        'fg@test.com',              // Student Email
+        'dd-1',                   // Course ID
+        'Test dfg',                // Course Title
+        'Test dfd Description',    // Course Description
+        'Instructor dfd',            // Instructor Name
+        'instrucsfftor@test.com'         // Instructor Email
     );
 
     return $response;
