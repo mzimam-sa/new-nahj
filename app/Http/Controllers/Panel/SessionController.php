@@ -87,6 +87,7 @@ class SessionController extends Controller
                 'access_after_day' => $data['access_after_day'],
                 'extra_time_to_join' => $data['extra_time_to_join'] ?? null,
                 'status' => (!empty($data['status']) and $data['status'] == 'on') ? Session::$Active : Session::$Inactive,
+                'is_final' => (!empty($data['is_final']) && $data['is_final'] == 'on') ? 1 : 0,
                 'created_at' => time()
             ]);
 
@@ -123,6 +124,39 @@ class SessionController extends Controller
         }
 
         abort(403);
+    }
+
+        /**
+     * حفظ حضور الطلاب للجلسة
+     */
+    public function attendance(Request $request, $session_id)
+    {
+        $user = auth()->user();
+        $session = \App\Models\Session::findOrFail($session_id);
+        $webinar = $session->webinar;
+
+        // فقط المدرس أو الأدمن يمكنه التعديل
+        if ($user->id != $webinar->teacher_id && !$user->isAdmin()) {
+            abort(403);
+        }
+
+        $attendance = $request->input('attendance', []);
+
+        // حذف الحضور السابق للجلسة
+        \App\Models\CourseLearning::where('session_id', $session_id)->delete();
+
+        // إضافة الحضور الجديد
+        foreach ($attendance as $student_id => $present) {
+            if ($present) {
+                \App\Models\CourseLearning::create([
+                    'user_id' => $student_id,
+                    'session_id' => $session_id,
+                    'created_at' => time(),
+                ]);
+            }
+        }
+
+        return back()->with('success', 'تم حفظ الحضور بنجاح');
     }
 
     public function update(Request $request, $id)
@@ -212,6 +246,7 @@ class SessionController extends Controller
                     'check_previous_parts' => $data['check_previous_parts'],
                     'access_after_day' => $data['access_after_day'],
                     'extra_time_to_join' => $data['extra_time_to_join'] ?? null,
+                    'is_final' => (!empty($data['is_final']) && $data['is_final'] == 'on') ? 1 : 0,
                     'updated_at' => time()
                 ]);
 

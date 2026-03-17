@@ -27,7 +27,7 @@ class EarnedCertificateStatementListener implements ShouldQueue
      */
     public function handle(EarnedCertificate $event)
     {
-        \Log::info("Listener Fired - Initialized");
+        \Log::info("Listener Fired - Earned Certificate");
         SendNelcStatementJob::dispatch(
             'earned',
             $event->student,

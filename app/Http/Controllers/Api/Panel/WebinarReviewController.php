@@ -20,6 +20,7 @@ class WebinarReviewController extends Controller
         return apiResponse2(1, 'retrieved', trans('api.public.retrieved'), $webinarReview);
     }
 
+    
     public function store(Request $request)
     {
         $rules = [

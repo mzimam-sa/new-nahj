@@ -147,7 +147,7 @@
                                     @endif
                                 </div>
 
-                                @include(getTemplate() . '.includes.webinar.rate',['rate' => $webinar->getRate()])
+                                {{-- تم إخفاء نجوم التقييم من صفحة دوراتي بناءً على طلب الإدارة --}}
 
                                 <div class="webinar-price-box mt-15">
                                     @if($webinar->price > 0)

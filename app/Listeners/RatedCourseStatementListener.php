@@ -27,7 +27,7 @@ class RatedCourseStatementListener implements ShouldQueue
      */
     public function handle(RatedCourse $event)
     {
-        \Log::info("Listener Fired - Initialized");
+        \Log::info("Listener Fired - Rated Course");
         SendNelcStatementJob::dispatch(
             'rated',
             $event->student,

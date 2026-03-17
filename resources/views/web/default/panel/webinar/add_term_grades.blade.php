@@ -277,64 +277,26 @@
 @section('content')
     <div class="grade-entry-wrapper">
         <section class="grade-card">
-            <form action="{{ route('panel.panel.webinars.store_term_grades') }}" method="POST">
+            <form action="{{ url('/panel/term_grades') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="section-header">
                     <i class="fas fa-graduation-cap"></i>
-                    <h4>تسجيل درجات الطلاب</h4>
+                    <h4>رفع ملف درجات الطالب</h4>
                 </div>
 
-                <div class="form-group">
-                    <label >
-                        <i class="fas fa-book"></i>
-                        اختر الفصل الدراسي
-                    </label>
-                    <select id="webinar-select" name="webinar_id" class="form-control custom-select P-20">
-                        <option value="">-- اختر الفصل --</option>
-                        @foreach ($webinars ?? [] as $webinar)
-                            <option value="{{ $webinar->id }}">{{ $webinar->title }}</option>
-                        @endforeach
-                    </select>
-                    <div class="info-badge">
-                        <i class="fas fa-info-circle"></i>
-                        يمكنك اختيار فصل معين أو تركه فارغاً لتسجيل درجات عامة
+                @if(request('student_id'))
+                    <input type="hidden" name="grades[{{ request('student_id') }}][student_id]" value="{{ request('student_id') }}">
+                    <div class="form-group">
+                                <form>
+                        <input type="file" name="grades[{{ request('student_id') }}][pdf_file]" accept="application/pdf" class="form-control" required>
                     </div>
-                </div>
-
-                <div class="students-table-wrapper">
-                    <div class="section-header">
-                        <i class="fas fa-users"></i>
-                        <h4>قائمة الطلاب والدرجات</h4>
+                @else
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                                        <input type="file" name="grades[{{ request('student_id') }}][pdf_file]" accept="application/pdf" class="form-control pdf-file-input" disabled>
                     </div>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-modern">
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-hashtag"></i></th>
-                                    <th><i class="fas fa-user"></i> الطالب</th>
-                                    <th><i class="fas fa-star"></i> الدرجة</th>
-                                    <th><i class="fas fa-tag"></i> النوع</th>
-                                    <th><i class="fas fa-calendar"></i> الترم</th>
-                                    <th><i class="fas fa-check-circle"></i> درجة النجاح</th>
-                                    <th><i class="fas fa-comment"></i> ملاحظات</th>
-                                    <th><i class="fas fa-toggle-on"></i> تفعيل</th>
-                                </tr>
-                            </thead>
-                            <tbody id="students-tbody">
-                                <tr>
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <i class="fas fa-arrow-up"></i>
-                                            <p>الرجاء اختيار الفصل الدراسي لعرض قائمة الطلاب</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                @endif
 
                 <div class="mt-4 text-center">
                     <button type="submit" class="btn-save">
@@ -348,7 +310,17 @@
 
     @push('scripts_bottom')
         <script>
-            (function () {
+        // اجعل required فقط إذا كان التشييك مفعّل
+        function togglePdfRequired(checkbox) {
+            const row = checkbox.closest('tr');
+            const pdfInput = row.querySelector('.pdf-file-input');
+            if (checkbox.checked) {
+                pdfInput.setAttribute('required', 'required');
+            } else {
+                pdfInput.removeAttribute('required');
+            }
+        }
+        (function () {
                 const webinarSelect = document.getElementById('webinar-select');
                 const studentsTbody = document.getElementById('students-tbody');
                 const baseUrl = "{{ url('/panel/webinars') }}";
@@ -367,49 +339,40 @@
                         `;
                         return;
                     }
-
+                                            <textarea name="notes" class="form-control" rows="4" placeholder="أضف ملاحظاتك هنا..." readonly></textarea>
                     let html = '';
                     students.forEach((s, idx) => {
-                        const id = s.id;
+                                        <button type="button" class="btn btn-primary" disabled>حفظ</button>
                         const name = s.name || s.full_name || s.username || ('#' + id);
                         html += `
-                            <tr>
-                                <td><span class="student-index">${idx + 1}</span></td>
-                                <td class="student-name">${escapeHtml(name)}</td>
-                                <input type="hidden" name="grades[${id}][student_id]" value="${id}">
-                                <td>
-                                    <input type="number" step="0.01" name="grades[${id}][score]" 
-                                           class="form-control" placeholder="0.00" min="0">
-                                </td>
-                                <td>
-                                    <select name="grades[${id}][type]" class="form-control">
-                                        <option value="term_grade">درجة الترم</option>
-                                        <option value="midterm">منتصف الترم</option>
-                                        <option value="final">نهائي</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" name="grades[${id}][term]" 
-                                           class="form-control" value="1" min="1" max="4">
-                                </td>
-                                <td>
-                                    <input type="number"  step="0.01" name="grades[${id}][success_score]" 
-                                           class="form-control" placeholder="50.00" min="0">
-                                </td>
-                                <td>
-                                    <input type="text" name="grades[${id}][notes]" 
-                                           class="form-control" placeholder="أضف ملاحظة...">
-                                </td>
-                                <td>
-                                    <div class="checkbox-wrapper">
-                                        <input type="checkbox" name="grades[${id}][enabled]" value="1" checked>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
+    <tr>
+        <td><span class="student-index">${idx + 1}</span></td>
+        <td class="student-name">${escapeHtml(name)}</td>
+        <input type="hidden" name="grades[${id}][student_id]" value="${id}">
+        <td><input type="text" name="grades[${id}][notes]" class="form-control" value="${s.notes ? escapeHtml(s.notes) : ''}"></td>
+        <td>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" name="grades[${id}][enabled]" value="1" checked>
+            </div>
+        </td>
+        <td>
+            <input type="file" name="grades[${id}][pdf_file]" accept="application/pdf" class="form-control pdf-file-input">
+            ${(s.pdf_path ? `<a href="/store/${s.pdf_path}" target="_blank" style="margin-right:8px;display:inline-block;">ملف الطالب الحالي</a>` : '')}
+        </td>
+    </tr>
+`;
                     });
 
                     studentsTbody.innerHTML = html;
+                    // بعد رسم الجدول، أضف روابط الملفات الحالية إن وجدت
+                    (students || []).forEach((s) => {
+                        if (s.pdf_path) {
+                            const linkSpan = document.getElementById('pdf-link-' + s.id);
+                            if (linkSpan) {
+                                linkSpan.innerHTML = `<a href="/storage/${s.pdf_path}" target="_blank" style="margin-right:8px;">ملف الطالب الحالي</a>`;
+                            }
+                        }
+                    });
                 }
 
                 function escapeHtml(str) {
@@ -428,54 +391,54 @@
                 }
 
                 webinarSelect.addEventListener('change', function () {
-                    const webinarId = this.value;
-                    
-                    if (!webinarId) {
-                        studentsTbody.innerHTML = `
-                            <tr>
-                                <td colspan="8">
-                                    <div class="empty-state">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <p>الرجاء اختيار الفصل الدراسي لعرض قائمة الطلاب</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        return;
-                    }
+    const webinarId = this.value;
+    
+    if (!webinarId) {
+        studentsTbody.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    <div class="empty-state">
+                        <i class="fas fa-arrow-up"></i>
+                        <p>الرجاء اختيار الفصل الدراسي لعرض قائمة الطلاب</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return; // ← هاد مهم
+    }
 
-                    studentsTbody.innerHTML = `
-                        <tr>
-                            <td colspan="8">
-                                <div class="loading-state">
-                                    <i class="fas fa-spinner"></i>
-                                    <span>جارٍ تحميل بيانات الطلاب...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+    studentsTbody.innerHTML = `
+        <tr>
+            <td colspan="9">
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <span>جارٍ تحميل بيانات الطلاب...</span>
+                </div>
+            </td>
+        </tr>
+    `;
 
-                    fetch(baseUrl + '/' + webinarId + '/students', {
-                        headers: { 'Accept': 'application/json' },
-                        credentials: 'same-origin'
-                    })
-                    .then(r => r.ok ? r.json() : Promise.reject(r))
-                    .then(data => {
-                        setTimeout(() => renderStudents(data), 300); // Smooth transition
-                    })
-                    .catch(() => {
-                        studentsTbody.innerHTML = `
-                            <tr>
-                                <td colspan="8">
-                                    <div class="error-state">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        <p>فشل في تحميل بيانات الطلاب. يرجى المحاولة مرة أخرى.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                });
+    fetch(baseUrl + '/' + webinarId + '/students', {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+    })
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(data => {
+        setTimeout(() => renderStudents(data), 300);
+    })
+    .catch(() => {
+        studentsTbody.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>فشل في تحميل بيانات الطلاب. يرجى المحاولة مرة أخرى.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+});
             })();
         </script>
     @endpush

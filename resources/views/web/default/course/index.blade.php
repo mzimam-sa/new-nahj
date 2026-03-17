@@ -3,6 +3,25 @@
 @push('styles_top')
     <link rel="stylesheet" href="/assets/default/css/css-stars.css">
     <link rel="stylesheet" href="/assets/default/vendors/video/video-js.min.css">
+    <style>
+        .star-rating {
+            direction: ltr;
+            display: inline-flex;
+        }
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+        .star-rating label {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            margin: 0 2px;
+            transition: color 0.2s;
+        }
+        .star-rating label.selected {
+            color: #ffd700;
+        }
+    </style>
 @endpush
 
 
@@ -32,12 +51,7 @@
                             <span class="d-block font-16 mt-10">{{ trans('public.in') }} <a href="{{ $course->category->getUrl() }}" target="_blank" class="font-weight-500 text-decoration-underline text-white">{{ $course->category->title }}</a></span>
                         @endif
 
-                        {{--
-                            <div class="d-flex align-items-center">
-                                @include('web.default.includes.webinar.rate',['rate' => $course->getRate()])
-                                <span class="ml-10 mt-15 font-14">({{ $course->reviews->pluck('creator_id')->count() }} {{ trans('public.ratings') }})</span>
-                            </div>
-                        --}}
+                        {{-- تم إخفاء التقييم من الكارد بناءً على طلب الإدارة --}}
 
                         {{--
                             <div class="mt-15">
@@ -113,6 +127,9 @@
                                 @include(getTemplate().'.course.tabs.reviews')
                             </div>
                         </div>
+
+                        
+                        
 
                     </div>
 
