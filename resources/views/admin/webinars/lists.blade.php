@@ -269,7 +269,7 @@
                                                 @endif
                                             </td>
 
-                                            <td class="text-left">{{ $webinar->teacher->full_name }}</td>
+<td class="text-left">{{ $webinar->teacher?->full_name ?? 'N/A' }}</td>
 
                                             <td>
                                                 @if(!empty($webinar->price) and $webinar->price > 0)
