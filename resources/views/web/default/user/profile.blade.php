@@ -33,9 +33,7 @@
                         <h1 class="font-24 font-weight-bold text-dark-blue">{{ $user["full_name"] }}</h1>
                         <span class="text-gray">{{ $user["headline"] }}</span>
 
-                        <div class="mr-1 stars-card d-flex align-items-center mt-5">
-                            @include('web.default.includes.webinar.rate',['rate' => $userRates])
-                        </div>
+                        {{-- تم إخفاء نجوم التقييم من صفحة فصولي بناءً على طلب الإدارة --}}
 
                         <div class="w-100 mt-10 d-flex align-items-center justify-content-center justify-content-lg-start">
                             <div class="d-flex flex-column followers-status">

@@ -369,17 +369,14 @@
         
             <div class="info-card">
                 <div class="info-item">
-                    <strong>المادة:</strong>
-                    <span>{{ optional($grade->webinar)->title ?? '-' }}</span>
-                </div>
-                <div class="info-item">
                     <strong>الطالب:</strong>
                     <span>{{ optional($grade->student)->full_name ?? optional($grade->student)->name ?? '-' }}</span>
                 </div>
             </div>
 
-<form action="{{ route('panel.panel.grades.update', $grade->id) }}" method="POST" enctype="multipart/form-data">                @csrf
-                @method('PATCH')
+<form action="{{ url('/panel/grades/'.$grade->id) }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    @method('PATCH')
 
                 <div class="form-group"> 
                     <label>الترم</label>
@@ -406,7 +403,7 @@
                     <button type="submit" class="btn btn-primary">
                         <span>✓ حفظ التعديلات</span>
                     </button>
-                    <a href="{{ route('panel.panel.webinars.student_grades') }}" class="btn btn-secondary">
+                    <a href="{{ url('/panel/webinars/term_grades') }}" class="btn btn-secondary">
                         ✕ إلغاء
                     </a>
                 </div>

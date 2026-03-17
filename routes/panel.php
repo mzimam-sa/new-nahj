@@ -545,5 +545,3 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     });
 
 });
-
-
