@@ -20,13 +20,13 @@ Route::get('/test-nelc', function () {
     $xapi = new XapiIntegration();
 
     $response = $xapi->Registered(
-        '1234567890',                 // Student National ID
-        'test@test.com',              // Student Email
-        'course-1',                   // Course ID
-        'Test Course',                // Course Title
-        'Test Course Description',    // Course Description
-        'Instructor Name',            // Instructor Name
-        'instructor@test.com'         // Instructor Email
+        '5634567890',                 // Student National ID
+        'fg@test.com',              // Student Email
+        'dd-1',                   // Course ID
+        'Test dfg',                // Course Title
+        'Test dfd Description',    // Course Description
+        'Instructor dfd',            // Instructor Name
+        'instrucsfftor@test.com'         // Instructor Email
     );
 
     return $response;
@@ -489,16 +489,10 @@ WHERE  NOT EXISTS
 
 Route::prefix('panel')->name('panel.')->middleware(['auth'])->group(function () {
     // show create form (fills $webinars and all $students)
-    Route::get('webinars/add_term_grades', [TermGradesController::class, 'termGradesShowCreate'])
-        ->name('panel.webinars.add_term_grades');
 
     // AJAX: students for a specific webinar
-    Route::get('webinars/{webinar}/students', [TermGradesController::class, 'studentsForWebinar'])
-        ->name('panel.webinars.students');
 
     // store submitted grades (blade posts here)
-    Route::post('webinars/term_grades', [TermGradesController::class, 'termGradesStore'])
-        ->name('panel.webinars.store_term_grades');
 
     Route::get('webinars/student_grades', [TermGradesController::class, 'studentGrades'])
         ->name('panel.webinars.student_grades');
@@ -514,7 +508,4 @@ Route::prefix('panel')->name('panel.')->middleware(['auth'])->group(function () 
         ->name('panel.grades.delete');
 
     // teacher grades list (if not already present)
-    Route::get('webinars/teacher-grades', [TermGradesController::class, 'teacherGrades'])
-        ->name('panel.webinars.teacher_grades');
 });
-

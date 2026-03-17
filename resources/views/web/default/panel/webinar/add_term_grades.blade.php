@@ -277,61 +277,26 @@
 @section('content')
     <div class="grade-entry-wrapper">
         <section class="grade-card">
-            <form action="{{ route('panel.panel.webinars.store_term_grades') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('/panel/term_grades') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="section-header">
                     <i class="fas fa-graduation-cap"></i>
-                    <h4>تسجيل درجات الطلاب</h4>
+                    <h4>رفع ملف درجات الطالب</h4>
                 </div>
 
-                <div class="form-group">
-                    <label >
-                        <i class="fas fa-book"></i>
-                        اختر الفصل الدراسي
-                    </label>
-                    <select id="webinar-select" name="webinar_id" class="form-control custom-select P-20">
-                        <option value="">-- اختر الفصل --</option>
-                        @foreach ($webinars ?? [] as $webinar)
-                            <option value="{{ $webinar->id }}">{{ $webinar->title }}</option>
-                        @endforeach
-                    </select>
-                    <div class="info-badge">
-                        <i class="fas fa-info-circle"></i>
-                        يمكنك اختيار فصل معين أو تركه فارغاً لتسجيل درجات عامة
+                @if(request('student_id'))
+                    <input type="hidden" name="grades[{{ request('student_id') }}][student_id]" value="{{ request('student_id') }}">
+                    <div class="form-group">
+                                <form>
+                        <input type="file" name="grades[{{ request('student_id') }}][pdf_file]" accept="application/pdf" class="form-control" required>
                     </div>
-                </div>
-
-                <div class="students-table-wrapper">
-                    <div class="section-header">
-                        <i class="fas fa-users"></i>
-                        <h4>قائمة الطلاب والدرجات</h4>
+                @else
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                                        <input type="file" name="grades[{{ request('student_id') }}][pdf_file]" accept="application/pdf" class="form-control pdf-file-input" disabled>
                     </div>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-modern">
-                           <thead>
-    <tr>
-        <th><i class="fas fa-hashtag"></i></th>
-        <th><i class="fas fa-user"></i> الطالب</th>
-        <th><i class="fas fa-comment"></i> ملاحظات</th>
-        <th><i class="fas fa-toggle-on"></i> تفعيل</th>
-        <th>ملف الطالب</th>
-    </tr>
-</thead>
-                            <tbody id="students-tbody">
-                                <tr>
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <i class="fas fa-arrow-up"></i>
-                                            <p>الرجاء اختيار الفصل الدراسي لعرض قائمة الطلاب</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                @endif
 
                 <div class="mt-4 text-center">
                     <button type="submit" class="btn-save">
@@ -374,10 +339,10 @@
                         `;
                         return;
                     }
-
+                                            <textarea name="notes" class="form-control" rows="4" placeholder="أضف ملاحظاتك هنا..." readonly></textarea>
                     let html = '';
                     students.forEach((s, idx) => {
-                        const id = s.id;
+                                        <button type="button" class="btn btn-primary" disabled>حفظ</button>
                         const name = s.name || s.full_name || s.username || ('#' + id);
                         html += `
     <tr>
