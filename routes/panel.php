@@ -215,6 +215,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{id}/endAgora', 'SessionController@endAgora');
         Route::get('/{id}/toggleUsersJoinToAgora', 'SessionController@toggleUsersJoinToAgora');
         Route::get('/{id}/joinToJitsi', 'SessionController@joinToJitsi');
+
+        // حفظ حضور الطلاب في الجلسة
+        Route::post('/{session_id}/attendance', 'SessionController@attendance')->name('panel.sessions.attendance');
     });
 
     Route::group(['prefix' => 'chapters'], function () {
