@@ -87,12 +87,22 @@ Route::get('/test-nelc', function () {
         }
     }
 
+    // Get Public/Outbound IP
+    $publicIp = null;
+    try {
+        $ipClient = new \GuzzleHttp\Client(['timeout' => 5]);
+        $publicIp = trim($ipClient->get('https://api.ipify.org')->getBody()->getContents());
+    } catch (\Exception $e) {
+        $publicIp = 'Could not detect: ' . $e->getMessage();
+    }
+
     return response()->json([
         'config' => $configCheck,
         'test_GET_no_auth' => $getResult,
         'test_POST_with_auth' => $postResult,
-        'server_ip' => request()->server('SERVER_ADDR'),
-        'recommendation' => 'If both GET and POST show cloudflare block, the server IP needs to be whitelisted by NELC.',
+        'server_internal_ip' => request()->server('SERVER_ADDR'),
+        'server_public_ip' => $publicIp,
+        'action_needed' => 'Send the server_public_ip to NELC to whitelist on Cloudflare.',
     ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 });
 
