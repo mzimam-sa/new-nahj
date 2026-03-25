@@ -17,19 +17,83 @@ use App\Services\NelcXapiService;
 
 Route::get('/test-nelc', function () {
 
-    $xapi = new NelcXapiService();
+    $endpoint = config('lrs-nelc-xapi.endpoint');
+    $key = config('lrs-nelc-xapi.key');
+    $secret = config('lrs-nelc-xapi.secret');
 
-    $response = $xapi->Registered(
-        '1234567890',                          // Student National ID
-        'student@nahj.com.sa',                 // Student Email
-        'nahj-course-101',                     // Course ID
-        'Introduction to Programming',         // Course Title
-        'Learn the basics of programming',     // Course Description
-        'Ahmad Mohammed',                      // Instructor Name
-        'instructor@nahj.com.sa'               // Instructor Email
-    );
+    // Test 1: Check if env vars are configured
+    $configCheck = [
+        'endpoint' => $endpoint ? 'SET (' . substr($endpoint, 0, 40) . '...)' : '❌ MISSING',
+        'key'      => $key ? 'SET (length: ' . strlen($key) . ')' : '❌ MISSING',
+        'secret'   => $secret ? 'SET (length: ' . strlen($secret) . ')' : '❌ MISSING',
+    ];
 
-    return response()->json($response);
+    // Test 2: Try a simple GET to the endpoint (no JSON body)
+    // This checks if the IP itself is blocked vs the content
+    $getResult = null;
+    $postResult = null;
+
+    if ($endpoint) {
+        $client = new \GuzzleHttp\Client([
+            'timeout' => 15,
+            'connect_timeout' => 10,
+            'http_errors' => false,
+        ]);
+
+        // Test GET (no auth, no body) - pure connectivity test
+        try {
+            $getResponse = $client->get($endpoint, [
+                'headers' => [
+                    'User-Agent' => 'NAHJ-LMS/1.0',
+                    'Accept' => 'application/json',
+                ],
+            ]);
+            $getBody = $getResponse->getBody()->getContents();
+            $getResult = [
+                'status' => $getResponse->getStatusCode(),
+                'blocked_by_cloudflare' => str_contains($getBody, 'cloudflare') || str_contains($getBody, 'Cloudflare'),
+                'body_preview' => substr(strip_tags($getBody), 0, 200),
+            ];
+        } catch (\Exception $e) {
+            $getResult = ['error' => $e->getMessage()];
+        }
+
+        // Test POST with auth + xAPI headers + minimal body
+        if ($key && $secret) {
+            try {
+                $postResponse = $client->post($endpoint, [
+                    'auth' => [$key, $secret],
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'X-Experience-API-Version' => '1.0.3',
+                        'Accept' => 'application/json',
+                        'User-Agent' => 'NAHJ-LMS/1.0 (compatible; xAPI-Client; +https://www.nahj.com.sa)',
+                    ],
+                    'json' => [
+                        'actor' => ['name' => '1234567890', 'mbox' => 'mailto:test@nahj.com.sa', 'objectType' => 'Agent'],
+                        'verb' => ['id' => 'http://adlnet.gov/expapi/verbs/registered', 'display' => ['en-US' => 'registered']],
+                        'object' => ['id' => 'nahj-101', 'objectType' => 'Activity'],
+                    ],
+                ]);
+                $postBody = $postResponse->getBody()->getContents();
+                $postResult = [
+                    'status' => $postResponse->getStatusCode(),
+                    'blocked_by_cloudflare' => str_contains($postBody, 'cloudflare') || str_contains($postBody, 'Cloudflare'),
+                    'body_preview' => substr(strip_tags($postBody), 0, 300),
+                ];
+            } catch (\Exception $e) {
+                $postResult = ['error' => $e->getMessage()];
+            }
+        }
+    }
+
+    return response()->json([
+        'config' => $configCheck,
+        'test_GET_no_auth' => $getResult,
+        'test_POST_with_auth' => $postResult,
+        'server_ip' => request()->server('SERVER_ADDR'),
+        'recommendation' => 'If both GET and POST show cloudflare block, the server IP needs to be whitelisted by NELC.',
+    ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 });
 
 
