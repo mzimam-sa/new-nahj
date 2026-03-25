@@ -142,11 +142,11 @@
                                 <td class="text-left">
                                     <div class="user-inline-avatar d-flex align-items-center">
                                         <div class="avatar bg-gray200">
-                                            <img src="{{ $history->student->getAvatar() }}" class="img-cover" alt="">
+                                            <img src="{{ $history->student ? $history->student->getAvatar() : '' }}" class="img-cover" alt="">
                                         </div>
                                         <div class="ml-1">
-                                            <span class="d-block font-weight-500">{{ $history->student->full_name }}</span>
-                                            <span class="mt-1 font-12 text-gray d-block">{{ $history->student->email }}</span>
+                                            <span class="d-block font-weight-500">{{ $history->student->full_name ?? trans('update.delete_item') }}</span>
+                                            <span class="mt-1 font-12 text-gray d-block">{{ $history->student->email ?? '' }}</span>
                                         </div>
                                     </div>
                                 </td>

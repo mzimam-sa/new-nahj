@@ -588,14 +588,17 @@ trait DashboardTrait
     public function getTopSellingClasses()
     {
         return Webinar::where('status', Webinar::$active)
-            ->join('sales', 'webinars.id', '=', 'sales.webinar_id')
-            ->select('webinars.*',
-                DB::raw('count(sales.webinar_id) as sales_count'),
-                DB::raw('sum(sales.total_amount) as sales_amount')
-            )->whereNull('sales.refund_at')
-            ->where('sales.amount', '>', '0')
-            ->groupBy('webinars.id')
-            ->orderBy('sales_count', 'desc')
+            ->select('webinars.*')
+            ->selectRaw('(SELECT count(*) FROM sales WHERE sales.webinar_id = webinars.id AND sales.refund_at IS NULL AND sales.amount > 0) as sales_count')
+            ->selectRaw('(SELECT COALESCE(sum(sales.total_amount), 0) FROM sales WHERE sales.webinar_id = webinars.id AND sales.refund_at IS NULL AND sales.amount > 0) as sales_amount')
+            ->whereExists(function($query) {
+                $query->select(DB::raw(1))
+                    ->from('sales')
+                    ->whereColumn('sales.webinar_id', 'webinars.id')
+                    ->whereNull('sales.refund_at')
+                    ->where('sales.amount', '>', '0');
+            })
+            ->orderByDesc('sales_count')
             ->limit(5)
             ->get();
     }
@@ -603,14 +606,17 @@ trait DashboardTrait
     public function getTopSellingAppointments()
     {
         return Meeting::where('disabled', false)
-            ->join('sales', 'meetings.id', '=', 'sales.meeting_id')
-            ->select('meetings.*',
-                DB::raw('count(sales.meeting_id) as sales_count'),
-                DB::raw('sum(sales.total_amount) as sales_amount')
-            )->whereNull('sales.refund_at')
-            ->where('sales.amount', '>', '0')
-            ->groupBy('meetings.id')
-            ->orderBy('sales_count', 'desc')
+            ->select('meetings.*')
+            ->selectRaw('(SELECT count(*) FROM sales WHERE sales.meeting_id = meetings.id AND sales.refund_at IS NULL AND sales.amount > 0) as sales_count')
+            ->selectRaw('(SELECT COALESCE(sum(sales.total_amount), 0) FROM sales WHERE sales.meeting_id = meetings.id AND sales.refund_at IS NULL AND sales.amount > 0) as sales_amount')
+            ->whereExists(function($query) {
+                $query->select(DB::raw(1))
+                    ->from('sales')
+                    ->whereColumn('sales.meeting_id', 'meetings.id')
+                    ->whereNull('sales.refund_at')
+                    ->where('sales.amount', '>', '0');
+            })
+            ->orderByDesc('sales_count')
             ->limit(5)
             ->get();
     }
@@ -618,15 +624,18 @@ trait DashboardTrait
     public function getTopSellingTeachersAndOrganizations($role = 'teachers')
     {
         $users = User::where('status', 'active')
-            ->join('sales', 'users.id', '=', 'sales.seller_id')
-            ->select('users.*',
-                DB::raw('count(sales.seller_id) as sales_count'),
-                DB::raw('sum(sales.total_amount) as sales_amount')
-            )->whereNull('sales.refund_at')
-            ->where('sales.amount', '>', '0')
+            ->select('users.*')
+            ->selectRaw('(SELECT count(*) FROM sales WHERE sales.seller_id = users.id AND sales.refund_at IS NULL AND sales.amount > 0) as sales_count')
+            ->selectRaw('(SELECT COALESCE(sum(sales.total_amount), 0) FROM sales WHERE sales.seller_id = users.id AND sales.refund_at IS NULL AND sales.amount > 0) as sales_amount')
             ->where('users.role_name', (($role == 'teachers') ? Role::$teacher : Role::$organization))
-            ->groupBy('users.id')
-            ->orderBy('sales_count', 'desc')
+            ->whereExists(function($query) {
+                $query->select(DB::raw(1))
+                    ->from('sales')
+                    ->whereColumn('sales.seller_id', 'users.id')
+                    ->whereNull('sales.refund_at')
+                    ->where('sales.amount', '>', '0');
+            })
+            ->orderByDesc('sales_count')
             ->limit(5)
             ->get();
 
@@ -646,17 +655,20 @@ trait DashboardTrait
     public function getMostActiveStudents()
     {
         return User::where('status', 'active')
-            ->join('sales', 'users.id', '=', 'sales.buyer_id')
-            ->select('users.*',
-                DB::raw('count(sales.webinar_id) as purchased_classes'),
-                DB::raw('count(sales.meeting_id) as reserved_appointments'),
-                DB::raw('sum(sales.total_amount) as total_cost')
-            )->whereNull('sales.refund_at')
-            ->where('sales.amount', '>', '0')
+            ->select('users.*')
+            ->selectRaw('(SELECT count(*) FROM sales WHERE sales.buyer_id = users.id AND sales.webinar_id IS NOT NULL AND sales.refund_at IS NULL AND sales.amount > 0) as purchased_classes')
+            ->selectRaw('(SELECT count(*) FROM sales WHERE sales.buyer_id = users.id AND sales.meeting_id IS NOT NULL AND sales.refund_at IS NULL AND sales.amount > 0) as reserved_appointments')
+            ->selectRaw('(SELECT COALESCE(sum(sales.total_amount), 0) FROM sales WHERE sales.buyer_id = users.id AND sales.refund_at IS NULL AND sales.amount > 0) as total_cost')
             ->where('users.role_name', Role::$user)
-            ->groupBy('users.id')
-            ->orderBy('purchased_classes', 'desc')
-            ->orderBy('reserved_appointments', 'desc')
+            ->whereExists(function($query) {
+                $query->select(DB::raw(1))
+                    ->from('sales')
+                    ->whereColumn('sales.buyer_id', 'users.id')
+                    ->whereNull('sales.refund_at')
+                    ->where('sales.amount', '>', '0');
+            })
+            ->orderByDesc('purchased_classes')
+            ->orderByDesc('reserved_appointments')
             ->limit(5)
             ->get();
     }
