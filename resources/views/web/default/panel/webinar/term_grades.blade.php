@@ -34,40 +34,24 @@
             opacity: 0.1;
             transform: translate(30%, -30%);
         }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.12);
-        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 50px rgba(0,0,0,0.12); }
         .stat-content { position: relative; z-index: 1; }
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            font-size: 24px;
-            color: white;
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 15px; font-size: 24px; color: white;
         }
         .stat-card.total-students .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .stat-card.total-students::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .stat-value { font-size: 32px; font-weight: 700; color: #2d3748; margin-bottom: 5px; }
         .stat-label { color: #718096; font-size: 14px; font-weight: 500; }
         .controls-section {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            background: white; border-radius: 16px; padding: 25px;
+            margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         }
         .controls-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;
         }
         .controls-title { display: flex; align-items: center; gap: 10px; }
         .controls-title i { font-size: 20px; color: #667eea; }
@@ -75,54 +59,31 @@
         .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
         .action-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            text-decoration: none;
+            color: white; border: none; padding: 10px 20px; border-radius: 8px;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center;
+            gap: 8px; transition: all 0.3s ease; font-size: 14px; text-decoration: none;
         }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); color: white; }
         .action-btn.secondary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; margin-top: 20px;
         }
         .filter-group label { display: block; margin-bottom: 8px; color: #4a5568; font-weight: 600; font-size: 14px; }
         .filter-group select, .filter-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0;
+            border-radius: 10px; font-size: 14px; transition: all 0.3s ease;
         }
         .filter-group select:focus, .filter-group input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #667eea; outline: none; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
         .grades-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
+            background: white; border-radius: 16px; padding: 30px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         }
         .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 3px solid #667eea;
         }
         .section-title { display: flex; align-items: center; gap: 12px; }
         .section-title i { font-size: 24px; color: #667eea; }
@@ -130,25 +91,12 @@
         .export-buttons { display: flex; gap: 8px; }
         .export-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-size: 14px;
+            color: white; border: none; padding: 10px 20px; border-radius: 8px;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center;
+            gap: 8px; transition: all 0.3s ease; font-size: 14px;
         }
         .export-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
-        .grades-table {
-            width: 100%;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+        .grades-table { width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .grades-table thead { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
         .grades-table thead th { padding: 16px 12px; font-weight: 600; font-size: 14px; text-align: center; border: none; }
         .grades-table tbody tr { transition: all 0.2s ease; border-bottom: 1px solid #e2e8f0; }
@@ -200,18 +148,19 @@
 @endpush
 
 @section('content')
-  @if(session('success'))
+    @if(session('success'))
         <div id="success-alert" style="background:#38c172;color:#fff;padding:16px 24px;border-radius:8px;text-align:center;font-weight:600;margin-bottom:18px;">
             <i class="fas fa-check-circle" style="margin-left:8px;"></i>
             {{ session('success') }}
         </div>
         <script>
             setTimeout(function(){
-                var alert = document.getElementById('success-alert');
-                if(alert) alert.style.display = 'none';
+                var el = document.getElementById('success-alert');
+                if(el) el.style.display = 'none';
             }, 3500);
         </script>
     @endif
+
     <div class="admin-grades-dashboard">
 
         <!-- Statistics Cards -->
@@ -239,45 +188,15 @@
                     </button>
                 </div>
             </div>
-
             <div class="filters-grid">
                 <div class="filter-group">
-                    <label><i class="fas fa-user"></i> اسم الطالب</label>
-                    <input type="text" id="filter-student" placeholder="ابحث عن طالب...">
+                    <label><i class="fas fa-user"></i> اسم الطالب أو الإيميل</label>
+                    <input type="text" id="filter-student" placeholder="ابحث عن طالب أو إيميل...">
                 </div>
-                <div class="filter-group" style="display:none">
-                    <label><i class="fas fa-book"></i> المادة</label>
-                    <select id="filter-course">
-                        <option value="">جميع المواد</option>
-                    </select>
-                </div>
-                <div class="filter-group" style="display:none">
-                    <label><i class="fas fa-calendar-alt"></i> الترم</label>
-                    <select id="filter-term">
-                        <option value="">جميع الترمات</option>
-                        <option value="1">الترم الأول</option>
-                        <option value="2">الترم الثاني</option>
-                        <option value="3">الترم الثالث</option>
-                        <option value="4">الترم الرابع</option>
-                    </select>
-                </div>
-                <div class="filter-group" style="display:none">
-                    <label><i class="fas fa-tag"></i> نوع الاختبار</label>
-                    <select id="filter-type">
-                        <option value="">جميع الأنواع</option>
-                        <option value="term_grade">درجة الترم</option>
-                        <option value="midterm">منتصف الترم</option>
-                        <option value="final">نهائي</option>
-                    </select>
-                </div>
-                <div class="filter-group" style="display:none">
-                    <label><i class="fas fa-check-circle"></i> الحالة</label>
-                    <select id="filter-status">
-                        <option value="">الكل</option>
-                        <option value="passed">ناجح</option>
-                        <option value="failed">راسب</option>
-                    </select>
-                </div>
+                <div class="filter-group" style="display:none"><select id="filter-course"><option value="">جميع المواد</option></select></div>
+                <div class="filter-group" style="display:none"><select id="filter-term"><option value="">جميع الترمات</option></select></div>
+                <div class="filter-group" style="display:none"><select id="filter-type"><option value="">جميع الأنواع</option></select></div>
+                <div class="filter-group" style="display:none"><select id="filter-status"><option value="">الكل</option></select></div>
             </div>
         </div>
 
@@ -304,6 +223,7 @@
                         <tr>
                             <th><i class="fas fa-hashtag"></i></th>
                             <th><i class="fas fa-user"></i> الطالب</th>
+                            <th><i class="fas fa-envelope"></i> الإيميل</th>
                             <th><i class="fas fa-calendar"></i> الترم</th>
                             <th><i class="fas fa-comment-dots"></i> ملاحظات</th>
                             <th><i class="fas fa-file-pdf"></i> ملف الدرجات</th>
@@ -313,7 +233,7 @@
                     <tbody id="grades-tbody">
                         @if(!isset($students) || !is_iterable($students) || count($students) == 0)
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox"></i>
                                         <h5>لا يوجد طلاب</h5>
@@ -328,7 +248,7 @@
                                 @php
                                     $firstGrade = $gradesByStudent->get($student->id);
                                 @endphp
-                                <tr>
+                                <tr data-student-id="{{ $student->id }}">
                                     <td><strong>{{ $loop->iteration }}</strong></td>
                                     <td>
                                         <div class="student-info">
@@ -336,9 +256,10 @@
                                             <span class="student-name">{{ $student->full_name ?? $student->name }}</span>
                                         </div>
                                     </td>
+                                    <td class="student-email">{{ $student->email }}</td>
                                     <td><span class="term-badge">{{ $firstGrade->term ?? '-' }}</span></td>
                                     <td class="notes-cell">{{ $firstGrade->notes ?? '-' }}</td>
-                                    <td>
+                                    <td class="pdf-cell">
                                         @if($firstGrade && $firstGrade->pdf_path)
                                             <a href="/store/{{ ltrim(preg_replace('#^pdf_grades[\\/]#', 'pdf_grades/', $firstGrade->pdf_path), '/') }}" target="_blank" class="btn btn-sm btn-danger">
                                                 <i class="fas fa-file-pdf"></i> تحميل
@@ -347,73 +268,29 @@
                                             -
                                         @endif
                                     </td>
-                               <td>
-                                    <div class="action-cell">
-                                        @if($firstGrade && $firstGrade->id)
-                                            <button class="btn-edit" onclick="editGrade('{{ $firstGrade->id }}')" title="تعديل">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn-delete" onclick="deleteGrade('{{ $firstGrade->id }}')" title="حذف">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        @else
-                                            <button class="btn-edit" onclick="openAddGradeModal('{{ $student->id }}')" title="إضافة" data-student="{{ $student->id }}">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        <!-- Modal for Adding Grade -->
-                                        <div id="addGradeModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
-                                            <div style="background:#fff;padding:32px 24px;border-radius:12px;max-width:400px;width:90%;position:relative;">
-                                                <button onclick="closeAddGradeModal()" style="position:absolute;top:10px;left:10px;background:none;border:none;font-size:22px;color:#888;cursor:pointer;">&times;</button>
-                                                <h4 style="margin-bottom:18px;text-align:center;color:#2d3748;font-weight:700;">رفع ملف درجات الطالب</h4>
-                                                <form id="addGradeForm" action="{{ route('panel.webinars.term_grades.index') }}" method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    <input type="hidden" id="modal-student-id" name="grades[STUDENT_ID][student_id]" value="">
-                                                    <div class="form-group">
-                                                        <label for="modal-pdf-file"><i class="fas fa-file-pdf"></i> ملف PDF للدرجات</label>
-                                                        <input type="file" id="modal-pdf-file" name="grades[STUDENT_ID][pdf_file]" accept="application/pdf" class="form-control" required>
-                                                    </div>
-                                                    <div class="mt-4 text-center">
-                                                        <button type="submit" class="btn-save" style="width:100%;">
-                                                            <i class="fas fa-save"></i>
-                                                            حفظ الدرجات
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                    <td class="action-td">
+                                        <div class="action-cell">
+                                            @if($firstGrade && $firstGrade->id)
+                                                <button class="btn-edit" onclick="editGrade('{{ $firstGrade->id }}')" title="تعديل">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-delete" onclick="deleteGrade('{{ $firstGrade->id }}')" title="حذف" data-student="{{ $student->id }}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @else
+                                                <button class="btn-edit" onclick="openAddGradeModal('{{ $student->id }}')" title="إضافة">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            @endif
                                         </div>
-                                        <script>
-                                        function openAddGradeModal(studentId) {
-                                            var modal = document.getElementById('addGradeModal');
-                                            var form = document.getElementById('addGradeForm');
-                                            // تحديث الحقول بالأيدي
-                                            document.getElementById('modal-student-id').value = studentId;
-                                            document.getElementById('modal-student-id').setAttribute('name', `grades[${studentId}][student_id]`);
-                                            document.getElementById('modal-pdf-file').setAttribute('name', `grades[${studentId}][pdf_file]`);
-                                            // إعادة تعيين الملف
-                                            document.getElementById('modal-pdf-file').value = '';
-                                            modal.style.display = 'flex';
-                                        }
-                                        function closeAddGradeModal() {
-                                            document.getElementById('addGradeModal').style.display = 'none';
-                                        }
-                                        // إغلاق المودال عند الضغط خارج المحتوى
-                                        window.onclick = function(event) {
-                                            var modal = document.getElementById('addGradeModal');
-                                            if (event.target === modal) {
-                                                closeAddGradeModal();
-                                            }
-                                        }
-                                        </script>
-                                        @endif
-                                    </div>
-                                </td>
-                                      
+                                    </td>
                                 </tr>
                             @endforeach
                         @endif
                     </tbody>
                 </table>
             </div>
+
             <div class="my-30">
                 @if(isset($students) && $students instanceof \Illuminate\Pagination\LengthAwarePaginator && $students->hasPages())
                     {{ $students->appends(request()->input())->links('vendor.pagination.panel') }}
@@ -422,21 +299,34 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div id="addGradeModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+        <div style="background:#fff;padding:32px 24px;border-radius:12px;max-width:400px;width:90%;position:relative;">
+            <button onclick="closeAddGradeModal()" style="position:absolute;top:10px;left:10px;background:none;border:none;font-size:22px;color:#888;cursor:pointer;">&times;</button>
+            <h4 style="margin-bottom:18px;text-align:center;color:#2d3748;font-weight:700;">رفع ملف درجات الطالب</h4>
+            <form id="addGradeForm" action="{{ route('panel.webinars.term_grades.index') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" id="modal-student-id" name="grades[0][student_id]" value="">
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label style="display:block;margin-bottom:8px;font-weight:600;"><i class="fas fa-file-pdf"></i> ملف PDF للدرجات</label>
+                    <input type="file" id="modal-pdf-file" name="grades[0][pdf_file]" accept="application/pdf" class="form-control" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn-edit" style="width:100%;padding:12px;font-size:15px;">
+                        <i class="fas fa-save"></i> حفظ الدرجات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('scripts_bottom')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-        
+
         <script>
             (function() {
                 const filterStudent = document.getElementById('filter-student');
-                const filterCourse  = document.getElementById('filter-course');
-                const filterTerm    = document.getElementById('filter-term');
-                const filterType    = document.getElementById('filter-type');
-                const filterStatus  = document.getElementById('filter-status');
-
-                let allGrades = @json($grades ?? []);
-                if (!Array.isArray(allGrades)) allGrades = Object.values(allGrades);
-                let filteredGrades = [...allGrades];
 
                 let allStudents = @json($students ?? []);
                 if (!Array.isArray(allStudents)) allStudents = Object.values(allStudents);
@@ -446,32 +336,43 @@
                 });
 
                 function updateStatistics() {
-                    document.getElementById('total-students').textContent = allStudents.length;
-                }
-
-                function applyFilters() {
-                    const studentSearch = filterStudent.value.toLowerCase();
-                    filteredGrades = allGrades.filter(grade => {
-                        return !studentSearch || (grade.student_name && grade.student_name.toLowerCase().includes(studentSearch));
-                    });
-                    filterTable(studentSearch);
+                    const visible = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none' && r.querySelector('.student-name')).length;
+                    document.getElementById('total-students').textContent = visible || allStudents.length;
                 }
 
                 function filterTable(search) {
                     const rows = document.querySelectorAll('#grades-tbody tr');
                     rows.forEach(row => {
                         const nameCell = row.querySelector('.student-name');
+                        const emailCell = row.querySelector('.student-email');
                         if (!nameCell) return;
                         const name = nameCell.textContent.toLowerCase();
-                        row.style.display = !search || name.includes(search) ? '' : 'none';
+                        const email = emailCell ? emailCell.textContent.toLowerCase() : '';
+                        row.style.display = !search || name.includes(search) || email.includes(search) ? '' : 'none';
                     });
-                    // update count
-                    const visible = [...rows].filter(r => r.style.display !== 'none').length;
-                    document.getElementById('total-students').textContent = visible;
+                    updateStatistics();
                 }
 
-                
-                filterStudent.addEventListener('input', applyFilters);
+                filterStudent.addEventListener('input', function() {
+                    filterTable(this.value.toLowerCase());
+                });
+
+                window.openAddGradeModal = function(studentId) {
+                    document.getElementById('modal-student-id').value = studentId;
+                    document.getElementById('modal-student-id').setAttribute('name', `grades[${studentId}][student_id]`);
+                    document.getElementById('modal-pdf-file').setAttribute('name', `grades[${studentId}][pdf_file]`);
+                    document.getElementById('modal-pdf-file').value = '';
+                    document.getElementById('addGradeModal').style.display = 'flex';
+                };
+
+                window.closeAddGradeModal = function() {
+                    document.getElementById('addGradeModal').style.display = 'none';
+                };
+
+                window.onclick = function(event) {
+                    const modal = document.getElementById('addGradeModal');
+                    if (event.target === modal) closeAddGradeModal();
+                };
 
                 window.editGrade = function(gradeId) {
                     window.location.href = `/panel/grades/${gradeId}/edit`;
@@ -499,16 +400,26 @@
                             })
                             .then(r => r.ok ? r.json() : Promise.reject(r))
                             .then(() => {
-                                const btn = document.querySelector(`button[onclick=\"deleteGrade('${gradeId}')\"]`);
+                                const btn = document.querySelector(`button[onclick="deleteGrade('${gradeId}')"]`);
                                 if (btn) {
                                     const row = btn.closest('tr');
                                     if (row) {
-                                        // ابحث عن عمود ملف الدرجات (td الخامس)
-                                        const fileTd = row.querySelectorAll('td')[4];
-                                        if (fileTd) fileTd.innerHTML = '-';
+                                        const studentId = row.getAttribute('data-student-id');
+                                        const cells = row.querySelectorAll('td');
+                                        if (cells[3]) cells[3].innerHTML = '<span class="term-badge">-</span>';
+                                        if (cells[4]) cells[4].textContent = '-';
+                                        if (cells[5]) cells[5].innerHTML = '-';
+                                        if (cells[6]) {
+                                            cells[6].innerHTML = `
+                                                <div class="action-cell">
+                                                    <button class="btn-edit" onclick="openAddGradeModal('${studentId}')" title="إضافة">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            `;
+                                        }
                                     }
                                 }
-                                updateStatistics();
                                 Swal.fire({
                                     icon: 'success',
                                     title: deleteAlertSuccess,
@@ -533,9 +444,9 @@
                 window.refreshData = function() { location.reload(); };
 
                 window.exportCSV = function() {
-                    const rows = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none');
+                    const rows = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none' && r.querySelector('.student-name'));
                     if (!rows.length) { alert('لا توجد بيانات للتصدير'); return; }
-                    const headers = ['#', 'الطالب', 'الترم', 'ملاحظات'];
+                    const headers = ['#', 'الطالب', 'الإيميل', 'الترم', 'ملاحظات'];
                     const data = rows.map((row, idx) => {
                         const cells = row.querySelectorAll('td');
                         return [
@@ -543,6 +454,7 @@
                             cells[1]?.querySelector('.student-name')?.textContent?.trim() || '',
                             cells[2]?.textContent?.trim() || '',
                             cells[3]?.textContent?.trim() || '',
+                            cells[4]?.textContent?.trim() || '',
                         ];
                     });
                     const csv = [headers, ...data].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -552,13 +464,11 @@
                     a.download = `grades_${new Date().toISOString().split('T')[0]}.csv`;
                     document.body.appendChild(a); a.click(); a.remove();
                 };
-window.addGrade = function(studentId) {
-    window.location.href = `/panel/webinars/add_term_grades?student_id=${studentId}`;
-};
+
                 window.exportPDF = function() {
-                    const rows = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none');
+                    const rows = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none' && r.querySelector('.student-name'));
                     if (!rows.length) { alert('لا توجد بيانات للتصدير'); return; }
-                    const headers = ['#', 'الطالب', 'الترم', 'ملاحظات'];
+                    const headers = ['#', 'الطالب', 'الإيميل', 'الترم', 'ملاحظات'];
                     const body = rows.map((row, idx) => {
                         const cells = row.querySelectorAll('td');
                         return [
@@ -566,6 +476,7 @@ window.addGrade = function(studentId) {
                             cells[1]?.querySelector('.student-name')?.textContent?.trim() || '',
                             cells[2]?.textContent?.trim() || '',
                             cells[3]?.textContent?.trim() || '',
+                            cells[4]?.textContent?.trim() || '',
                         ];
                     });
                     const { jsPDF } = window.jspdf;
@@ -584,6 +495,7 @@ window.addGrade = function(studentId) {
                     });
                     doc.save(`grades_report_${new Date().toISOString().split('T')[0]}.pdf`);
                 };
+
             })();
         </script>
     @endpush
