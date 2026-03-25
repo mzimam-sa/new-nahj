@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Panel\TermGradesController;
-use Nelc\LaravelNelcXapiIntegration\XapiIntegration;
+use App\Services\NelcXapiService;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,19 +17,19 @@ use Nelc\LaravelNelcXapiIntegration\XapiIntegration;
 
 Route::get('/test-nelc', function () {
 
-    $xapi = new XapiIntegration();
+    $xapi = new NelcXapiService();
 
     $response = $xapi->Registered(
-        '5634567890',                 // Student National ID
-        'fg@test.com',              // Student Email
-        'dd-1',                   // Course ID
-        'Test dfg',                // Course Title
-        'Test dfd Description',    // Course Description
-        'Instructor dfd',            // Instructor Name
-        'instrucsfftor@test.com'         // Instructor Email
+        '1234567890',                          // Student National ID
+        'student@nahj.com.sa',                 // Student Email
+        'nahj-course-101',                     // Course ID
+        'Introduction to Programming',         // Course Title
+        'Learn the basics of programming',     // Course Description
+        'Ahmad Mohammed',                      // Instructor Name
+        'instructor@nahj.com.sa'               // Instructor Email
     );
 
-    return $response;
+    return response()->json($response);
 });
 
 
