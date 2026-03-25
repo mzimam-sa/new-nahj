@@ -470,6 +470,7 @@
                     document.getElementById('total-students').textContent = visible;
                 }
 
+                
                 filterStudent.addEventListener('input', applyFilters);
 
                 window.editGrade = function(gradeId) {
