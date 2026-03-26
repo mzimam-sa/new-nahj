@@ -12,7 +12,7 @@ class RegionsController extends Controller
     public function countries()
     {
 
-        $countries = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $countries = Region::select(DB::raw('*'))
             ->where('type', Region::$country)
             ->get();
         return apiResponse2(1, 'retrieved', trans('api.public.retrieved'),
@@ -44,7 +44,7 @@ class RegionsController extends Controller
     {
         $user = apiAuth();
         $region_id = $super_region_id;
-        $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $provinces = Region::select(DB::raw('*'))
             ->where('type', $type);
 
         if ($region_id) {

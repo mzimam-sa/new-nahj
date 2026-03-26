@@ -8,6 +8,7 @@ use App\Models\Quiz as Model;
 use App\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Auth\Events\Failed;
 
 class Quiz extends Model
@@ -202,7 +203,11 @@ class Quiz extends Model
     {
 
         ///   return 'f' ;
-        return $this->quizResults()->orderBy('created_at', 'desc')->groupBy('user_id')->get()->map(function ($result) {
+        return $this->quizResults()
+            ->select('user_id', DB::raw('MAX(created_at) as created_at'))
+            ->groupBy('user_id')
+            ->orderBy('created_at', 'desc')
+            ->get()->map(function ($result) {
             return $result->user->brief/// ->user()
                 ;
         });

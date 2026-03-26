@@ -180,8 +180,8 @@ class ClassesController extends Controller
                         ->whereNull('refund_at');
                 })
                     ->whereNotNull("sales.{$this->columnId}")
-                    ->select("{$this->tableName}.*", "sales.{$this->columnId}", DB::raw("count(sales.{$this->columnId}) as salesCounts"))
-                    ->groupBy("sales.{$this->columnId}")
+                    ->select("{$this->tableName}.*", DB::raw("count(sales.{$this->columnId}) as salesCounts"))
+                    ->groupBy("{$this->tableName}.id")
                     ->orderBy('salesCounts', 'desc');
             }
 

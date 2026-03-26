@@ -23,7 +23,7 @@ class RegionController extends Controller
 
         $type = $pageTypes[$pageType];
 
-        $regions = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $regions = Region::select(DB::raw('*'))
             ->where('type', $type)
             ->orderBy('created_at', 'desc')
             ->with([
@@ -51,7 +51,7 @@ class RegionController extends Controller
         $countries = null;
 
         if ($type !== Region::$country) {
-            $countries = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $countries = Region::select(DB::raw('*'))
                 ->where('type', Region::$country)
                 ->get();
 
@@ -115,7 +115,7 @@ class RegionController extends Controller
     {
         $this->authorize('admin_regions_edit');
 
-        $region = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $region = Region::select(DB::raw('*'))
             ->where('id', $id)
             ->first();
 
@@ -129,7 +129,7 @@ class RegionController extends Controller
             $cities = null;
 
             if ($region->type !== Region::$country) {
-                $countries = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+                $countries = Region::select(DB::raw('*'))
                     ->where('type', Region::$country)
                     ->get();
 
@@ -139,7 +139,7 @@ class RegionController extends Controller
             }
 
             if ($region->type !== Region::$country and $region->type !== Region::$province) {
-                $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+                $provinces = Region::select(DB::raw('*'))
                     ->where('type', Region::$province)
                     ->where('country_id', $region->country_id)
                     ->get();
@@ -150,7 +150,7 @@ class RegionController extends Controller
             }
 
             if ($region->type == Region::$district) {
-                $cities = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+                $cities = Region::select(DB::raw('*'))
                     ->where('type', Region::$city)
                     ->where('country_id', $region->country_id)
                     ->get();
@@ -233,7 +233,7 @@ class RegionController extends Controller
     {
         $this->authorize('admin_regions_create');
 
-        $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $provinces = Region::select(DB::raw('*'))
             ->where('type', Region::$province)
             ->where('country_id', $countryId)
             ->get();
@@ -254,7 +254,7 @@ class RegionController extends Controller
     {
         $this->authorize('admin_regions_create');
 
-        $cities = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $cities = Region::select(DB::raw('*'))
             ->where('type', Region::$city)
             ->where('province_id', $provinceId)
             ->get();

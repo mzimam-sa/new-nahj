@@ -57,7 +57,7 @@ class NotificationsController extends Controller
         }
 
         $notifications = $notifications->leftJoin('notifications_status', 'notifications.id', '=', 'notifications_status.notification_id')
-            ->selectRaw('notifications.*, count(notifications_status.notification_id) AS `count`')
+            ->selectRaw('notifications.*, count(notifications_status.notification_id) AS "count"')
             ->with(['notificationStatus'])
             ->groupBy('notifications.id')
             ->orderBy('count', 'asc')

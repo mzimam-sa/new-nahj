@@ -11,7 +11,7 @@ class RegionController extends Controller
 {
     public function provincesByCountry($countryId)
     {
-        $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $provinces = Region::select(DB::raw('*'))
             ->where('type', Region::$province)
             ->where('country_id', $countryId)
             ->get();
@@ -30,7 +30,7 @@ class RegionController extends Controller
 
     public function citiesByProvince($provinceId)
     {
-        $cities = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $cities = Region::select(DB::raw('*'))
             ->where('type', Region::$city)
             ->where('province_id', $provinceId)
             ->get();
@@ -49,7 +49,7 @@ class RegionController extends Controller
 
     public function districtsByCity($cityId)
     {
-        $districts = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $districts = Region::select(DB::raw('*'))
             ->where('type', Region::$district)
             ->where('city_id', $cityId)
             ->get();

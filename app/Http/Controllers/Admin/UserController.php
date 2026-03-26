@@ -299,95 +299,95 @@ class UserController extends Controller
             switch ($sort) {
                 case 'sales_classes_asc':
                     $query->join('sales', 'users.id', '=', 'sales.seller_id')
-                        ->select('users.*', 'sales.seller_id', 'sales.webinar_id', 'sales.refund_at', DB::raw('count(sales.seller_id) as sales_count'))
+                        ->select('users.*', DB::raw('count(sales.seller_id) as sales_count'))
                         ->whereNotNull('sales.webinar_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.seller_id')
+                        ->groupBy('users.id')
                         ->orderBy('sales_count', 'asc');
                     break;
                 case 'sales_classes_desc':
                     $query->join('sales', 'users.id', '=', 'sales.seller_id')
-                        ->select('users.*', 'sales.seller_id', 'sales.webinar_id', 'sales.refund_at', DB::raw('count(sales.seller_id) as sales_count'))
+                        ->select('users.*', DB::raw('count(sales.seller_id) as sales_count'))
                         ->whereNotNull('sales.webinar_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.seller_id')
+                        ->groupBy('users.id')
                         ->orderBy('sales_count', 'desc');
                     break;
                 case 'purchased_classes_asc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.refund_at', DB::raw('count(sales.buyer_id) as purchased_count'))
+                        ->select('users.*', DB::raw('count(sales.buyer_id) as purchased_count'))
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.buyer_id')
+                        ->groupBy('users.id')
                         ->orderBy('purchased_count', 'asc');
                     break;
                 case 'purchased_classes_desc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.refund_at', DB::raw('count(sales.buyer_id) as purchased_count'))
-                        ->groupBy('sales.buyer_id')
+                        ->select('users.*', DB::raw('count(sales.buyer_id) as purchased_count'))
+                        ->groupBy('users.id')
                         ->whereNull('sales.refund_at')
                         ->orderBy('purchased_count', 'desc');
                     break;
                 case 'purchased_classes_amount_asc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.amount', 'sales.refund_at', DB::raw('sum(sales.amount) as purchased_amount'))
-                        ->groupBy('sales.buyer_id')
+                        ->select('users.*', DB::raw('sum(sales.amount) as purchased_amount'))
+                        ->groupBy('users.id')
                         ->whereNull('sales.refund_at')
                         ->orderBy('purchased_amount', 'asc');
                     break;
                 case 'purchased_classes_amount_desc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.amount', 'sales.refund_at', DB::raw('sum(sales.amount) as purchased_amount'))
-                        ->groupBy('sales.buyer_id')
+                        ->select('users.*', DB::raw('sum(sales.amount) as purchased_amount'))
+                        ->groupBy('users.id')
                         ->whereNull('sales.refund_at')
                         ->orderBy('purchased_amount', 'desc');
                     break;
                 case 'sales_appointments_asc':
                     $query->join('sales', 'users.id', '=', 'sales.seller_id')
-                        ->select('users.*', 'sales.seller_id', 'sales.meeting_id', 'sales.refund_at', DB::raw('count(sales.seller_id) as sales_count'))
+                        ->select('users.*', DB::raw('count(sales.seller_id) as sales_count'))
                         ->whereNotNull('sales.meeting_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.seller_id')
+                        ->groupBy('users.id')
                         ->orderBy('sales_count', 'asc');
                     break;
                 case 'sales_appointments_desc':
                     $query->join('sales', 'users.id', '=', 'sales.seller_id')
-                        ->select('users.*', 'sales.seller_id', 'sales.meeting_id', 'sales.refund_at', DB::raw('count(sales.seller_id) as sales_count'))
+                        ->select('users.*', DB::raw('count(sales.seller_id) as sales_count'))
                         ->whereNotNull('sales.meeting_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.seller_id')
+                        ->groupBy('users.id')
                         ->orderBy('sales_count', 'desc');
                     break;
                     break;
                 case 'purchased_appointments_asc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.meeting_id', 'sales.refund_at', DB::raw('count(sales.buyer_id) as purchased_count'))
+                        ->select('users.*', DB::raw('count(sales.buyer_id) as purchased_count'))
                         ->whereNotNull('sales.meeting_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.buyer_id')
+                        ->groupBy('users.id')
                         ->orderBy('purchased_count', 'asc');
                     break;
                 case 'purchased_appointments_desc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.meeting_id', 'sales.refund_at', DB::raw('count(sales.buyer_id) as purchased_count'))
+                        ->select('users.*', DB::raw('count(sales.buyer_id) as purchased_count'))
                         ->whereNotNull('sales.meeting_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.buyer_id')
+                        ->groupBy('users.id')
                         ->orderBy('purchased_count', 'desc');
                     break;
                 case 'purchased_appointments_amount_asc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.amount', 'sales.meeting_id', 'sales.refund_at', DB::raw('sum(sales.amount) as purchased_amount'))
+                        ->select('users.*', DB::raw('sum(sales.amount) as purchased_amount'))
                         ->whereNotNull('sales.meeting_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.buyer_id')
+                        ->groupBy('users.id')
                         ->orderBy('purchased_amount', 'asc');
                     break;
                 case 'purchased_appointments_amount_desc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
-                        ->select('users.*', 'sales.buyer_id', 'sales.amount', 'sales.meeting_id', 'sales.refund_at', DB::raw('sum(sales.amount) as purchased_amount'))
+                        ->select('users.*', DB::raw('sum(sales.amount) as purchased_amount'))
                         ->whereNotNull('sales.meeting_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.buyer_id')
+                        ->groupBy('users.id')
                         ->orderBy('purchased_amount', 'desc');
                     break;
                 case 'register_asc':
@@ -607,26 +607,26 @@ class UserController extends Controller
         $cities = null;
         $districts = null;
 
-        $countries = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+        $countries = Region::select(DB::raw('*'))
             ->where('type', Region::$country)
             ->get();
 
         if (!empty($user->country_id)) {
-            $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $provinces = Region::select(DB::raw('*'))
                 ->where('type', Region::$province)
                 ->where('country_id', $user->country_id)
                 ->get();
         }
 
         if (!empty($user->province_id)) {
-            $cities = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $cities = Region::select(DB::raw('*'))
                 ->where('type', Region::$city)
                 ->where('province_id', $user->province_id)
                 ->get();
         }
 
         if (!empty($user->city_id)) {
-            $districts = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
+            $districts = Region::select(DB::raw('*'))
                 ->where('type', Region::$district)
                 ->where('city_id', $user->city_id)
                 ->get();
