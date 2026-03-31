@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Panel\TermGradesController;
 
 $prefix = getAdminPanelUrlPrefix();
 
@@ -258,6 +259,29 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
         });
 
         Route::group(['prefix' => 'webinars'], function () {
+
+            Route::get('/term_grades', [\App\Http\Controllers\Panel\TermGradesController::class, 'termGrades'])
+            ->name('admin.webinars.term_grades');
+
+            Route::get('/add_term_grades', [\App\Http\Controllers\Panel\TermGradesController::class, 'termGradesShowCreate'])
+                ->name('admin.webinars.add_term_grades');
+
+            Route::post('/term_grades', [\App\Http\Controllers\Panel\TermGradesController::class, 'termGradesStore'])
+                ->name('admin.webinars.store_term_grades');
+
+            // Route::get('/{webinar}/students', [\App\Http\Controllers\Panel\TermGradesController::class, 'studentsForWebinar'])
+            //     ->name('admin.webinars.students');
+
+            Route::get('/grades/{id}/edit', [\App\Http\Controllers\Panel\TermGradesController::class, 'editGrade'])
+                ->name('admin.grades.edit');
+
+            Route::patch('/grades/{id}', [\App\Http\Controllers\Panel\TermGradesController::class, 'updateGrade'])
+                ->name('admin.grades.update');
+
+            Route::delete('/grades/{id}', [\App\Http\Controllers\Panel\TermGradesController::class, 'deleteGrade'])
+                ->name('admin.grades.delete');
+
+            
             // صفحة عرض محاور الدورة للإدارة
             Route::get('/{id}/chapters', 'WebinarController@adminChapters')->name('admin.webinars.chapters');
             Route::get('/', 'WebinarController@index');

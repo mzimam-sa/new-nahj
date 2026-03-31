@@ -132,7 +132,7 @@
                     @endif
 
 
-                    @if($authUser->isOrganization() || $authUser->isTeacher())
+                    <!-- @if($authUser->isOrganization() || $authUser->isTeacher() || $authUser->isSupervisor())
                         <li class="mt-5 {{ (request()->is('panel/webinars/comments')) ? 'active' : '' }}">
                             <a href="/panel/webinars/comments">{{ trans('panel.my_class_comments') }}</a>
                         </li>
@@ -154,7 +154,7 @@
                     @endif
 
 
-                    {{-- my-grades --}}
+                    {{-- my-grades --}} -->
 
                     <li class="mt-5 {{ (request()->is('panel/webinars/my-comments')) ? 'active' : '' }}">
                         <a href="/panel/webinars/my-comments">{{ trans('panel.my_comments') }}</a>

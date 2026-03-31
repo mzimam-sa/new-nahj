@@ -355,18 +355,20 @@
     </style>
 </head>
 <body>
+
     <div class="container">
         <section class="panel-section-card">
+
             <div class="header-section">
-                <a href="{{ route('panel.webinars.term_grades.index') }}" class="back-button">
+                <a href="{{ $backUrl }}" class="back-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 18l-6-6 6-6"/>
                     </svg>
                     رجوع
                 </a>
                 <h3>تعديل الدرجة</h3>
-            </div> 
-        
+            </div>
+
             <div class="info-card">
                 <div class="info-item">
                     <strong>الطالب:</strong>
@@ -374,11 +376,11 @@
                 </div>
             </div>
 
-<form action="{{ url('/panel/grades/'.$grade->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PATCH')
+            <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PATCH')
 
-                <div class="form-group"> 
+                <div class="form-group">
                     <label>الترم</label>
                     <input name="term" type="number" class="form-control" value="{{ old('term', $grade->term) }}" placeholder="أدخل رقم الترم">
                 </div>
@@ -389,10 +391,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>سجل  الطالب</label>
+                    <label>سجل الطالب</label>
                     @if($grade->pdf_path)
                         <div style="margin-bottom:8px">
-                            <a href="/store/{{ $grade->pdf_path }}" target="_blank" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> تحميل الملف الحالي</a>
+                            <a href="/store/{{ $grade->pdf_path }}" target="_blank" class="btn btn-sm btn-danger">
+                                <i class="fas fa-file-pdf"></i> تحميل الملف الحالي
+                            </a>
                         </div>
                     @endif
                     <input type="file" name="pdf_file" accept="application/pdf" class="form-control">
@@ -403,12 +407,15 @@
                     <button type="submit" class="btn btn-primary">
                         <span>✓ حفظ التعديلات</span>
                     </button>
-                    <a href="{{ url('/panel/webinars/term_grades') }}" class="btn btn-secondary">
+                    <a href="{{ $cancelUrl }}" class="btn btn-secondary">
                         ✕ إلغاء
                     </a>
                 </div>
+
             </form>
+
         </section>
     </div>
+
 </body>
 </html>

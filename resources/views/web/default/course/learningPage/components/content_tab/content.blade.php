@@ -85,6 +85,12 @@
                                 </tbody>
                             </table>
                             <button type="submit" class="btn btn-primary btn-sm mt-2">حفظ الحضور</button>
+                            <a href="{{ route('panel.sessions.attendance.export', ['session_id' => $item->id]) }}"
+                               class="btn btn-sm mt-2 ml-2 export-attendance-btn"
+                               style="background: linear-gradient(90deg, #00c7b2 0%, #1e90ff 100%); color: #fff; border: none; box-shadow: 0 2px 8px rgba(30,144,255,0.08); font-weight: bold; letter-spacing: 0.5px;">
+                                <i class="fa fa-file-excel-o" style="margin-left: 6px;"></i>
+                                تصدير الحضور (Excel)
+                            </a>
                         </form>
                     </div>
                 @else

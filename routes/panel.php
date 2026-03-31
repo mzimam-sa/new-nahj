@@ -218,6 +218,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
         // حفظ حضور الطلاب في الجلسة
         Route::post('/{session_id}/attendance', 'SessionController@attendance')->name('panel.sessions.attendance');
+        // تصدير حضور الطلاب للجلسة
+        Route::get('/{session_id}/attendance/export', 'SessionController@exportAttendanceExcel')->name('panel.sessions.attendance.export');
     });
 
     Route::group(['prefix' => 'chapters'], function () {
