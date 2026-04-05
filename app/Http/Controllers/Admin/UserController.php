@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Http\Controllers\Admin;
+
 
 use App\Bitwise\UserLevelOfTraining;
 use App\Exports\InstructorsExport;
@@ -35,24 +37,31 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
     use UserFormFieldsTrait;
 
+
     public function staffs(Request $request)
     {
         $this->authorize('admin_staffs_list');
 
+
         $staffsRoles = Role::where('is_admin', true)->get();
         $staffsRoleIds = $staffsRoles->pluck('id')->toArray();
+
 
         // this query get all staffs user without system dev
         $query = User::whereIn('role_id', $staffsRoleIds)->where('id', '!=', '1049');
         $query = $this->filters($query, $request);
 
+
         $users = $query->orderBy('created_at', 'desc')
             ->paginate(10);
+
 
         $data = [
             'pageTitle' => trans('admin/main.staff_list_title'),
@@ -60,14 +69,18 @@ class UserController extends Controller
             'staffsRoles' => $staffsRoles,
         ];
 
+
         return view('admin.users.staffs', $data);
     }
+
 
     public function organizations(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_organizations_list');
 
+
         $query = User::where('role_name', Role::$organization);
+
 
         $totalOrganizations = deepClone($query)->count();
         $verifiedOrganizations = deepClone($query)->where('verified', true)
@@ -83,7 +96,10 @@ class UserController extends Controller
             ->get();
 
 
+
+
         $query = $this->filters($query, $request);
+
 
         if ($is_export_excel) {
             $users = $query->orderBy('created_at', 'desc')->get();
@@ -93,11 +109,15 @@ class UserController extends Controller
         }
 
 
+
+
         $users = $this->addUsersExtraInfo($users);
+
 
         if ($is_export_excel) {
             return $users;
         }
+
 
         $data = [
             'pageTitle' => trans('admin/main.organizations'),
@@ -109,14 +129,18 @@ class UserController extends Controller
             'userGroups' => $userGroups,
         ];
 
+
         return view('admin.users.organizations', $data);
     }
+
 
     public function students(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
 
+
         $query = User::where('role_name', Role::$user);
+
 
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -126,6 +150,7 @@ class UserController extends Controller
             ->where('ban_end_at', '>', time())
             ->count();
 
+
         $totalOrganizationsStudents = User::where('role_name', Role::$user)
             ->whereNotNull('organ_id')
             ->count();
@@ -133,13 +158,17 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         $organizations = User::select('id', 'full_name', 'created_at')
             ->where('role_name', Role::$organization)
             ->orderBy('created_at', 'desc')
             ->get();
 
 
+
+
         $query = $this->filters($query, $request);
+
 
         if ($is_export_excel) {
             $users = $query->orderBy('created_at', 'desc')->get();
@@ -148,11 +177,14 @@ class UserController extends Controller
                 ->paginate(10);
         }
 
+
         $users = $this->addUsersExtraInfo($users);
+
 
         if ($is_export_excel) {
             return $users;
         }
+
 
         $data = [
             'pageTitle' => trans('public.students'),
@@ -165,14 +197,18 @@ class UserController extends Controller
             'organizations' => $organizations,
         ];
 
+
         return view('admin.users.students', $data);
     }
+
 
     public function instructors(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_instructors_list');
 
+
         $query = User::where('role_name', Role::$teacher);
+
 
         $totalInstructors = deepClone($query)->count();
         $inactiveInstructors = deepClone($query)->where('status', 'inactive')
@@ -182,6 +218,7 @@ class UserController extends Controller
             ->where('ban_end_at', '>', time())
             ->count();
 
+
         $totalOrganizationsInstructors = User::where('role_name', Role::$teacher)
             ->whereNotNull('organ_id')
             ->count();
@@ -189,13 +226,17 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         $organizations = User::select('id', 'full_name', 'created_at')
             ->where('role_name', Role::$organization)
             ->orderBy('created_at', 'desc')
             ->get();
 
 
+
+
         $query = $this->filters($query, $request);
+
 
         if ($is_export_excel) {
             $users = $query->orderBy('created_at', 'desc')->get();
@@ -204,11 +245,14 @@ class UserController extends Controller
                 ->paginate(10);
         }
 
+
         $users = $this->addUsersExtraInfo($users);
+
 
         if ($is_export_excel) {
             return $users;
         }
+
 
         $data = [
             'pageTitle' => trans('admin/main.instructors'),
@@ -221,8 +265,10 @@ class UserController extends Controller
             'organizations' => $organizations,
         ];
 
+
         return view('admin.users.instructors', $data);
     }
+
 
     private function addUsersExtraInfo($users)
     {
@@ -230,13 +276,16 @@ class UserController extends Controller
             $salesQuery = Sale::where('seller_id', $user->id)
                 ->whereNull('refund_at');
 
+
             $classesSaleQuery = deepClone($salesQuery)->whereNotNull('webinar_id')
                 ->whereNull('meeting_id')
                 ->whereNull('promotion_id')
                 ->whereNull('subscribe_id');
 
+
             $user->classesSalesCount = $classesSaleQuery->count();
             $user->classesSalesSum = $classesSaleQuery->sum('total_amount');
+
 
             $meetingIds = Meeting::where('creator_id', $user->id)->pluck('id');
             $reserveMeetingsQuery = ReserveMeeting::whereIn('meeting_id', $meetingIds)
@@ -245,38 +294,48 @@ class UserController extends Controller
                         $query->whereNull('refund_at');
                     });
 
+
                     $query->orWhere(function ($query) {
                         $query->whereIn('status', ['canceled']);
                         $query->whereHas('sale');
                     });
                 });
 
+
             $user->meetingsSalesCount = deepClone($reserveMeetingsQuery)->count();
             $user->meetingsSalesSum = deepClone($reserveMeetingsQuery)->sum('paid_amount');
 
 
+
+
             $purchasedQuery = Sale::where('buyer_id', $user->id)
                 ->whereNull('refund_at');
+
 
             $classesPurchasedQuery = deepClone($purchasedQuery)->whereNotNull('webinar_id')
                 ->whereNull('meeting_id')
                 ->whereNull('promotion_id')
                 ->whereNull('subscribe_id');
 
+
             $user->classesPurchasedsCount = $classesPurchasedQuery->count();
             $user->classesPurchasedsSum = $classesPurchasedQuery->sum('total_amount');
+
 
             $meetingsPurchasedQuery = deepClone($purchasedQuery)->whereNotNull('meeting_id')
                 ->whereNull('webinar_id')
                 ->whereNull('promotion_id')
                 ->whereNull('subscribe_id');
 
+
             $user->meetingsPurchasedsCount = $meetingsPurchasedQuery->count();
             $user->meetingsPurchasedsSum = $meetingsPurchasedQuery->sum('total_amount');
         }
 
+
         return $users;
     }
+
 
     private function filters($query, $request)
     {
@@ -289,11 +348,14 @@ class UserController extends Controller
         $role_id = $request->get('role_id');
         $organization_id = $request->get('organization_id');
 
+
         $query = fromAndToDateFilter($from, $to, $query, 'created_at');
+
 
         if (!empty($full_name)) {
             $query->where('full_name', 'like', "%$full_name%");
         }
+
 
         if (!empty($sort)) {
             switch ($sort) {
@@ -399,11 +461,14 @@ class UserController extends Controller
             }
         }
 
+
         if (!empty($group_id)) {
             $userIds = GroupUser::where('group_id', $group_id)->pluck('user_id')->toArray();
 
+
             $query->whereIn('id', $userIds);
         }
+
 
         if (!empty($status)) {
             switch ($status) {
@@ -426,24 +491,30 @@ class UserController extends Controller
             }
         }
 
+
         if (!empty($role_id)) {
             $query->where('role_id', $role_id);
         }
+
 
         if (!empty($organization_id)) {
             $query->where('organ_id', $organization_id);
         }
 
+
         //dd($query->get());
         return $query;
     }
+
 
     public function create()
     {
         $this->authorize('admin_users_create');
 
+
         $roles = Role::orderBy('created_at', 'desc')->get();
         $userGroups = Group::orderBy('created_at', 'desc')->where('status', 'active')->get();
+
 
         $data = [
             'pageTitle' => trans('admin/main.user_new_page_title'),
@@ -452,30 +523,38 @@ class UserController extends Controller
         ];
 
 
+
+
         return view('admin.users.create', $data);
     }
+
 
     private function username($data)
     {
         $email_regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+
 
         $username = 'mobile';
         if (preg_match($email_regex, request('username', null))) {
             $username = 'email';
         }
 
+
         return $username;
     }
+
 
     public function store(Request $request)
     {
         $this->authorize('admin_users_create');
         $data = $request->all();
 
+
         $username = $this->username($data);
         $data[$username] = $data['username'];
         $request->merge([$username => $data['username']]);
         unset($data['username']);
+
 
         $this->validate($request, [
             $username => ($username == 'mobile') ? 'required|numeric|unique:users' : 'required|string|email|max:255|unique:users',
@@ -485,12 +564,16 @@ class UserController extends Controller
             'status' => 'required',
         ]);
 
+
         if (!empty($data['role_id'])) {
             $role = Role::find($data['role_id']);
+
 
             if (!empty($role)) {
                 $referralSettings = getReferralSettings();
                 $usersAffiliateStatus = (!empty($referralSettings) and !empty($referralSettings['users_affiliate_status']));
+
+
 
 
                 $user = User::create([
@@ -505,8 +588,10 @@ class UserController extends Controller
                     'created_at' => time(),
                 ]);
 
+
                 if (!empty($data['group_id'])) {
                     $group = Group::find($data['group_id']);
+
 
                     if (!empty($group)) {
                         GroupUser::create([
@@ -515,6 +600,7 @@ class UserController extends Controller
                             'created_at' => time(),
                         ]);
 
+
                         $notifyOptions = [
                             '[u.g.title]' => $group->name,
                         ];
@@ -522,9 +608,11 @@ class UserController extends Controller
                     }
                 }
 
+
                 return redirect(getAdminPanelUrl() . '/users/' . $user->id . '/edit');
             }
         }
+
 
         $toastData = [
             'title' => '',
@@ -534,9 +622,11 @@ class UserController extends Controller
         return back()->with(['toast' => $toastData]);
     }
 
+
     public function edit(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
+
 
         // edit all users wihout system dev
         $user = User::where('id', $id)->where('id', '!=', 1049)
@@ -554,17 +644,22 @@ class UserController extends Controller
             ])
             ->first(); //
 
+
         if (empty($user)) {
             abort(404);
         }
 
+
         if (!empty($user->location)) {
             $user->location = \Geo::getST_AsTextFromBinary($user->location);
+
 
             $user->location = \Geo::get_geo_array($user->location);
         }
 
+
         $userMetas = $user->userMetas;
+
 
         if (!empty($userMetas)) {
             foreach ($userMetas as $meta) {
@@ -572,28 +667,36 @@ class UserController extends Controller
             }
         }
 
+
         $becomeInstructor = null;
         $becomeInstructorFormFieldValues = null;
+
 
         if (!empty($request->get('type')) and $request->get('type') == 'check_instructor_request') {
             $becomeInstructor = BecomeInstructor::where('user_id', $user->id)
                 ->first();
+
 
             if (!empty($becomeInstructor)) {
                 $becomeInstructorFormFieldValues = $this->getBecomeInstructorFormFieldValues($becomeInstructor);
             }
         }
 
+
         $categories = Category::where('parent_id', null)
             ->with('subCategories')
             ->get();
 
+
         $occupations = $user->occupations->pluck('category_id')->toArray();
+
 
         $userBadges = $user->getBadges(false);
 
+
         $roles = Role::all();
         $badges = Badge::all();
+
 
         $userLanguages = getGeneralSettings('user_languages');
         if (!empty($userLanguages) and is_array($userLanguages)) {
@@ -603,13 +706,17 @@ class UserController extends Controller
         }
 
 
+
+
         $provinces = null;
         $cities = null;
         $districts = null;
 
+
         $countries = Region::select(DB::raw('*'))
             ->where('type', Region::$country)
             ->get();
+
 
         if (!empty($user->country_id)) {
             $provinces = Region::select(DB::raw('*'))
@@ -618,12 +725,14 @@ class UserController extends Controller
                 ->get();
         }
 
+
         if (!empty($user->province_id)) {
             $cities = Region::select(DB::raw('*'))
                 ->where('type', Region::$city)
                 ->where('province_id', $user->province_id)
                 ->get();
         }
+
 
         if (!empty($user->city_id)) {
             $districts = Region::select(DB::raw('*'))
@@ -632,12 +741,14 @@ class UserController extends Controller
                 ->get();
         }
 
+
         $userBanks = UserBank::query()
             ->with([
                 'specifications'
             ])
             ->orderBy('created_at', 'desc')
             ->get();
+
 
         $userType = "organization";
         if ($user->isTeacher()) {
@@ -646,7 +757,10 @@ class UserController extends Controller
             $userType = "user";
         }
 
+
         $formFieldsHtml = $this->getFormFieldsByUserType($request, $userType, true, $user);
+
+
 
 
         $data = [
@@ -669,14 +783,18 @@ class UserController extends Controller
             'becomeInstructorFormFieldValues' => $becomeInstructorFormFieldValues,
         ];
 
+
         // Purchased Classes Data
         $data = array_merge($data, $this->getPurchasedClassesData($user));
+
 
         // Purchased Bundles Data
         $data = array_merge($data, $this->getPurchasedBundlesData($user));
 
+
         // Purchased Product Data
         $data = array_merge($data, $this->getPurchasedProductsData($user));
+
 
         if (auth()->user()->can('admin_forum_topics_lists')) {
             $data['topics'] = ForumTopic::where('creator_id', $user->id)
@@ -691,22 +809,28 @@ class UserController extends Controller
                 ->get();
         }
 
+
         return view('admin.users.edit', $data);
     }
+
 
     private function getBecomeInstructorFormFieldValues($becomeInstructor)
     {
         $values = [];
         $becomeInstructorFields = \App\Models\UserFormField::query()->where('become_instructor_id', $becomeInstructor->id)->get();
 
+
         foreach ($becomeInstructorFields as $becomeInstructorField) {
             $field = $becomeInstructorField->field;
+
 
             $values[$field->title] = $becomeInstructorField->value;
         }
 
+
         return $values;
     }
+
 
     private function getPurchasedClassesData($user)
     {
@@ -722,6 +846,7 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         $manualDisabledClasses = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
             ->whereNotNull('webinar_id')
@@ -732,6 +857,7 @@ class UserController extends Controller
             ])
             ->orderBy('created_at', 'desc')
             ->get();
+
 
         $purchasedClasses = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -745,12 +871,14 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         return [
             'manualAddedClasses' => $manualAddedClasses,
             'purchasedClasses' => $purchasedClasses,
             'manualDisabledClasses' => $manualDisabledClasses,
         ];
     }
+
 
     private function getPurchasedBundlesData($user)
     {
@@ -766,6 +894,7 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         $manualDisabledBundles = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
             ->whereNotNull('bundle_id')
@@ -776,6 +905,7 @@ class UserController extends Controller
             ])
             ->orderBy('created_at', 'desc')
             ->get();
+
 
         $purchasedBundles = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -789,12 +919,14 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         return [
             'manualAddedBundles' => $manualAddedBundles,
             'purchasedBundles' => $purchasedBundles,
             'manualDisabledBundles' => $manualDisabledBundles,
         ];
     }
+
 
     private function getPurchasedProductsData($user)
     {
@@ -814,6 +946,7 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         $manualDisabledProducts = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
             ->whereNotNull('product_order_id')
@@ -828,6 +961,7 @@ class UserController extends Controller
             ])
             ->orderBy('created_at', 'desc')
             ->get();
+
 
         $purchasedProducts = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -845,6 +979,7 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         return [
             'manualAddedProducts' => $manualAddedProducts,
             'purchasedProducts' => $purchasedProducts,
@@ -852,11 +987,14 @@ class UserController extends Controller
         ];
     }
 
+
     public function update(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
+
 
         $this->validate($request, [
             'full_name' => 'required|min:3|max:128',
@@ -872,10 +1010,13 @@ class UserController extends Controller
             'ban_end_at' => 'required_if:ban,on',
         ]);
 
+
         $data = $request->all();
+
 
         $role = Role::where('id', $data['role_id'])->first();
         $userOldRoleId = $user->role_id;
+
 
         if (empty($role)) {
             $toastData = [
@@ -886,20 +1027,25 @@ class UserController extends Controller
             return back()->with(['toast' => $toastData]);
         }
 
+
         if ($user->role_id != $role->id and $role->name == Role::$teacher) {
             $becomeInstructor = BecomeInstructor::where('user_id', $user->id)
                 ->where('status', 'pending')
                 ->first();
+
 
             if (!empty($becomeInstructor)) {
                 $becomeInstructor->update([
                     'status' => 'accept'
                 ]);
 
+
                 // Send Notification
                 $becomeInstructor->sendNotificationToUser('accept');
             }
         }
+
+
 
 
         $user->full_name = !empty($data['full_name']) ? $data['full_name'] : null;
@@ -916,13 +1062,17 @@ class UserController extends Controller
         $user->language = !empty($data['language']) ? $data['language'] : null;
 
 
+
+
         if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
         }
 
+
         if (!empty($data['ban']) and $data['ban'] == '1') {
             $ban_start_at = strtotime($data['ban_start_at']);
             $ban_end_at = strtotime($data['ban_end_at']);
+
 
             $user->ban = true;
             $user->ban_start_at = $ban_start_at;
@@ -933,20 +1083,28 @@ class UserController extends Controller
             $user->ban_end_at = null;
         }
 
+
         $user->verified = (!empty($data['verified']) and $data['verified'] == '1');
+
 
         $user->affiliate = (!empty($data['affiliate']) and $data['affiliate'] == '1');
 
+
         $user->can_create_store = (!empty($data['can_create_store']) and $data['can_create_store'] == '1');
+
 
         $user->access_content = (!empty($data['access_content']) and $data['access_content'] == '1');
 
+
         $user->enable_ai_content = (!empty($data['enable_ai_content']) and $data['enable_ai_content'] == '1');
+
 
         $user->save();
 
+
         // save certificate_additional in user metas table
         $this->handleUserCertificateAdditional($user->id, $data['certificate_additional']);
+
 
         if ($userOldRoleId != $role->id) {
             $notifyOptions = [
@@ -955,17 +1113,21 @@ class UserController extends Controller
             sendNotification("user_role_change", $notifyOptions, $user->id);
         }
 
+
         return redirect()->back();
     }
+
 
     private function handleUserCertificateAdditional($userId, $value)
     {
         $name = 'certificate_additional';
 
+
         if (empty($value)) {
             $checkMeta = UserMeta::where('user_id', $userId)
                 ->where('name', $name)
                 ->first();
+
 
             if (!empty($checkMeta)) {
                 $checkMeta->delete();
@@ -980,28 +1142,37 @@ class UserController extends Controller
         }
     }
 
+
     public function updateImage(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
 
+
         $user->avatar = $request->get('avatar', null);
+
 
         if (!empty($request->get('cover_img', null))) {
             $user->cover_img = $request->get('cover_img', null);
         }
 
+
         $user->save();
+
 
         return redirect()->back();
     }
+
 
     public function updateFormFields(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
+
 
         $userType = "organization";
         if ($user->isTeacher()) {
@@ -1010,27 +1181,35 @@ class UserController extends Controller
             $userType = "user";
         }
 
+
         $form = $this->getFormFieldsByType($userType);
+
 
         if (!empty($form)) {
             $errors = $this->checkFormRequiredFields($request, $form);
+
 
             if (count($errors)) {
                 return redirect()->back()->withErrors($errors);
             }
 
+
             $this->storeFormFields($request->all(), $user);
         }
 
+
         return redirect()->back();
     }
+
 
     public function financialUpdate(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
         $data = $request->all();
+
 
         $user->update([
             'identity_scan' => ((isset($data['identity_scan'])) ? $data['identity_scan'] : ''),
@@ -1044,16 +1223,20 @@ class UserController extends Controller
             'registration_bonus_amount' => !empty($data['registration_bonus_amount']) ? $data['registration_bonus_amount'] : null,
         ]);
 
+
         if (!empty($data['bank_id'])) {
             UserSelectedBank::query()->where('user_id', $user->id)->delete();
+
 
             $userSelectedBank = UserSelectedBank::query()->create([
                 'user_id' => $user->id,
                 'user_bank_id' => $data['bank_id']
             ]);
 
+
             if (!empty($data['bank_specifications'])) {
                 $specificationInsert = [];
+
 
                 foreach ($data['bank_specifications'] as $specificationId => $specificationValue) {
                     if (!empty($specificationValue)) {
@@ -1065,22 +1248,28 @@ class UserController extends Controller
                     }
                 }
 
+
                 UserSelectedBankSpecification::query()->insert($specificationInsert);
             }
         }
 
+
         return redirect()->back();
     }
+
 
     public function occupationsUpdate(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
         $data = $request->all();
 
+
         UserOccupation::where('user_id', $user->id)->delete();
         if (!empty($data['occupations'])) {
+
 
             foreach ($data['occupations'] as $category_id) {
                 UserOccupation::create([
@@ -1090,20 +1279,25 @@ class UserController extends Controller
             }
         }
 
+
         return redirect()->back();
     }
+
 
     public function badgesUpdate(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
 
+
         $this->validate($request, [
             'badge_id' => 'required'
         ]);
 
+
         $data = $request->all();
         $user = User::findOrFail($id);
         $badge = Badge::findOrFail($data['badge_id']);
+
 
         UserBadge::create([
             'user_id' => $user->id,
@@ -1111,51 +1305,67 @@ class UserController extends Controller
             'created_at' => time()
         ]);
 
+
         sendNotification('new_badge', ['[u.b.title]' => $badge->title], $user->id);
+
 
         return redirect()->back();
     }
+
 
     public function deleteBadge(Request $request, $id, $badge_id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
+
 
         $badge = UserBadge::where('id', $badge_id)
             ->where('user_id', $user->id)
             ->first();
 
+
         if (!empty($badge)) {
             $badge->delete();
         }
 
+
         return redirect()->back();
     }
+
 
     public function destroy(Request $request, $id)
     {
         $this->authorize('admin_users_delete');
 
+
         $user = User::find($id);
+
 
         if ($user) {
             $user->delete();
         }
 
+
         return redirect()->back();
     }
+
 
     public function acceptRequestToInstructor($id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::findOrFail($id);
+
 
         $becomeInstructors = BecomeInstructor::where('user_id', $user->id)->first();
 
+
         if (!empty($becomeInstructors)) {
             $role = Role::where('name', $becomeInstructors->role)->first();
+
 
             if (!empty($role)) {
                 $user->update([
@@ -1163,24 +1373,30 @@ class UserController extends Controller
                     'role_name' => $role->name,
                 ]);
 
+
                 $becomeInstructors->update([
                     'status' => 'accept'
                 ]);
+
 
                 // Send Notification
                 $becomeInstructors->sendNotificationToUser('accept');
             }
 
+
             return redirect(getAdminPanelUrl() . '/users/' . $user->id . '/edit')->with(['msg' => trans('admin/pages/users.user_role_updated')]);
         }
 
+
         abort(404);
     }
+
 
     public function search(Request $request)
     {
         $term = $request->get('term');
         $option = $request->get('option');
+
 
         $users = User::select('id', 'full_name as name')
             //->where('role_name', Role::$user)
@@ -1188,29 +1404,36 @@ class UserController extends Controller
                 $query->where('full_name', 'like', '%' . $term . '%');
             });
 
+
         if ($option === "for_user_group") {
             $users->whereNotIn('id', GroupUser::all()->pluck('user_id'));
         }
+
 
         if ($option === "just_teacher_role") {
             $users->where('role_name', Role::$teacher);
         }
 
+
         if ($option === "just_student_role") {
             $users->where('role_name', Role::$user);
         }
+
 
         if ($option === "just_organization_role") {
             $users->where('role_name', Role::$organization);
         }
 
+
         if ($option === "just_organization_and_teacher_role") {
             $users->whereIn('role_name', [Role::$organization, Role::$teacher]);
         }
 
+
         if ($option === "except_user") {
             $users->where('role_name', '!=', Role::$user);
         }
+
 
         if ($option === "consultants") {
             $users->whereHas('meeting', function ($query) {
@@ -1219,60 +1442,130 @@ class UserController extends Controller
             });
         }
 
+
         return response()->json($users->get(), 200);
     }
+
 
     public function impersonate($user_id)
     {
         $this->authorize('admin_users_impersonate');
 
+
         $user = User::findOrFail($user_id);
 
+
+        $impersonatorId = auth()->id();
+
+
+        // أوقف الـ regeneration مؤقتاً
+        session()->put('impersonator_id', $impersonatorId);
+        session()->put('impersonated', $user->id);
+       
+        // احفظ الـ session يدوياً قبل أي شي
+        session()->save();
+
+
+        // سجل دخول بدون regeneration
+        \Illuminate\Support\Facades\Auth::guard()->setUser($user);
+       
+        // احفظ مرة ثانية بعد setUser
+        session()->put('impersonator_id', $impersonatorId);
+        session()->put('impersonated', $user->id);
+        session()->save();
+
+
         if ($user->isAdmin()) {
-            return redirect(getAdminPanelUrl() . '');
+            return redirect(getAdminPanelUrl());
         }
 
-        session()->put(['impersonated' => $user->id]);
 
         return redirect('/panel');
     }
+
+
+    public function stopImpersonate()
+    {
+    //         $adminId = session()->get('impersonator_id') ?? request()->cookie('impersonator_id');
+
+
+    // session()->forget('impersonated');
+    // session()->forget('impersonator_id');
+
+
+    // // امسح الـ cookies
+    // cookie()->queue(cookie()->forget('impersonated'));
+    // cookie()->queue(cookie()->forget('impersonator_id'));
+
+
+    // \Illuminate\Support\Facades\Auth::loginUsingId($adminId);
+
+
+    // return redirect(getAdminPanelUrl());
+        $adminId = session()->get('impersonator_id');
+
+        session()->forget('impersonated');
+        session()->forget('impersonator_id');
+
+        // ارجع للأدمن الأصلي
+        \Illuminate\Support\Facades\Auth::loginUsingId($adminId);
+        
+        // احفظ الـ session قبل الـ redirect
+        session()->save();
+
+        return redirect(getAdminPanelUrl());
+    }
+
 
     public function exportExcelOrganizations(Request $request)
     {
         $this->authorize('admin_users_export_excel');
 
+
         $users = $this->organizations($request, true);
+
 
         $usersExport = new OrganizationsExport($users);
 
+
         return Excel::download($usersExport, 'organizations.xlsx');
     }
+
 
     public function exportExcelInstructors(Request $request)
     {
         $this->authorize('admin_users_export_excel');
 
+
         $users = $this->instructors($request, true);
+
 
         $usersExport = new InstructorsExport($users);
 
+
         return Excel::download($usersExport, 'instructors.xlsx');
     }
+
 
     public function exportExcelStudents(Request $request)
     {
         $this->authorize('admin_users_export_excel');
 
+
         $users = $this->students($request, true);
 
+
         $usersExport = new StudentsExport($users);
+
 
         return Excel::download($usersExport, 'students.xlsx');
     }
 
+
     public function userRegistrationPackage(Request $request, $id)
     {
         $this->authorize('admin_update_user_registration_package');
+
 
         $this->validate($request, [
             'instructors_count' => 'nullable|numeric',
@@ -1282,10 +1575,13 @@ class UserController extends Controller
             'meeting_count' => 'nullable|numeric',
         ]);
 
+
         $user = User::findOrFail($id);
+
 
         if ($user->isOrganization() or $user->isTeacher()) {
             $data = $request->all();
+
 
             UserRegistrationPackage::updateOrCreate([
                 'user_id' => $user->id,
@@ -1299,20 +1595,26 @@ class UserController extends Controller
                 'created_at' => time(),
             ]);
 
+
             return redirect()->back();
         }
 
+
         abort(404);
     }
+
 
     public function meetingSettings(Request $request, $id)
     {
         $this->authorize('admin_update_user_meeting_settings');
 
+
         $user = User::findOrFail($id);
+
 
         if ($user->isOrganization() or $user->isTeacher()) {
             $data = $request->all();
+
 
             $user->update([
                 "level_of_training" => !empty($data['level_of_training']) ? (new UserLevelOfTraining())->getValue($data['level_of_training']) : null,
@@ -1325,16 +1627,19 @@ class UserController extends Controller
                 "location" => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw("POINT(" . $data['latitude'] . "," . $data['longitude'] . ")") : null,
             ]);
 
+
             $updateUserMeta = [
                 "gender" => $data['gender'] ?? null,
                 "age" => $data['age'] ?? null,
                 "address" => $data['address'] ?? null,
             ];
 
+
             foreach ($updateUserMeta as $name => $value) {
                 $checkMeta = UserMeta::where('user_id', $user->id)
                     ->where('name', $name)
                     ->first();
+
 
                 if (!empty($checkMeta)) {
                     if (!empty($value)) {
@@ -1353,21 +1658,27 @@ class UserController extends Controller
                 }
             }
 
+
             return redirect()->back();
         }
 
+
         abort(404);
     }
+
 
     public function disableCashbackToggle($id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::query()->findOrFail($id);
+
 
         $user->update([
             'disable_cashback' => !$user->disable_cashback
         ]);
+
 
         $toastData = [
             'title' => trans('public.request_success'),
@@ -1375,18 +1686,23 @@ class UserController extends Controller
             'status' => 'success'
         ];
 
+
         return back()->with(['toast' => $toastData]);
     }
+
 
     public function disableRegitrationBonusStatus($id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::query()->findOrFail($id);
+
 
         $user->update([
             'enable_registration_bonus' => false
         ]);
+
 
         $toastData = [
             'title' => trans('public.request_success'),
@@ -1394,18 +1710,23 @@ class UserController extends Controller
             'status' => 'success'
         ];
 
+
         return back()->with(['toast' => $toastData]);
     }
+
 
     public function disableInstallmentApproval($id)
     {
         $this->authorize('admin_users_edit');
 
+
         $user = User::query()->findOrFail($id);
+
 
         $user->update([
             'installment_approval' => false
         ]);
+
 
         $toastData = [
             'title' => trans('public.request_success'),
@@ -1413,6 +1734,10 @@ class UserController extends Controller
             'status' => 'success'
         ];
 
+
         return back()->with(['toast' => $toastData]);
     }
 }
+
+
+

@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Http;
+
 
 use App\Http\Middleware\AdminAuthenticate;
 use App\Http\Middleware\AdminLocale;
@@ -12,6 +14,7 @@ use App\Http\Middleware\Share;
 use App\Http\Middleware\UserNotAccess;
 use App\Http\Middleware\WebAuthenticate;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+
 
 class Kernel extends HttpKernel
 {
@@ -32,6 +35,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
+
     /**
      * The application's route middleware groups.
      *
@@ -47,7 +51,8 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\UserLocale::class,
-            \App\Http\Middleware\DebugBar::class
+            \App\Http\Middleware\DebugBar::class,
+            // \App\Http\Middleware\Impersonate::class,
         ],
         'api' => [
             'throttle:60,1',
@@ -56,7 +61,9 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\Api\SetLocale::class,
         ],
 
+
     ];
+
 
     /**
      * The application's route middleware.
@@ -91,6 +98,6 @@ class Kernel extends HttpKernel
         'api.request.type' => \App\Http\Middleware\Api\RequestType::class,
         'api.identify' => \App\Http\Middleware\Api\CheckApiKey::class,
         'api.level-access' => \App\Http\Middleware\Api\LevelAccess::class,
-
     ];
 }
+
