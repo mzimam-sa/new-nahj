@@ -353,26 +353,8 @@
                     updateStatistics();
                 }
 
-                filterStudent.addEventListener('input', function() {
-                    filterTable(this.value.toLowerCase());
-                });
-
-                window.openAddGradeModal = function(studentId) {
-                    document.getElementById('modal-student-id').value = studentId;
-                    document.getElementById('modal-student-id').setAttribute('name', `grades[${studentId}][student_id]`);
-                    document.getElementById('modal-pdf-file').setAttribute('name', `grades[${studentId}][pdf_file]`);
-                    document.getElementById('modal-pdf-file').value = '';
-                    document.getElementById('addGradeModal').style.display = 'flex';
-                };
-
-                window.closeAddGradeModal = function() {
-                    document.getElementById('addGradeModal').style.display = 'none';
-                };
-
-                window.onclick = function(event) {
-                    const modal = document.getElementById('addGradeModal');
-                    if (event.target === modal) closeAddGradeModal();
-                };
+                
+                filterStudent.addEventListener('input', applyFilters);
 
                 window.editGrade = function(gradeId) {
                     window.location.href = `/panel/grades/${gradeId}/edit`;
