@@ -29,7 +29,8 @@ RUN docker-php-ext-install -j$(nproc) \
     bcmath \
     gd \
     exif \
-    zip
+    zip \
+    opcache
 
 # Set working directory
 WORKDIR /var/www/html
@@ -68,9 +69,32 @@ RUN echo 'display_errors = On' >> /usr/local/etc/php/conf.d/errors.ini \
     && echo 'log_errors = On' >> /usr/local/etc/php/conf.d/errors.ini \
     && echo 'error_log = /dev/stderr' >> /usr/local/etc/php/conf.d/errors.ini
 
+# OPcache configuration for production performance
+RUN echo 'opcache.enable=1' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.memory_consumption=256' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.interned_strings_buffer=16' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.max_accelerated_files=20000' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.validate_timestamps=0' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.save_comments=1' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.fast_shutdown=1' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.enable_cli=1' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.jit_buffer_size=128M' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.jit=1255' >> /usr/local/etc/php/conf.d/opcache.ini
+
+# PHP realpath cache (reduces filesystem lookups)
+RUN echo 'realpath_cache_size=4096K' >> /usr/local/etc/php/conf.d/performance.ini \
+    && echo 'realpath_cache_ttl=600' >> /usr/local/etc/php/conf.d/performance.ini
+
 # PHP-FPM: catch worker output to show PHP errors in logs
 RUN sed -i 's/;catch_workers_output = yes/catch_workers_output = yes/' /usr/local/etc/php-fpm.d/www.conf \
     && sed -i 's/;decorate_workers_output = no/decorate_workers_output = no/' /usr/local/etc/php-fpm.d/www.conf
+
+# PHP-FPM: optimize worker pool for production
+RUN sed -i 's/pm = dynamic/pm = dynamic/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/pm.max_children = 5/pm.max_children = 20/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/pm.start_servers = 2/pm.start_servers = 5/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/pm.min_spare_servers = 1/pm.min_spare_servers = 3/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/pm.max_spare_servers = 3/pm.max_spare_servers = 10/' /usr/local/etc/php-fpm.d/www.conf
 
 # Nginx config
 COPY docker/nginx.conf /etc/nginx/sites-available/default
