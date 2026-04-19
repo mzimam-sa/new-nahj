@@ -35,7 +35,7 @@
         "laravel/ui": "^4.2",
         "lasserafn/php-initial-avatar-generator": "^4.2",
         "league/flysystem": "^3.15",
-        "league/flysystem-aws-s3-v3": "^3.15",
+        "league/flysystem-aws-s3-v3": "^3.32",
         "league/omnipay": "^3.2",
         "lokielse/omnipay-global-alipay": "^3.0",
         "lucassmacedo/omnipay-mercadopago": "~1.1",

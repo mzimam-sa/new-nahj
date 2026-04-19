@@ -353,7 +353,10 @@ class UserController extends Controller
 
 
         if (!empty($full_name)) {
-            $query->where('full_name', 'like', "%$full_name%");
+            $query->where(function ($query) use ($full_name) {
+                $query->where('full_name', 'like', "%$full_name%")
+                    ->orWhere('email', 'like', "%$full_name%");
+            });
         }
 
 
