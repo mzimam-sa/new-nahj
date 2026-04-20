@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Panel\TermGradesController;
 use App\Services\NelcXapiService;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,20 @@ use App\Services\NelcXapiService;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/store/{path}', function ($path) {
+    if (!Storage::disk('s3')->exists($path)) {
+        abort(404);
+    }
+    
+    $file = Storage::disk('s3')->get($path);
+    $mimeType = Storage::disk('s3')->mimeType($path);
+    
+    return response($file, 200)
+        ->header('Content-Type', $mimeType)
+        ->header('Cache-Control', 'public, max-age=31536000');
+})->where('path', '.*');
+
 
 Route::get('/test-nelc', function () {
 

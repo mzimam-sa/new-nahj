@@ -129,6 +129,10 @@
                     <li class="mt-5 {{ (request()->is('panel/webinars/purchases') && request()->query('type') == 'webinar') ? 'active' : '' }}">
                         <a href="/panel/webinars/purchases?type=webinar">الدورات والدبلومات</a>
                     </li>
+
+                        <li class="mt-5 {{ (request()->is('panel/webinars/student_grades') || request()->is('panel/student_grades')) ? 'active' : '' }}">
+                            <a href="/panel/webinars/student_grades">درجات الترم</a>
+                        </li>
                     @endif
 
 
