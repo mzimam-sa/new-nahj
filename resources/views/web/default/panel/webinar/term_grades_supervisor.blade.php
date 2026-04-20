@@ -188,16 +188,18 @@
                     </button>
                 </div>
             </div>
+            <form method="GET" action="" style="width:100%">
             <div class="filters-grid">
                 <div class="filter-group">
                     <label><i class="fas fa-user"></i> اسم الطالب أو الإيميل</label>
-                    <input type="text" id="filter-student" placeholder="ابحث عن طالب أو إيميل...">
+                    <input type="text" id="filter-student" name="search" placeholder="ابحث عن طالب أو إيميل..." value="{{ request()->get('search') }}" onkeydown="if(event.key==='Enter'){this.closest('form').submit();}">                    <button type="submit" style="margin-top:8px;padding:8px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;"><i class="fas fa-search"></i> بحث</button>
                 </div>
                 <div class="filter-group" style="display:none"><select id="filter-course"><option value="">جميع المواد</option></select></div>
                 <div class="filter-group" style="display:none"><select id="filter-term"><option value="">جميع الترمات</option></select></div>
                 <div class="filter-group" style="display:none"><select id="filter-type"><option value="">جميع الأنواع</option></select></div>
                 <div class="filter-group" style="display:none"><select id="filter-status"><option value="">الكل</option></select></div>
             </div>
+            </form>
         </div>
 
         <!-- Grades Table Section -->
@@ -340,21 +342,11 @@
                     document.getElementById('total-students').textContent = visible || allStudents.length;
                 }
 
-                function filterTable(search) {
-                    const rows = document.querySelectorAll('#grades-tbody tr');
-                    rows.forEach(row => {
-                        const nameCell = row.querySelector('.student-name');
-                        const emailCell = row.querySelector('.student-email');
-                        if (!nameCell) return;
-                        const name = nameCell.textContent.toLowerCase();
-                        const email = emailCell ? emailCell.textContent.toLowerCase() : '';
-                        row.style.display = !search || name.includes(search) || email.includes(search) ? '' : 'none';
-                    });
-                    updateStatistics();
-                }
-
-                filterStudent.addEventListener('input', function() {
-                    filterTable(this.value.toLowerCase());
+                filterStudent.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.closest('form').submit();
+                    }
                 });
 
                 window.openAddGradeModal = function(studentId) {

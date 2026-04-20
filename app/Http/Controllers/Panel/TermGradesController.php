@@ -30,7 +30,17 @@ class termGradesController extends Controller
             ->whereNull('refund_at')
             ->pluck('buyer_id')->unique()->toArray();
 
-        $students = \App\User::whereIn('id', $studentIds)->paginate(15);
+        $search = $request->get('search');
+        $studentsQuery = \App\User::whereIn('id', $studentIds);
+
+        if (!empty($search)) {
+            $studentsQuery->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $studentsQuery->paginate(15);
 
         // درجة وحدة لكل طالب (آخر درجة)
         $grades = WebinarGrade::whereIn('student_id', $studentIds)
