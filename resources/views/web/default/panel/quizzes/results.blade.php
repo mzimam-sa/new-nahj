@@ -136,16 +136,22 @@
     <section class="mt-35">
         <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
             <h2 class="section-title">{{ trans('quiz.student_results') }}</h2>
+            <div class="d-flex align-items-start align-items-md-center flex-column flex-md-row mt-20 mt-md-0">
+                <a href="/panel/quizzes/results/excel?{{ http_build_query(request()->all()) }}" class="btn btn-sm btn-primary d-inline-flex align-items-center mr-md-15 mb-15 mb-md-0">
+                    <i data-feather="download" width="16" height="16"></i>
+                    <span class="ml-5">Excel</span>
+                </a>
 
-            <form action="/panel/quizzes/results" method="get" class="">
-                <div class="d-flex align-items-center flex-row-reverse flex-md-row justify-content-start justify-content-md-center mt-20 mt-md-0">
+                <form action="/panel/quizzes/results" method="get" class="">
+                    <div class="d-flex align-items-center flex-row-reverse flex-md-row justify-content-start justify-content-md-center">
                     <label class="mb-0 ml-10 cursor-pointer font-14 text-gray font-weight-500" for="onlyOpenQuizzesSwitch">{{ trans('quiz.show_only_open_results') }}</label>
                     <div class="custom-control custom-switch">
                         <input type="checkbox" name="open_results" class="custom-control-input" id="onlyOpenQuizzesSwitch" @if(request()->get('open_results',null) == 'on') checked @endif>
                         <label class="custom-control-label" for="onlyOpenQuizzesSwitch"></label>
                     </div>
-                </div>
-            </form>
+                    </div>
+                </form>
+            </div>
         </div>
 
         @if($quizzesResults->count() > 0)

@@ -178,6 +178,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
         Route::group(['prefix' => 'results'], function () {
             Route::get('/', 'QuizController@results');
+            Route::get('/excel', 'QuizController@exportResultsExcel');
             Route::get('/{quizResultId}/delete', 'QuizController@destroyQuizResult');
             Route::get('/{quizResultId}/showCertificate', 'CertificateController@makeCertificate');
         });

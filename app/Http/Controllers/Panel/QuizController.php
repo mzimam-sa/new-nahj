@@ -15,8 +15,10 @@ use App\Models\Webinar;
 use App\Models\QuizzesResult;
 use App\Models\QuizzesQuestion;
 use App\Models\QuizzesQuestionsAnswer;
+use App\Exports\QuizResultsExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class QuizController extends Controller
 {
@@ -891,6 +893,36 @@ class QuizController extends Controller
             ];
 
             return view(getTemplate() . '.panel.quizzes.results', $data);
+        }
+
+        abort(404);
+    }
+
+    public function exportResultsExcel(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->isUser()) {
+            $quizzes = Quiz::where('creator_id', $user->id)
+                ->where('status', 'active')
+                ->get();
+
+            $quizzesIds = $quizzes->pluck('id')->toArray();
+
+            $query = QuizzesResult::whereIn('quiz_id', $quizzesIds);
+
+            $query = $this->resultFilters($request, deepClone($query));
+
+            $quizzesResults = $query->with([
+                'quiz' => function ($q) {
+                    $q->with(['teacher', 'webinar', 'quizQuestions']);
+                },
+                'user'
+            ])->orderBy('created_at', 'desc')->get();
+
+            $export = new QuizResultsExport($quizzesResults);
+
+            return Excel::download($export, 'quiz_results.xlsx');
         }
 
         abort(404);
