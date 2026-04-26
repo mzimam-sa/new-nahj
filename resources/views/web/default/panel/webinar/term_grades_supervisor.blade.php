@@ -226,6 +226,7 @@
                             <th><i class="fas fa-hashtag"></i></th>
                             <th><i class="fas fa-user"></i> الطالب</th>
                             <th><i class="fas fa-envelope"></i> الإيميل</th>
+                            <th><i class="fas fa-mobile-alt"></i> الموبايل</th>
                             <th><i class="fas fa-calendar"></i> الترم</th>
                             <th><i class="fas fa-comment-dots"></i> ملاحظات</th>
                             <th><i class="fas fa-file-pdf"></i> ملف الدرجات</th>
@@ -235,7 +236,7 @@
                     <tbody id="grades-tbody">
                         @if(!isset($students) || !is_iterable($students) || count($students) == 0)
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
                                     <div class="empty-state">
                                         <i class="fas fa-inbox"></i>
                                         <h5>لا يوجد طلاب</h5>
@@ -259,6 +260,7 @@
                                         </div>
                                     </td>
                                     <td class="student-email">{{ $student->email }}</td>
+                                    <td class="student-mobile">{{ $student->mobile ?? '-' }}</td>
                                     <td><span class="term-badge">{{ $firstGrade->term ?? '-' }}</span></td>
                                     <td class="notes-cell">{{ $firstGrade->notes ?? '-' }}</td>
                                     <td class="pdf-cell">
@@ -438,7 +440,7 @@
                 window.exportCSV = function() {
                     const rows = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none' && r.querySelector('.student-name'));
                     if (!rows.length) { alert('لا توجد بيانات للتصدير'); return; }
-                    const headers = ['#', 'الطالب', 'الإيميل', 'الترم', 'ملاحظات'];
+                    const headers = ['#', 'الطالب', 'الإيميل', 'الموبايل', 'الترم', 'ملاحظات'];
                     const data = rows.map((row, idx) => {
                         const cells = row.querySelectorAll('td');
                         return [
@@ -447,6 +449,7 @@
                             cells[2]?.textContent?.trim() || '',
                             cells[3]?.textContent?.trim() || '',
                             cells[4]?.textContent?.trim() || '',
+                            cells[5]?.textContent?.trim() || '',
                         ];
                     });
                     const csv = [headers, ...data].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -460,7 +463,7 @@
                 window.exportPDF = function() {
                     const rows = [...document.querySelectorAll('#grades-tbody tr')].filter(r => r.style.display !== 'none' && r.querySelector('.student-name'));
                     if (!rows.length) { alert('لا توجد بيانات للتصدير'); return; }
-                    const headers = ['#', 'الطالب', 'الإيميل', 'الترم', 'ملاحظات'];
+                    const headers = ['#', 'الطالب', 'الإيميل', 'الموبايل', 'الترم', 'ملاحظات'];
                     const body = rows.map((row, idx) => {
                         const cells = row.querySelectorAll('td');
                         return [
@@ -469,6 +472,7 @@
                             cells[2]?.textContent?.trim() || '',
                             cells[3]?.textContent?.trim() || '',
                             cells[4]?.textContent?.trim() || '',
+                            cells[5]?.textContent?.trim() || '',
                         ];
                     });
                     const { jsPDF } = window.jspdf;

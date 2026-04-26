@@ -36,7 +36,8 @@ class termGradesController extends Controller
         if (!empty($search)) {
             $studentsQuery->where(function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%");
             });
         }
 
