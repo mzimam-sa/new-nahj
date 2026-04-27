@@ -139,7 +139,7 @@
 
                                                 <a href="/panel/webinars/{{ $webinar->id }}/statistics" class="webinar-actions d-block mt-10">{{ trans('update.statistics') }}</a>
 
-                                                @if($webinar->creator_id == $authUser->id)
+                                                @if($webinar->creator_id == $authUser->id and !$authUser->isTeacher())
                                                     <a href="/panel/webinars/{{ $webinar->id }}/delete" class="webinar-actions d-block mt-10 text-danger delete-action">{{ trans('public.delete') }}</a>
                                                 @endif
                                             </div>
@@ -147,7 +147,6 @@
                                     @endif
                                 </div>
 
-                                {{-- تم إخفاء نجوم التقييم من صفحة دوراتي بناءً على طلب الإدارة --}}
 
                                 <div class="webinar-price-box mt-15">
                                     @if($webinar->price > 0)
