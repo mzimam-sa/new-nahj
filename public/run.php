@@ -10,6 +10,7 @@ $quizResult = App\Models\QuizzesResult::with('quiz')->find(56);
 $nelc = app(App\Services\NelcService::class);
 
 $results['registered'] = $nelc->sendStatement('registered', $student, $course);
+sleep(1);
 $results['initialized'] = $nelc->sendStatement('initialized', $student, $course);
 $results['watched'] = $nelc->sendStatement('watched', $student, $course, $assignment);
 $results['progressed_33'] = $nelc->sendStatement('progressed', $student, $course,null, 0.33);
