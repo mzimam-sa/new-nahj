@@ -339,6 +339,10 @@ class UserController extends Controller
             if ($step <= 9) {
                 if ($nextStep) {
                     $step = $step + 1;
+                    // Skip step 7 (identity/financial) for teachers and students
+                    if ($step == 7 && ($user->isTeacher() || $user->isUser())) {
+                        $step = $step + 1;
+                    }
                 }
 
                 $url .= '/step/' . (($step <= 8) ? $step : 9);
