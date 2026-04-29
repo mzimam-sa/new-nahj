@@ -9,6 +9,28 @@ $assignment = App\Models\WebinarAssignment::with('chapter', 'translations')->fin
 $quizResult = App\Models\QuizzesResult::with('quiz')->find(56);
 $nelc = app(App\Services\NelcService::class);
 
+$actorName = optional(
+	optional($student)->userMetas?->where('name', 'certificate_additional')->first()
+)->value;
+
+$platformArabic = config('lrs-nelc-xapi.platform_in_arabic');
+$platformEnglish = config('lrs-nelc-xapi.platform_in_english');
+$locale = app()->getLocale();
+$resolvedPlatform = $locale === 'ar' ? $platformArabic : $platformEnglish;
+
+$diagnostics = [
+	'student_id' => optional($student)->id,
+	'student_email' => optional($student)->email,
+	'locale' => $locale,
+	'actor_name_source' => 'userMetas.name = certificate_additional',
+	'actor_name_value' => $actorName,
+	'actor_name_exists' => filled($actorName),
+	'platform_in_arabic' => $platformArabic,
+	'platform_in_english' => $platformEnglish,
+	'resolved_platform' => $resolvedPlatform,
+	'resolved_platform_exists' => filled($resolvedPlatform),
+];
+
 $results['registered'] = $nelc->sendStatement('registered', $student, $course);
 sleep(1);
 $results['initialized'] = $nelc->sendStatement('initialized', $student, $course);
@@ -23,5 +45,8 @@ $results['rated'] = $nelc->sendStatement('rated', $student, $course);
 $results['earned'] = $nelc->sendStatement('earned', $student, $course);
 
 echo '<pre>';
+echo "=== NELC Diagnostics ===\n";
+print_r($diagnostics);
+echo "\n=== API Results ===\n";
 print_r($results);
 echo '</pre>';
