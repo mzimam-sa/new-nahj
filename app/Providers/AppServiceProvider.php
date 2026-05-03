@@ -26,5 +26,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::defaultView('pagination::default');
+
+        $fallbackPlatform = config('lrs-nelc-xapi.lms_url') ?: config('app.url');
+
+        if (blank(config('lrs-nelc-xapi.platform_in_arabic')) && filled($fallbackPlatform)) {
+            config(['lrs-nelc-xapi.platform_in_arabic' => $fallbackPlatform]);
+        }
+
+        if (blank(config('lrs-nelc-xapi.platform_in_english')) && filled($fallbackPlatform)) {
+            config(['lrs-nelc-xapi.platform_in_english' => $fallbackPlatform]);
+        }
     }
 }
