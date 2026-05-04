@@ -163,18 +163,18 @@ class BundleController extends Controller
                     break;
                 case 'sales_asc':
                     $query->join('sales', 'bundles.id', '=', 'sales.bundle_id')
-                        ->select('bundles.*', 'sales.bundle_id', 'sales.refund_at', DB::raw('count(sales.bundle_id) as sales_count'))
+                        ->select('bundles.*', DB::raw('count(sales.bundle_id) as sales_count'))
                         ->whereNotNull('sales.bundle_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.bundle_id')
+                        ->groupBy('bundles.id')
                         ->orderBy('sales_count', 'asc');
                     break;
                 case 'sales_desc':
                     $query->join('sales', 'bundles.id', '=', 'sales.bundle_id')
-                        ->select('bundles.*', 'sales.bundle_id', 'sales.refund_at', DB::raw('count(sales.bundle_id) as sales_count'))
+                        ->select('bundles.*', DB::raw('count(sales.bundle_id) as sales_count'))
                         ->whereNotNull('sales.bundle_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.bundle_id')
+                        ->groupBy('bundles.id')
                         ->orderBy('sales_count', 'desc');
                     break;
 
@@ -188,19 +188,19 @@ class BundleController extends Controller
 
                 case 'income_asc':
                     $query->join('sales', 'bundles.id', '=', 'sales.bundle_id')
-                        ->select('bundles.*', 'sales.bundle_id', 'sales.total_amount', 'sales.refund_at', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
+                        ->select('bundles.*', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
                         ->whereNotNull('sales.bundle_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.bundle_id')
+                        ->groupBy('bundles.id')
                         ->orderBy('amounts', 'asc');
                     break;
 
                 case 'income_desc':
                     $query->join('sales', 'bundles.id', '=', 'sales.bundle_id')
-                        ->select('bundles.*', 'sales.bundle_id', 'sales.total_amount', 'sales.refund_at', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
+                        ->select('bundles.*', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
                         ->whereNotNull('sales.bundle_id')
                         ->whereNull('sales.refund_at')
-                        ->groupBy('sales.bundle_id')
+                        ->groupBy('bundles.id')
                         ->orderBy('amounts', 'desc');
                     break;
 
@@ -633,17 +633,17 @@ class BundleController extends Controller
                     $query->on('webinar_reviews.creator_id', 'users.id')
                         ->where('webinar_reviews.bundle_id', $bundle->id);
                 })
-                ->select('users.*', 'webinar_reviews.rates', 'sales.gift_id', DB::raw('sales.created_at as purchase_date'))
+                ->select('users.*', 'webinar_reviews.rates', 'sales.gift_id', DB::raw('min(sales.created_at) as purchase_date'))
                 ->where(function ($query) use ($bundle, $giftsIds, $installmentSalesIds) {
                     $query->where('sales.bundle_id', $bundle->id);
                     $query->orWhereIn('sales.gift_id', $giftsIds);
                     $query->orWhereIn('sales.id', $installmentSalesIds);
                 })
-                ->groupBy('sales.buyer_id')
+                ->groupBy('users.id', 'webinar_reviews.rates', 'sales.gift_id')
                 ->whereNull('sales.refund_at');
 
             $students = $this->studentsListsFilters($bundle, $query, $request)
-                ->orderBy('sales.created_at', 'desc')
+                ->orderBy('purchase_date', 'desc')
                 ->paginate(10);
 
             $userGroups = Group::where('status', 'active')

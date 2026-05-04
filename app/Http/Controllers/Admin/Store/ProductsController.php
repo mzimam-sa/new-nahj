@@ -117,7 +117,7 @@ class ProductsController extends Controller
             ->whereNotIn('product_orders.status', [ProductOrder::$canceled, ProductOrder::$pending])
             ->first();
 
-        $totalSellers = deepClone($query)->groupBy('creator_id')->get()->count();
+        $totalSellers = deepClone($query)->select('creator_id')->groupBy('creator_id')->get()->count();
 
         $totalBuyers = deepClone($query)
             ->join('product_orders', 'products.id', 'product_orders.product_id')
@@ -185,7 +185,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.refund_at', DB::raw('count(sales.product_order_id) as sales_count'))
+                        ->select('products.*', DB::raw('count(sales.product_order_id) as sales_count'))
                         ->whereNotNull('sales.product_order_id')
                         ->whereNull('sales.refund_at')
                         ->groupBy('products.id')
@@ -197,7 +197,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.refund_at', DB::raw('count(sales.product_order_id) as sales_count'))
+                        ->select('products.*', DB::raw('count(sales.product_order_id) as sales_count'))
                         ->whereNotNull('sales.product_order_id')
                         ->whereNull('sales.refund_at')
                         ->groupBy('products.id')
@@ -219,7 +219,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.total_amount', 'sales.refund_at', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
+                        ->select('products.*', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
                         ->whereNotNull('sales.product_order_id')
                         ->whereNull('sales.refund_at')
                         ->groupBy('products.id')
@@ -232,7 +232,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.total_amount', 'sales.refund_at', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
+                        ->select('products.*', DB::raw('(sum(sales.total_amount) - (sum(sales.tax) + sum(sales.commission))) as amounts'))
                         ->whereNotNull('sales.product_order_id')
                         ->whereNull('sales.refund_at')
                         ->groupBy('products.id')
@@ -261,7 +261,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.refund_at', DB::raw('(products.inventory - sum(product_orders.quantity)) as remaining_inventory'))
+                        ->select('products.*', DB::raw('(products.inventory - sum(product_orders.quantity)) as remaining_inventory'))
                         ->whereNotNull('products.inventory')
                         ->whereNotNull('product_orders.sale_id')
                         ->whereNull('sales.refund_at')
@@ -276,7 +276,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.refund_at', DB::raw('(products.inventory - sum(product_orders.quantity)) as remaining_inventory'))
+                        ->select('products.*', DB::raw('(products.inventory - sum(product_orders.quantity)) as remaining_inventory'))
                         ->whereNotNull('products.inventory')
                         ->whereNotNull('product_orders.sale_id')
                         ->whereNull('sales.refund_at')
@@ -291,7 +291,7 @@ class ProductsController extends Controller
                             $join->on('product_orders.id', '=', 'sales.product_order_id')
                                 ->whereNull('sales.refund_at');
                         })
-                        ->select('products.*', 'sales.product_order_id', 'sales.refund_at', DB::raw('(products.inventory - sum(product_orders.quantity)) as remaining_inventory'))
+                        ->select('products.*', DB::raw('(products.inventory - sum(product_orders.quantity)) as remaining_inventory'))
                         ->whereNotNull('products.inventory')
                         ->whereNotNull('product_orders.sale_id')
                         ->whereNull('sales.refund_at')

@@ -178,6 +178,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
         Route::group(['prefix' => 'results'], function () {
             Route::get('/', 'QuizController@results');
+            Route::get('/excel', 'QuizController@exportResultsExcel');
             Route::get('/{quizResultId}/delete', 'QuizController@destroyQuizResult');
             Route::get('/{quizResultId}/showCertificate', 'CertificateController@makeCertificate');
         });
@@ -218,6 +219,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
         // حفظ حضور الطلاب في الجلسة
         Route::post('/{session_id}/attendance', 'SessionController@attendance')->name('panel.sessions.attendance');
+        // تصدير حضور الطلاب للجلسة
+        Route::get('/{session_id}/attendance/export', 'SessionController@exportAttendanceExcel')->name('panel.sessions.attendance.export');
     });
 
     Route::group(['prefix' => 'chapters'], function () {

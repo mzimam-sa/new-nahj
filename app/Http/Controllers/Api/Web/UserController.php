@@ -201,11 +201,7 @@ class UserController extends Controller
             ->select('users.*', DB::raw('avg(rates) as rates'))
             ->orderBy('rates', 'desc');
 
-        if ($role == Role::$organization) {
-            $query->groupBy('webinars.creator_id');
-        } else {
-            $query->groupBy('webinars.teacher_id');
-        }
+        $query->groupBy('users.id');
 
         return $query;
     }
@@ -217,8 +213,8 @@ class UserController extends Controller
                 ->whereNull('refund_at');
         })
             ->whereNotNull('sales.seller_id')
-            ->select('users.*', 'sales.seller_id', DB::raw('count(sales.seller_id) as counts'))
-            ->groupBy('sales.seller_id')
+            ->select('users.*', DB::raw('count(sales.seller_id) as counts'))
+            ->groupBy('users.id')
             ->orderBy('counts', 'desc');
 
         return $query;

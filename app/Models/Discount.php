@@ -53,6 +53,7 @@ class Discount extends Model
         $count = $this->count;
 
         $orderItems = OrderItem::where('discount_id', $this->id)
+            ->select('order_id')
             ->groupBy('order_id')
             ->get();
 
@@ -194,6 +195,7 @@ class Discount extends Model
 
         $usedCount = 0;
         $orderItems = OrderItem::where('discount_id', $this->id)
+            ->select('order_id')
             ->groupBy('order_id')
             ->get();
 

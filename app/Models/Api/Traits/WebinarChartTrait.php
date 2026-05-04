@@ -37,7 +37,7 @@ trait WebinarChartTrait
             ->toArray();
 
         $users = User::whereIn('id', $studentsIds)
-            ->select('id', 'role_name', DB::raw('count(id) as count'))
+            ->select('role_name', DB::raw('count(id) as count'))
             ->groupBy('role_name')
             ->get();
 

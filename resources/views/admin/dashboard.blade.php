@@ -265,6 +265,7 @@
                         <div class="card-body d-flex flex-column justify-content-between">
                             <ul class="list-unstyled list-unstyled-border">
                                 @foreach($recentComments as $recentComment)
+                                    @if($recentComment->user)
                                     <li class="media">
                                         <img class="mr-3 rounded-circle" width="50" height="50" src="{{ $recentComment->user->getAvatar() }}" alt="avatar">
                                         <div class="media-body">
@@ -273,6 +274,7 @@
                                             <span class="text-small text-muted">{{ truncate($recentComment->comment, 150) }}</span>
                                         </div>
                                     </li>
+                                    @endif
                                 @endforeach
                             </ul>
 
@@ -311,7 +313,7 @@
                                                 <h4>{{ $ticket->title }}</h4>
                                             </div>
                                             <div class="ticket-info">
-                                                <div>{{ $ticket->user->full_name }}</div>
+                                                <div>{{ $ticket->user->full_name ?? '' }}</div>
                                                 <div class="bullet"></div>
                                                 @if($ticket->status == 'replied' or $ticket->status == 'open')
                                                     <span class="text-warning  text-small font-600-bold">{{ trans('admin/main.pending_reply') }}</span>
@@ -354,7 +356,7 @@
                                             </div>
 
                                             <div class="ticket-info">
-                                                <div>{{ $webinar->teacher->full_name }}</div>
+                                                <div>{{ $webinar->teacher->full_name ?? '' }}</div>
                                                 <div class="bullet"></div>
                                                 @switch($webinar->status)
                                                     @case(\App\Models\Webinar::$active)

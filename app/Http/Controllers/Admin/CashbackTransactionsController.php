@@ -161,7 +161,7 @@ class CashbackTransactionsController extends Controller
 
         $query = Accounting::query()
             ->leftJoin('order_items', 'accounting.order_item_id', 'order_items.id')
-            ->select('accounting.*', DB::raw('sum(accounting.amount) as total_cashback'),
+            ->select('accounting.user_id', DB::raw('sum(accounting.amount) as total_cashback'),
                 DB::raw('max(accounting.created_at) as last_cashback'), DB::raw('sum(order_items.total_amount) as purchase_amount'))
             ->where('is_cashback', true)
             ->where('system', false)
@@ -253,7 +253,7 @@ class CashbackTransactionsController extends Controller
 
         $query = Accounting::query()
             ->leftJoin('order_items', 'accounting.order_item_id', 'order_items.id')
-            ->select('accounting.*', DB::raw('sum(accounting.amount) as total_cashback'),
+            ->select('accounting.user_id', DB::raw('sum(accounting.amount) as total_cashback'),
                 DB::raw('max(accounting.created_at) as last_cashback'), DB::raw('sum(order_items.total_amount) as purchase_amount'))
             ->where('is_cashback', true)
             ->where('system', false)

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Accounting;
 use App\Models\Affiliate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReferralController extends Controller
@@ -62,6 +63,7 @@ class ReferralController extends Controller
 
 
         $affiliates = Affiliate::query()
+            ->select('affiliate_user_id', DB::raw('MAX(id) as id'), DB::raw('MAX(created_at) as created_at'))
             ->with([
                 'affiliateUser' => function ($query) {
                     $query->select('id', 'full_name', 'role_id', 'role_name', 'affiliate');

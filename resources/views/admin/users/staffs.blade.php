@@ -1,8 +1,11 @@
 @extends('admin.layouts.app')
 
+
 @push('libraries_top')
 
+
 @endpush
+
 
 @section('content')
     <section class="section">
@@ -15,11 +18,14 @@
             </div>
         </div>
 
+
         <div class="section-body">
+
 
             <section class="card">
                 <div class="card-body">
                     <form method="get" class="mb-0">
+
 
                         <div class="row">
                             <div class="col-md-4">
@@ -28,6 +34,7 @@
                                     <input name="full_name" type="text" class="form-control" value="{{ request()->get('full_name') }}">
                                 </div>
                             </div>
+
 
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -42,6 +49,8 @@
                             </div>
 
 
+
+
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label mb-4"> </label>
@@ -53,12 +62,15 @@
                 </div>
             </section>
 
+
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="card">
                         <div class="card-header">
 
+
                         </div>
+
 
                         <div class="card-body">
                             <div class="table-responsive">
@@ -72,6 +84,7 @@
                                         <th width="120">{{ trans('admin/main.actions') }}</th>
                                     </tr>
 
+
                                     @foreach($users as $user)
                                         <tr>
                                             <td>{{ $user->id }}</td>
@@ -83,9 +96,11 @@
                                                     <div class="media-body ml-1">
                                                         <div class="mt-0 mb-1 font-weight-bold">{{ $user->full_name }}</div>
 
+
                                                         @if($user->mobile)
                                                             <div class="text-primary text-small font-600-bold">{{ $user->mobile }}</div>
                                                         @endif
+
 
                                                         @if($user->email)
                                                             <div class="text-primary text-small font-600-bold">{{ $user->email }}</div>
@@ -94,8 +109,10 @@
                                                 </div>
                                             </td>
 
+
                                             <td class="text-center">{{ $user->role->caption }}</td>
                                             <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
+
 
                                             <td>
                                                 <div class="media-body">
@@ -109,6 +126,12 @@
                                                 </div>
                                             </td>
                                             <td class="text-center mb-2" width="120">
+                                                @can('admin_users_impersonate')
+                                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/impersonate" target="_blank" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.login') }}">
+                                                        <i class="fa fa-user-shield"></i>
+                                                    </a>
+                                                @endcan
+
 
                                                 @can('admin_users_edit')
                                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/edit" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
@@ -116,19 +139,22 @@
                                                     </a>
                                                 @endcan
 
+
                                                 @can('admin_users_delete')
                                                     @include('admin.includes.delete_button',['url' => getAdminPanelUrl().'/users/'.$user->id.'/delete' , 'btnClass' => '', 'deleteConfirmMsg' => trans('update.user_delete_confirm_msg')])
                                                 @endcan
-                                            </td>
+                                            </td
                                         </tr>
                                     @endforeach
                                 </table>
                             </div>
                         </div>
 
+
                         <div class="card-footer text-center">
                             {{ $users->appends(request()->input())->links() }}
                         </div>
+
 
                     </div>
                 </div>
@@ -137,6 +163,11 @@
     </section>
 @endsection
 
+
 @push('scripts_bottom')
 
+
 @endpush
+
+
+

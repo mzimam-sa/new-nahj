@@ -90,44 +90,44 @@ class QuizController extends Controller
                     break;
                 case 'students_count_asc':
                     $query->join('quizzes_results', 'quizzes_results.quiz_id', '=', 'quizzes.id')
-                        ->select('quizzes.*', 'quizzes_results.quiz_id', DB::raw('count(quizzes_results.quiz_id) as result_count'))
-                        ->groupBy('quizzes_results.quiz_id')
+                        ->select('quizzes.*', DB::raw('count(quizzes_results.quiz_id) as result_count'))
+                        ->groupBy('quizzes.id')
                         ->orderBy('result_count', 'asc');
                     break;
 
                 case 'students_count_desc':
                     $query->join('quizzes_results', 'quizzes_results.quiz_id', '=', 'quizzes.id')
-                        ->select('quizzes.*', 'quizzes_results.quiz_id', DB::raw('count(quizzes_results.quiz_id) as result_count'))
-                        ->groupBy('quizzes_results.quiz_id')
+                        ->select('quizzes.*', DB::raw('count(quizzes_results.quiz_id) as result_count'))
+                        ->groupBy('quizzes.id')
                         ->orderBy('result_count', 'desc');
                     break;
                 case 'passed_count_asc':
                     $query->join('quizzes_results', 'quizzes_results.quiz_id', '=', 'quizzes.id')
-                        ->select('quizzes.*', 'quizzes_results.quiz_id', DB::raw('count(quizzes_results.quiz_id) as result_count'))
+                        ->select('quizzes.*', DB::raw('count(quizzes_results.quiz_id) as result_count'))
                         ->where('quizzes_results.status', 'passed')
-                        ->groupBy('quizzes_results.quiz_id')
+                        ->groupBy('quizzes.id')
                         ->orderBy('result_count', 'asc');
                     break;
 
                 case 'passed_count_desc':
                     $query->join('quizzes_results', 'quizzes_results.quiz_id', '=', 'quizzes.id')
-                        ->select('quizzes.*', 'quizzes_results.quiz_id', DB::raw('count(quizzes_results.quiz_id) as result_count'))
+                        ->select('quizzes.*', DB::raw('count(quizzes_results.quiz_id) as result_count'))
                         ->where('quizzes_results.status', 'passed')
-                        ->groupBy('quizzes_results.quiz_id')
+                        ->groupBy('quizzes.id')
                         ->orderBy('result_count', 'desc');
                     break;
 
                 case 'grade_avg_asc':
                     $query->join('quizzes_results', 'quizzes_results.quiz_id', '=', 'quizzes.id')
-                        ->select('quizzes.*', 'quizzes_results.quiz_id', 'quizzes_results.user_grade', DB::raw('avg(quizzes_results.user_grade) as grade_avg'))
-                        ->groupBy('quizzes_results.quiz_id')
+                        ->select('quizzes.*', DB::raw('avg(quizzes_results.user_grade) as grade_avg'))
+                        ->groupBy('quizzes.id')
                         ->orderBy('grade_avg', 'asc');
                     break;
 
                 case 'grade_avg_desc':
                     $query->join('quizzes_results', 'quizzes_results.quiz_id', '=', 'quizzes.id')
-                        ->select('quizzes.*', 'quizzes_results.quiz_id', 'quizzes_results.user_grade', DB::raw('avg(quizzes_results.user_grade) as grade_avg'))
-                        ->groupBy('quizzes_results.quiz_id')
+                        ->select('quizzes.*', DB::raw('avg(quizzes_results.user_grade) as grade_avg'))
+                        ->groupBy('quizzes.id')
                         ->orderBy('grade_avg', 'desc');
                     break;
 

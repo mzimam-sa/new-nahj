@@ -46,7 +46,9 @@
                 @break
 
                 @case(7)
-                @include('web.default.panel.setting.setting_includes.identity_and_financial')
+                @if(!$user->isTeacher() and !$user->isUser())
+                    @include('web.default.panel.setting.setting_includes.identity_and_financial')
+                @endif
                 @break
 
                 @case(8)
@@ -70,12 +72,19 @@
         <div class="d-flex align-items-center">
             @if(!empty($user) and empty($new_user))
                 @if(!empty($currentStep) and $currentStep > 1)
-                    <a href="/panel/setting/step/{{ ($currentStep - 1) }}" class="btn btn-sm btn-primary">{{ trans('webinars.previous') }}</a>
+                    @php
+                        $prevStep = $currentStep - 1;
+                        // Skip step 7 for teachers and students
+                        if ($prevStep == 7 && ($user->isTeacher() || $user->isUser())) {
+                            $prevStep = 6;
+                        }
+                    @endphp
+                    <a href="/panel/setting/step/{{ $prevStep }}" class="btn btn-sm btn-primary">{{ trans('webinars.previous') }}</a>
                 @else
                     <a href="" class="btn btn-sm btn-primary disabled">{{ trans('webinars.previous') }}</a>
                 @endif
 
-                <button type="button" id="getNextStep" class="btn btn-sm btn-primary ml-15" @if(!empty($currentStep) and (($user->isUser() and $currentStep == 7) or (!$user->isUser() and $currentStep == 9))) disabled @endif>{{ trans('webinars.next') }}</button>
+                <button type="button" id="getNextStep" class="btn btn-sm btn-primary ml-15" @if(!empty($currentStep) and (($user->isUser() and $currentStep == 6) or ($user->isTeacher() and $currentStep == 6) or (!$user->isUser() and !$user->isTeacher() and $currentStep == 9))) disabled @endif>{{ trans('webinars.next') }}</button>
             @endif
         </div>
 

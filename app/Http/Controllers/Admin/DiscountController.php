@@ -79,24 +79,24 @@ class DiscountController extends Controller
                     break;
                 case 'usable_time_remain_asc':
                     $query->leftJoin('order_items', 'discounts.id', '=', 'order_items.discount_id')
-                        ->select('discounts.*', 'order_items.order_id', DB::raw('(discounts.count - count(order_items.order_id)) as remain_count'))
+                        ->select('discounts.*', DB::raw('(discounts.count - count(order_items.order_id)) as remain_count'))
                         ->leftJoin('orders', 'orders.id', '=', 'order_items.order_id')
                         ->where(function ($query) {
                             $query->whereNull('order_id')
                                 ->orWhere('orders.status', 'paid');
                         })
-                        ->groupBy('order_items.order_id')
+                        ->groupBy('discounts.id')
                         ->orderBy('remain_count', 'asc');
                     break;
                 case 'usable_time_remain_desc':
                     $query->leftJoin('order_items', 'discounts.id', '=', 'order_items.discount_id')
-                        ->select('discounts.*', 'order_items.order_id', DB::raw('(discounts.count - count(order_items.order_id)) as remain_count'))
+                        ->select('discounts.*', DB::raw('(discounts.count - count(order_items.order_id)) as remain_count'))
                         ->leftJoin('orders', 'orders.id', '=', 'order_items.order_id')
                         ->where(function ($query) {
                             $query->whereNull('order_id')
                                 ->orWhere('orders.status', 'paid');
                         })
-                        ->groupBy('order_items.order_id')
+                        ->groupBy('discounts.id')
                         ->orderBy('remain_count', 'desc');
                     break;
                 case 'created_at_asc':

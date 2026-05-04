@@ -23,7 +23,7 @@ class AdminAuthenticate
     {
         if (auth()->check() and auth()->user()->isAdmin()) {
 
-            \Session::forget('impersonated');
+            // \Session::forget('impersonated');
 
             if (auth()->user()->hasPermission('admin_notifications_list')) {
                 $adminUser = User::find(1);

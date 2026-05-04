@@ -250,8 +250,7 @@ class ForumController extends Controller
             ->leftJoin('forum_topic_posts', 'forum_topic_posts.user_id', 'users.id')
             ->select('users.id', 'users.full_name', 'users.avatar', DB::raw("count(forum_topics.creator_id) as topics, count(forum_topic_posts.user_id) as posts"), DB::raw("(count(forum_topics.creator_id) + count(forum_topic_posts.user_id)) as all_posts"))
             ->whereHas('forumTopics')
-            ->groupBy('forum_topics.creator_id')
-            ->groupBy('forum_topic_posts.user_id')
+            ->groupBy('users.id')
             ->orderBy('all_posts', 'desc')
             ->limit(4)
             ->get();

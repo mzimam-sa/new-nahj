@@ -40,6 +40,15 @@
 
 </head>
 <body class="@if($isRtl) rtl @endif">
+    @if(session()->has('impersonated'))
+    <div style="background:#e74c3c; color:white; padding:8px; text-align:center; position:sticky; top:0; z-index:9999;">
+        أنت تتصفح الآن كـ: <strong>{{ auth()->user()->full_name }}</strong>
+        <a href="{{ getAdminPanelUrl() }}/users/stop-impersonate"
+           style="color:white; font-weight:bold; margin-right:15px; text-decoration:underline;">
+            ← إنهاء والعودة لحسابك
+        </a>
+    </div>
+@endif
 
 @php
     $isPanel = true;

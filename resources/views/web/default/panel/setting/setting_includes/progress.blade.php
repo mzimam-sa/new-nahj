@@ -36,6 +36,10 @@
         ]
     ];
 
+    if($user->isTeacher() || $user->isUser()) {
+        unset($progressSteps[7]);
+    }
+
     if(!$user->isUser()) {
         $progressSteps[8] =[
             'lang' => 'public.zoom_api',

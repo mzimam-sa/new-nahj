@@ -386,10 +386,12 @@
                                                         @endcan
 
                                                         @can('admin_support_send')
+                                                            @if($webinar->teacher)
                                                             <a href="{{ getAdminPanelUrl() }}/supports/create?user_id={{ $webinar->teacher->id }}" target="_blank" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1" title="{{ trans('admin/main.send_message_to_teacher') }}">
                                                                 <i class="fa fa-comment"></i>
                                                                 <span class="ml-2">{{ trans('site.send_message') }}</span>
                                                             </a>
+                                                            @endif
                                                         @endcan
 
                                                         @can('admin_webinars_edit')

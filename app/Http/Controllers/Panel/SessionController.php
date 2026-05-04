@@ -12,6 +12,8 @@ use App\Models\WebinarChapterItem;
 use App\Sessions\ZoomOAuth;
 use Illuminate\Http\Request;
 use Validator;
+use App\Exports\SessionAttendanceExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SessionController extends Controller
 {
@@ -597,5 +599,24 @@ class SessionController extends Controller
         }
 
         abort(404);
+    }
+
+    /**
+     * تصدير حضور الطلاب للجلسة إلى ملف إكسل
+     */
+    public function exportAttendanceExcel($session_id)
+    {
+        $session = \App\Models\Session::findOrFail($session_id);
+        $webinar = $session->webinar;
+        $user = auth()->user();
+        if ($user->id != $webinar->teacher_id && !$user->isAdmin()) {
+            abort(403);
+        }
+        $studentsIds = $webinar->getStudentsIds();
+        $students = \App\User::whereIn('id', $studentsIds)->get();
+        $presentStudents = \App\Models\CourseLearning::where('session_id', $session_id)->pluck('user_id')->toArray();
+        $export = new SessionAttendanceExport($session, $students, $presentStudents);
+        $filename = 'attendance_session_' . $session->id . '.xlsx';
+        return Excel::download($export, $filename);
     }
 }

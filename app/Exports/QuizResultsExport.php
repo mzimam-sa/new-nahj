@@ -32,10 +32,10 @@ class QuizResultsExport implements FromCollection, WithHeadings, WithMapping
         return [
             trans('admin/main.id'),
             trans('admin/pages/quiz.title'),
-            trans('admin/pages/webinars.webinar'),
+            'المحتوى التعليمي',
             trans('quiz.student'),
-            trans('admin/pages/quiz.instructor'),
-            trans('admin/pages/quiz.grades'),
+            'درجة الاختبار',
+            'درجة المتدرب',
             trans('admin/pages/quiz.grade_date'),
             trans('admin/main.status'),
         ];
@@ -46,15 +46,24 @@ class QuizResultsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function map($result): array
     {
+        $quizTotalGrade = $result->quiz->quizQuestions ? $result->quiz->quizQuestions->sum('grade') : 0;
+        $studentGrade   = $result->user_grade;
+
+        $statusMap = [
+            'passed'  => 'ناجح',
+            'failed'  => 'راسب',
+            'waiting' => 'قيد المراجعة',
+        ];
+
         return [
             $result->id,
             $result->quiz->title,
-            $result->quiz->webinar->title,
+            optional($result->quiz->webinar)->title,
             $result->user->full_name,
-            $result->quiz->teacher->full_nam,
-            $result->user_grade,
+            $quizTotalGrade == 0 ? 'صفر' : $quizTotalGrade,
+            $studentGrade == 0 ? 'صفر' : $studentGrade,
             dateTimeformat($result->created_at, 'j F Y'),
-            $result->status,
+            $statusMap[$result->status] ?? $result->status,
         ];
     }
 }

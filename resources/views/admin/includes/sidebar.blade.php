@@ -66,10 +66,27 @@
                                 <a class="nav-link @if(!empty($sidebarBeeps['webinars']) and $sidebarBeeps['webinars']) beep beep-sidebar @endif" href="{{ getAdminPanelUrl() }}/webinars">استعرض الكل</a>
                             </li>
 
+                            @if(auth()->user()->isSupervisor())
+                                <li class="{{ request()->is(getAdminPanelUrlPrefix() . '/webinars/term_grades') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ url(getAdminPanelUrlPrefix() . '/webinars/term_grades') }}">
+                                        درجات الترم
+                                    </a>
+                                </li>
+                            @endif
                             <!-- <li class="{{ (request()->is(getAdminPanelUrl('/webinars', false)) and request()->get('type') == 'text_lesson') ? 'active' : '' }}">
                                 <a class="nav-link @if(!empty($sidebarBeeps['textLessons']) and $sidebarBeeps['textLessons']) beep beep-sidebar @endif" href="{{ getAdminPanelUrl() }}/webinars?type=text_lesson">{{ trans('admin/main.text_courses') }}</a>
                             </li> -->
-                        @endcan()
+
+                            <!-- {{-- داخل admin sidebar --}}
+                                @if(auth()->user()->isSupervisor())
+                                    <li class="{{ request()->is(getAdminPanelUrlPrefix() . '/webinars/term_grades') ? 'active' : '' }}">
+                                        <a href="{{ url(getAdminPanelUrlPrefix() . '/webinars/term_grades') }}">
+                                            <i data-feather="award"></i>
+                                            <span>درجات الترم</span>
+                                        </a>
+                                    </li>
+                                @endif
+                        @endcan() -->
 
                         @can('admin_webinars_create')
                             <li class="{{ (request()->is(getAdminPanelUrl('/webinars/create', false))) ? 'active' : '' }}">

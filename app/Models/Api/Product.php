@@ -156,7 +156,7 @@ class Product extends Model
                         ->whereNotIn('product_orders.status', [ProductOrder::$canceled, ProductOrder::$pending]);
                 })
                     ->select('products.*', DB::raw('sum(product_orders.quantity) as salesCounts'))
-                    ->groupBy('product_orders.product_id')
+                    ->groupBy('products.id')
                     ->orderBy('salesCounts', 'desc');
             }
 
@@ -167,7 +167,7 @@ class Product extends Model
                 })
                     ->whereNotNull('rates')
                     ->select('products.*', DB::raw('avg(rates) as rates'))
-                    ->groupBy('product_reviews.product_id')
+                    ->groupBy('products.id')
                     ->orderBy('rates', 'desc');
             }
         }

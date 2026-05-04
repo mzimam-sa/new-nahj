@@ -97,8 +97,8 @@
                                                 <span>{{ $certificate->quiz->title }}</span>
                                                 <small class="d-block text-left">{{ !empty($certificate->quiz->webinar) ? $certificate->quiz->webinar->title : trans('update.delete_item') }})</small>
                                             </td>
-                                            <td class="text-left">{{ $certificate->student->full_name }}</td>
-                                            <td class="text-left">{{ $certificate->quiz->teacher->full_name }}</td>
+                                            <td class="text-left">{{ $certificate->student->full_name ?? trans('update.delete_item') }}</td>
+                                            <td class="text-left">{{ $certificate->quiz->teacher->full_name ?? trans('update.delete_item') }}</td>
                                             <td class="text-center">{{ $certificate->quizzesResult->user_grade }}</td>
                                             <td class="text-center">{{ dateTimeFormat($certificate->created_at, 'j M Y') }}</td>
                                             <td>

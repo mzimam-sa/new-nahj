@@ -79,7 +79,7 @@
                                                                 <div>
                                                                     <strong>رقم التواصل بالشركة:</strong>
                                                                     <br>
-                                                                    {{ $generalSettings['site_phone'] }}
+                                                                    {{ $generalSettings['site_phone'] ?? '' }}
                                                                 </div>
                                                             </div>
 

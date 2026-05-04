@@ -129,10 +129,14 @@
                     <li class="mt-5 {{ (request()->is('panel/webinars/purchases') && request()->query('type') == 'webinar') ? 'active' : '' }}">
                         <a href="/panel/webinars/purchases?type=webinar">الدورات والدبلومات</a>
                     </li>
+
+                        <li class="mt-5 {{ (request()->is('panel/webinars/student_grades') || request()->is('panel/student_grades')) ? 'active' : '' }}">
+                            <a href="/panel/webinars/student_grades">درجات الترم</a>
+                        </li>
                     @endif
 
 
-                    @if($authUser->isOrganization() || $authUser->isTeacher())
+                    <!-- @if($authUser->isOrganization() || $authUser->isTeacher() || $authUser->isSupervisor())
                         <li class="mt-5 {{ (request()->is('panel/webinars/comments')) ? 'active' : '' }}">
                             <a href="/panel/webinars/comments">{{ trans('panel.my_class_comments') }}</a>
                         </li>
@@ -154,7 +158,7 @@
                     @endif
 
 
-                    {{-- my-grades --}}
+                    {{-- my-grades --}} -->
 
                     <li class="mt-5 {{ (request()->is('panel/webinars/my-comments')) ? 'active' : '' }}">
                         <a href="/panel/webinars/my-comments">{{ trans('panel.my_comments') }}</a>

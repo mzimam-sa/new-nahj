@@ -211,7 +211,7 @@
                                                 @endif
                                             </td>
 
-                                            <td class="text-left">{{ $quiz->teacher->full_name }}</td>
+                                            <td class="text-left">{{ $quiz->teacher->full_name ?? trans('update.delete_item') }}</td>
 
                                             <td class="text-center">
                                                 {{ $quiz->quizQuestions->count() }}

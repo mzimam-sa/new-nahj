@@ -23,13 +23,25 @@ class termGradesController extends Controller
         // يمكنك تخصيص البيانات حسب الحاجة
         return view(getTemplate() . '.panel.webinar.add_term_grades');
     }
+
    public function termGrades(Request $request)
     {
         $studentIds = \App\Models\Sale::whereNotNull('webinar_id')
             ->whereNull('refund_at')
             ->pluck('buyer_id')->unique()->toArray();
 
-        $students = \App\User::whereIn('id', $studentIds)->paginate(15);
+        $search = $request->get('search');
+        $studentsQuery = \App\User::whereIn('id', $studentIds);
+
+        if (!empty($search)) {
+            $studentsQuery->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $studentsQuery->paginate(15);
 
         // درجة وحدة لكل طالب (آخر درجة)
         $grades = WebinarGrade::whereIn('student_id', $studentIds)
@@ -55,41 +67,59 @@ class termGradesController extends Controller
             ]);
         }
 
-        return view(getTemplate() . '.panel.webinar.term_grades', [
-            'grades'   => $allGrades,
-            'students' => $students
+        return view(getTemplate() . '.panel.webinar.term_grades_supervisor', [
+            'grades'      => $allGrades,
+            'students'    => $students,
+            'adminPrefix' => getAdminPanelUrlPrefix(),
         ]);
     }
 
-
-public function store(Request $request, $webinarId)
-{
-    $data = $request->validate([
-        'grades' => 'required|array',
-        'grades.*.student_id' => 'required|exists:users,id',
-        'grades.*.pdf_file' => 'required|file|mimes:pdf|max:20480',
-    ]);
-
-    foreach ($data['grades'] as $studentId => $gradeData) {
-        $file = $request->grades[$studentId]['pdf_file'] ?? null;
-        if ($file instanceof \Illuminate\Http\UploadedFile) {
-            $fileName = 'grade_' . $webinarId . '_' . $studentId . '_' . time() . '.pdf';
-            $path = $file->storeAs('pdf_grades', $fileName, 'public');
-            WebinarGrade::updateOrCreate(
-                [
-                    'webinar_id' => $webinarId,
-                    'student_id' => $studentId,
-                ],
-                [
-                    'pdf_path' => $path,
-                    'creator_id' => auth()->id(),
-                ]
-            );
+    private function getRedirectRoute(): string
+    {
+        $adminPrefix = getAdminPanelUrlPrefix();
+        
+        // إذا الطلب جاي من مسار الأدمن
+        if (request()->is($adminPrefix . '/*') || request()->is($adminPrefix)) {
+            return route('admin.webinars.term_grades');
         }
+        
+        // إذا المستخدم supervisor حتى لو الطلب من مكان ثاني
+        if (auth()->user()->isSupervisor()) {
+            return route('admin.webinars.term_grades');
+        }
+        
+        return route('panel.webinars.term_grades');
     }
 
-    return redirect()->back()->with('success', 'تم رفع ملف درجات الطالب بنجاح');
-}
+
+    public function store(Request $request, $webinarId)
+    {
+        $data = $request->validate([
+            'grades' => 'required|array',
+            'grades.*.student_id' => 'required|exists:users,id',
+            'grades.*.pdf_file' => 'required|file|mimes:pdf|max:20480',
+        ]);
+
+        foreach ($data['grades'] as $studentId => $gradeData) {
+            $file = $request->grades[$studentId]['pdf_file'] ?? null;
+            if ($file instanceof \Illuminate\Http\UploadedFile) {
+                $fileName = 'grade_' . $webinarId . '_' . $studentId . '_' . time() . '.pdf';
+                $path = $file->storeAs('pdf_grades', $fileName, 'public');
+                WebinarGrade::updateOrCreate(
+                    [
+                        'webinar_id' => $webinarId,
+                        'student_id' => $studentId,
+                    ],
+                    [
+                        'pdf_path' => $path,
+                        'creator_id' => auth()->id(),
+                    ]
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'تم رفع ملف درجات الطالب بنجاح');
+    }
 
 
 
@@ -154,8 +184,9 @@ public function store(Request $request, $webinarId)
             }
         }
 
-        return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم رفع ملف درجات الطالب بنجاح');
-                            // ...existing code...
+        // return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم رفع ملف درجات الطالب بنجاح');
+        return redirect($this->getRedirectRoute())
+    ->with('success', 'تم رفع ملف درجات الطالب بنجاح');
     }
 
 
@@ -227,17 +258,25 @@ public function store(Request $request, $webinarId)
   
 
     // show edit form OR return JSON for AJAX requests
-    public function editGrade(Request $request, $id)
-    {
-        $grade = WebinarGrade::with(['student', 'webinar'])->findOrFail($id);
+   public function editGrade(Request $request, $id)
+{
+    $grade = WebinarGrade::with(['student', 'webinar'])->findOrFail($id);
 
-        if ($request->ajax() || $request->wantsJson()) { 
-            return response()->json($grade);
-        }
-        // @dd($grade);
-
-        return view(getTemplate() . '.panel.webinar.edit_grade', compact('grade'));
+    if ($request->ajax() || $request->wantsJson()) {
+        return response()->json($grade);
     }
+
+    $adminPrefix = getAdminPanelUrlPrefix();
+    $isSupervisor = auth()->user()->isSupervisor();
+
+    $backUrl     = $isSupervisor ? url($adminPrefix . '/webinars/term_grades')     : route('panel.webinars.term_grades');
+    $formAction  = $isSupervisor ? url($adminPrefix . '/webinars/grades/' . $id)   : url('/panel/grades/' . $id);
+    $cancelUrl   = $isSupervisor ? url($adminPrefix . '/webinars/term_grades')      : url('/panel/webinars/term_grades');
+
+    return view(getTemplate() . '.panel.webinar.edit_grade', compact(
+        'grade', 'backUrl', 'formAction', 'cancelUrl'
+    ));
+}
 
     // update grade (PATCH) — respond JSON for AJAX 
    public function updateGrade(Request $request, $id)
@@ -275,7 +314,8 @@ public function store(Request $request, $webinarId)
         return response()->json(['status' => 'ok', 'grade' => $grade->fresh()]);
     }
 
-    return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم تحديث الدرجة');
+    // return redirect()->route('panel.webinars.term_grades.index')->with('success', 'تم تحديث الدرجة');
+    return redirect($this->getRedirectRoute())->with('success', 'تم تحديث الدرجة');
 }
 
     // delete grade (DELETE) — already returns json, keep it

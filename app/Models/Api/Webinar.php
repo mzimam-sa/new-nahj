@@ -564,8 +564,8 @@ class Webinar extends Model
                         ->whereNull('refund_at');
                 })
                     ->whereNotNull('sales.webinar_id')
-                    ->select('webinars.*', 'sales.webinar_id', DB::raw('count(sales.webinar_id) as salesCounts'))
-                    ->groupBy('sales.webinar_id')
+                    ->select('webinars.*', DB::raw('count(sales.webinar_id) as salesCounts'))
+                    ->groupBy('webinars.id')
                     ->orderBy('salesCounts', 'desc');
             }
 
