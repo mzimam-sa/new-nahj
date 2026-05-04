@@ -15,6 +15,7 @@ $actorName = optional(
 
 $platformArabic = config('lrs-nelc-xapi.platform_in_arabic');
 $platformEnglish = config('lrs-nelc-xapi.platform_in_english');
+$explicitPlatform = config('lrs-nelc-xapi.platform');
 $locale = app()->getLocale();
 $resolvedPlatform = $locale === 'ar' ? $platformArabic : $platformEnglish;
 
@@ -25,6 +26,7 @@ $diagnostics = [
 	'actor_name_source' => 'userMetas.name = certificate_additional',
 	'actor_name_value' => $actorName,
 	'actor_name_exists' => filled($actorName),
+	'explicit_platform' => $explicitPlatform,
 	'platform_in_arabic' => $platformArabic,
 	'platform_in_english' => $platformEnglish,
 	'resolved_platform' => $resolvedPlatform,

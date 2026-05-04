@@ -14,6 +14,7 @@ return [
     'middleware'      => ['web'],
     'key'    => env('LRS_USERNAME'),
     'secret'    => env('LRS_PASSWORD'),
+    'platform'    => env('LRS_PLATFORM', 'https://www.nahj.com.sa'),
     // 'platform_in_arabic'    => 'نهج المعرفة للتدريب', // Platform name in Arabic
     'platform_in_arabic'    => 'https://www.nahj.com.sa', // Platform name in English
     'platform_in_english'    => 'https://www.nahj.com.sa', // Platform name in English
