@@ -11,6 +11,14 @@ class NelcService
         $this->xapi = new NelcXapiService();
     }
 
+    protected function lmsUrl(string $path = ''): string
+    {
+        $baseUrl = rtrim((string) (config('lrs-nelc-xapi.lms_url') ?: config('app.url')), '/');
+        $normalizedPath = ltrim($path, '/');
+
+        return $normalizedPath ? "{$baseUrl}/{$normalizedPath}" : $baseUrl;
+    }
+
     /**
      * Send xAPI statement to NELC
      *
@@ -43,7 +51,7 @@ class NelcService
         switch ($type) {
 
             case 'registered':
-               $programUrl = url('/courses/' . $course->slug);
+                    $programUrl = $this->lmsUrl('/courses/' . $course->slug);
 
 
                 return $this->xapi->Registered(
@@ -77,7 +85,9 @@ class NelcService
                             ?? $object->translations->first();
 
                 $chapterTitle       = $translation?->title       ?? 'Untitled Course';
-                $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
+                // $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
+                $chapterDescription = strip_tags('Untitled Description chapter');
+
                 
 
                 return $this->xapi->Watched(
@@ -105,7 +115,8 @@ class NelcService
                             ?? $object->translations->first();
 
                 $chapterTitle       = $translation?->title       ?? 'Untitled Course';
-                $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
+                // $chapterDescription = strip_tags($translation?->title ?? $chapterTitle);
+                $chapterDescription = strip_tags('Untitled Description chapter lesson');
 
                 return $this->xapi->CompletedLesson(
                    $actorName, $actorEmail,
@@ -150,7 +161,8 @@ class NelcService
                                 ?? $quiz->translations->first();
 
                 $quizTitle       = $quizTranslation?->title ?? 'Untitled Quiz';
-                $quizDescription = strip_tags($quizTranslation?->description ?? $quizTitle);
+                // $quizDescription = strip_tags($quizTranslation?->description ?? $quizTitle);
+                $quizDescription = strip_tags('Untitled Description chapter quiz');
 
                 $raw     = $object->user_grade;
                 $max     = $quiz->total_mark;
@@ -193,12 +205,11 @@ class NelcService
 
                 $certName = $courseTitle; // اسم الشهادة = اسم الكورس
 
-                
-                 // ✅ رابط عام للشهادة (خاص بالكورس مش بالطالب)
-                $certUrl = url('/certificate/course/' . $course->id);
+                // ✅ رابط الشهادة النهائي القابل للفتح
+                $certStudentUrl = $this->lmsUrl('/certificate/' . $course->id . '/' . $student->id);
 
-                // ✅ رابط خاص بالطالب
-                $certStudentUrl = url('/certificate/' . $course->id . '/' . $student->id);
+                // نرسل نفس الرابط كـ object id لتفادي 404 على الرابط العام
+                $certUrl = $certStudentUrl;
 
                 return $this->xapi->Earned(
                     $actorName,

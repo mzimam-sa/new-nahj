@@ -28,7 +28,9 @@ abstract class BaseInteraction
             ?: config("lrs-nelc-xapi.{$key}")
             ?: config('lrs-nelc-xapi.lms_url')
             ?: config('app.url')
-            ?: ''
+            ?: env('LRS_PLATFORM')
+            ?: env('APP_URL')
+            ?: 'https://www.nahj.com.sa'
         );
     }
 }
