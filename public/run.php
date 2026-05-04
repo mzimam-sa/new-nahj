@@ -4,7 +4,7 @@ $app = require __DIR__ . '/../bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 $student = App\User::find(1079);
-$course = App\Models\Webinar::with('teacher', 'translations')->find(2037);
+$course = App\Models\Webinar::with('teacher', 'translations')->find(2038);
 $assignment = App\Models\WebinarAssignment::with('chapter', 'translations')->find(6);
 $quizResult = App\Models\QuizzesResult::with('quiz')->find(56);
 $nelc = app(App\Services\NelcService::class);
