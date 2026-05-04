@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use App\NelcXapi\XapiIntegration;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
-use Nelc\LaravelNelcXapiIntegration\XapiIntegration;
 
 /**
  * Custom wrapper for NELC xAPI Integration

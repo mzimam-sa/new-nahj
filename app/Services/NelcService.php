@@ -2,15 +2,13 @@
 
 namespace App\Services;
 
-use Nelc\LaravelNelcXapiIntegration\XapiIntegration;
-
 class NelcService
 {
     protected $xapi;
 
     public function __construct()
     {
-        $this->xapi = new XapiIntegration();
+        $this->xapi = new NelcXapiService();
     }
 
     /**
