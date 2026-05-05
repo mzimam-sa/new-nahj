@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شهادة إتمام - {{ $sale->webinar->title ?? '' }}</title>
+    <title>شهادة إتمام - {{ $webinar->translate('ar')?->title ?? $webinar->slug ?? '' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -228,13 +228,13 @@
         <div class="body">
             <div class="presented-to">تُمنح هذه الشهادة إلى</div>
             <div class="student-name">
-                {{ $sale->buyer->full_name ?? 'اسم المتعلم' }}
+                {{ $student->full_name ?? $student->name ?? 'اسم المتعلم' }}
             </div>
             <div class="completion-text">
                 لإتمامه بنجاح متطلبات الدورة التدريبية
             </div>
             <div class="course-name">
-                {{ $sale->webinar->translate('ar')?->title ?? $sale->webinar->slug ?? 'اسم الدورة' }}
+                {{ $webinar->translate('ar')?->title ?? $webinar->slug ?? 'اسم الدورة' }}
             </div>
         </div>
 
@@ -242,7 +242,7 @@
             <div class="footer-item">
                 <div class="footer-label">تاريخ الإصدار</div>
                 <div class="footer-value">
-                    {{ \Carbon\Carbon::createFromTimestamp($sale->created_at)->format('Y/m/d') }}
+                    {{ $sale ? \Carbon\Carbon::createFromTimestamp($sale->created_at)->format('Y/m/d') : now()->format('Y/m/d') }}
                 </div>
             </div>
 
@@ -255,13 +255,13 @@
             <div class="footer-item">
                 <div class="footer-label">المدرب</div>
                 <div class="footer-value">
-                    {{ $sale->webinar->teacher?->full_name ?? '—' }}
+                    {{ $webinar->teacher?->full_name ?? '—' }}
                 </div>
             </div>
         </div>
 
         <div class="cert-id">
-            رقم الشهادة: CERT-{{ $sale->webinar_id }}-{{ $sale->buyer_id }}
+            رقم الشهادة: CERT-{{ $webinar->id }}-{{ $student->id }}
         </div>
     </div>
 

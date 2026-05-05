@@ -146,11 +146,13 @@ Route::get('/certificate/course/{courseId}', function($courseId) {
 })->name('certificate.course');
 
 Route::get('/certificate/{courseId}/{studentId}', function($courseId, $studentId) {
-    $sale = \App\Models\Sale::where('webinar_id', $courseId)
+    $webinar = \App\Models\Webinar::with('teacher', 'translations')->findOrFail($courseId);
+    $student = \App\User::findOrFail($studentId);
+    $sale    = \App\Models\Sale::where('webinar_id', $courseId)
                 ->where('buyer_id', $studentId)
                 ->whereNull('refund_at')
-                ->firstOrFail();
-    return view('certificate.public', compact('sale'));
+                ->first(); // not firstOrFail - certificate still shows even without sale record
+    return view('certificate.public', compact('webinar', 'student', 'sale'));
 })->name('certificate.public');
 
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
