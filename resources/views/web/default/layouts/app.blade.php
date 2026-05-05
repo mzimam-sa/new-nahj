@@ -220,6 +220,17 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KNLSXP3Z" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+
+    <!-- NELC Entity Verification Badge -->
+    <iframe
+        src="https://services.futurex.sa/entity-badge?code=vCmXYwlkPGBUNtYt"
+        width="250"
+        height="60"
+        referrerpolicy="unsafe-url"
+        style="border: none; position: fixed; bottom: 0; left: 10px; z-index: 9999;"
+        title="NELC Verified Entity"
+    ></iframe>
+    <!-- End NELC Entity Verification Badge -->
 </body>
 
 </html>
