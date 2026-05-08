@@ -162,20 +162,24 @@
                         @foreach($reviews as $review)
                             <tr>
                                 <td class="text-left">
-                                    @if(!empty($review->webinar_id))
+                                    @if(!empty($review->webinar_id) and !empty($review->webinar))
                                         <a href="{{ $review->webinar->getUrl() }}" target="_blank">{{ $review->webinar->title }}</a>
-                                    @elseif(!empty($review->bundle_id))
+                                    @elseif(!empty($review->bundle_id) and !empty($review->bundle))
                                         <a href="{{ $review->bundle->getUrl() }}" target="_blank">{{ $review->bundle->title }}</a>
+                                    @else
+                                        <span class="text-warning">{{ trans('public.not_defined') }}</span>
                                     @endif
                                 </td>
 
-                                <td class="text-left">{{ $review->creator->full_name }}</td>
+                                <td class="text-left">{{ $review->creator->full_name ?? trans('public.not_defined') }}</td>
 
                                 <td class="">
-                                    @if(!empty($review->webinar_id))
+                                    @if(!empty($review->webinar_id) and !empty($review->webinar))
                                         <span class="">{{ trans('admin/main.course') }}</span>
-                                    @elseif(!empty($review->bundle_id))
+                                    @elseif(!empty($review->bundle_id) and !empty($review->bundle))
                                         <span class="">{{ trans('update.bundle') }}</span>
+                                    @else
+                                        <span class="">{{ trans('public.not_defined') }}</span>
                                     @endif
                                 </td>
 
