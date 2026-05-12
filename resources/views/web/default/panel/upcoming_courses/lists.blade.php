@@ -98,7 +98,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <a href="{{ $upcomingCourse->getUrl() }}" target="_blank">
                                         <h3 class="font-16 text-dark-blue font-weight-bold">{{ $upcomingCourse->title }}
-                                            <span class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.'.$upcomingCourse->type) }}</span>
+                                            {{-- <span class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.'.$upcomingCourse->type) }}</span> --}}
                                         </h3>
                                     </a>
 

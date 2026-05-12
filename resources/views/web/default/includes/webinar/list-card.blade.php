@@ -14,7 +14,7 @@
                 <!--<span class="badge badge-secondary">{{ trans('public.finished') }}</span>-->
             @endif
         @else
-            <span class="badge badge-primary">{{ trans('webinars.' . $webinar->type) }}</span>
+            {{-- <span class="badge badge-primary">{{ trans('webinars.' . $webinar->type) }}</span> --}}
         @endif
 
         <a href="{{ $webinar->getUrl() }}">

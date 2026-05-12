@@ -134,10 +134,10 @@
                                                         class="badge badge-outlined-danger ml-10">{{ trans('update.subscribe_expired') }}</span>
                                                 @endif
 
-                                                @if (!empty($sale->webinar))
-                                                    <span
-                                                        class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.' . $item->type) }}</span>
-                                                @endif
+{{-- @if (!empty($sale->webinar))
+                                    <span
+                                        class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.' . $item->type) }}</span>
+                                @endif --}}
 
                                                 @if (!empty($sale->gift_id))
                                                     <span

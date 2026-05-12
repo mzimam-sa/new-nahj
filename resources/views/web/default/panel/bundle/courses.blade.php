@@ -41,7 +41,7 @@
                                             <!--<span class="badge badge-secondary">{{ trans('public.finished') }}</span>-->
                                         @endif
                                     @else
-                                        <span class="badge badge-secondary">{{ trans('webinars.'.$webinar->type) }}</span>
+                                        {{-- <span class="badge badge-secondary">{{ trans('webinars.'.$webinar->type) }}</span> --}}
                                     @endif
                                     @break
                                     @case(\App\Models\Webinar::$isDraft)
@@ -66,7 +66,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <a href="{{ $webinar->getUrl() }}" target="_blank">
                                         <h3 class="font-16 text-dark-blue font-weight-bold">{{ $webinar->title }}
-                                            <span class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.'.$webinar->type) }}</span>
+                                            {{-- <span class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.'.$webinar->type) }}</span> --}}
                                         </h3>
                                     </a>
 

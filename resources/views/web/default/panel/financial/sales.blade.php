@@ -241,7 +241,7 @@
                                             @switch($sale->type)
                                                 @case(\App\Models\Sale::$webinar)
                                                 @if(!empty($sale->webinar))
-                                                    <span class="text-primary">{{ trans('webinars.'.$sale->webinar->type) }}</span>
+                                                    {{-- <span class="text-primary">{{ trans('webinars.'.$sale->webinar->type) }}</span> --}}
                                                 @else
                                                     <span class="text-danger">{{ trans('update.class') }}</span>
                                                 @endif

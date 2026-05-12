@@ -199,7 +199,7 @@
                                         <td>
                                             <a href="{{ $getTopSellingClass->getUrl() }}" target="_blank" class="media-body text-left">
                                                 <div>{{ $getTopSellingClass->title }}</div>
-                                                <div class="text-primary text-small font-600-bold">{{ trans('webinars.'.$getTopSellingClass->type) }}</div>
+                                                {{-- <div class="text-primary text-small font-600-bold">{{ trans('webinars.'.$getTopSellingClass->type) }}</div> --}}
                                             </a>
                                         </td>
                                         <td>{{ $getTopSellingClass->sales_count }}</td>
