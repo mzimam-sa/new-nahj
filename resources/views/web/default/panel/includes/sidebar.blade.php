@@ -280,11 +280,11 @@
                             <a href="/panel/quizzes/results">نتائج الاختبارات</a>
                         </li>
                     @endif
-                    @if($authUser->isUserBoughtEnglish())
-                      <li class="mt-5">
-                        <a href="https://forms.gle/WZEJoWoJnfi3VshJA" target="_blank">أختبار تحديد المستوى في اللغة الإنجليزية</a>
-                    </li>
-                    @endif
+                    {{-- @if($authUser->isUserBoughtEnglish())
+                        <li class="mt-5">
+                            <a href="https://forms.gle/WZEJoWoJnfi3VshJA" target="_blank">أختبار تحديد المستوى في اللغة الإنجليزية</a>
+                        </li>
+                    @endif --}}
                     @if($authUser->isUser())
                     <li class="mt-5 {{ (request()->is('panel/quizzes/my-results')) ? 'active' : '' }}">
                         <a href="/panel/quizzes/my-results">{{ trans('public.my_results') }}</a>
