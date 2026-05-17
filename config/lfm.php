@@ -56,7 +56,7 @@ return [
 
     'folder_categories' => [
         'file' => [
-            'folder_name' => '/',
+            'folder_name' => '',
             'startup_view' => 'list',
             'max_size' => 5097152, // size in KB
             'valid_mime' => [
@@ -89,7 +89,7 @@ return [
             ],
         ],
         'image' => [
-            'folder_name' => '/',
+            'folder_name' => '',
             'startup_view' => 'list',
             'max_size' => 5097152, // size in KB
             'valid_mime' => [
@@ -133,7 +133,7 @@ return [
     |--------------------------------------------------------------------------
      */
 
-    'rename_file' => false,
+    'rename_file' => true,
 
     'alphanumeric_filename' => false,
 
