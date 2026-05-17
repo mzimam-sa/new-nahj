@@ -133,9 +133,9 @@ return [
     |--------------------------------------------------------------------------
      */
 
-    'rename_file' => true,
+    'rename_file' => false,
 
-    'alphanumeric_filename' => false,
+    'alphanumeric_filename' => true,
 
     'alphanumeric_directory' => false,
 
