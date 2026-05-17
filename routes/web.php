@@ -121,22 +121,22 @@ Route::get('/store/{path}', function ($path) {
 //         'action_needed' => 'Send the server_public_ip to NELC to whitelist on Cloudflare.',
 //     ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 // });
-Route::get('/test-nelc', function () {
+// Route::get('/test-nelc', function () {
 
-    $xapi = new XapiIntegration();
+//     $xapi = new XapiIntegration();
 
-    $response = $xapi->Registered(
-        '5634567790',                 // Student National ID
-        'test-nelc@gmail.com',              // Student Email
-        'ff-1',                   // Course ID
-        'Test dfg Course Title',                // Course Title
-        'Test dfd Description Course',    // Course Description
-        'Instructor ddd',            // Instructor Name
-        'insucsfftor@gmail.com'         // Instructor Email
-    );
+//     $response = $xapi->Registered(
+//         '5634567790',                 // Student National ID
+//         'test-nelc@gmail.com',              // Student Email
+//         'ff-1',                   // Course ID
+//         'Test dfg Course Title',                // Course Title
+//         'Test dfd Description Course',    // Course Description
+//         'Instructor ddd',            // Instructor Name
+//         'insucsfftor@gmail.com'         // Instructor Email
+//     );
 
-    return $response;
-});
+//     return $response;
+// });
 
 
 
